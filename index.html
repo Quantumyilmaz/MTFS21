@@ -5,10 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <style>
-body {
-  font-family: "Lato", sans-serif;
-}
-
 /* Fixed sidenav, full height */
 .sidenav {
   height: 100%;
@@ -17,15 +13,16 @@ body {
   z-index: 1;
   top: 0;
   left: 0;
-  background-color: #2217b5;
+  background-color: rgba(0,0,255,0.3);;
   overflow-x: hidden;
   padding-top: 20px;
+  border-right: 6px solid red;
 }
 
 /* Style the sidenav links and the dropdown button */
 .sidenav a, .dropdown-btn {
   padding: 6px 8px 6px 16px;
-  text-decoration: underline;
+  text-decoration: none;
   font-size: 30px;
   color: #c2fffb;
   display: block;
@@ -46,7 +43,9 @@ body {
 .main {
   margin-left: 300px; /* Same as the width of the sidenav */
   font-size: 20px; /* Increased text to enable scrolling */
-  padding: 0px 10px;
+  padding: 20px 10px;
+  text-align:center;
+  
 }
 
 /* Add an active class to the active dropdown button */
@@ -73,16 +72,32 @@ body {
   .sidenav {padding-top: 15px;}
   .sidenav a {font-size: 16px;}
 }
-</style>
-</head>
-<body>
 
+body {
+  font-family: optima,"Lato", sans-serif;
+  background-image: url('./MT_bg.jpg');
+}
+
+hr {
+  border: 1px solid red;
+}
+
+h2.new {
+  font: 100px/1 Optima,Palatino,times new roman;
+  color: black;
+  text-shadow: 10px 4px 10px rgba(0,0,0,0.2); 
+}
+</style>
+  
+</head>
+  
+<body>
 <div class="sidenav">
   <a href="#about">About</a>
 </div>
 
 <div class="main">
-  <h2>About</h2>
+  <h2 class="new";>MTFS21</h2>
   <p>Here are the links to the thesis documents.</p>
 </div>
 
