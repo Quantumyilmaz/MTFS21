@@ -4,137 +4,28 @@
 <title>MTFS21</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="MT.css">
   
-  
-  
-           <! STYLE >
-
-<style>
-/* Fixed sidenav, full height */
-.sidenav {
-  height: 100%;
-  width: 200px;
-  position: fixed;
-  z-index: 1;
-  top: 0;
-  left: 0;
-  background-color: rgba(0,0,255,0.3);
-  overflow-x: hidden;
-  padding-top: 20px;
-  border-right: 6px solid red;
-}
-
-/* Style the sidenav links and the dropdown button */
-.sidenav a, .dropdown-btn {
-  padding:6px 8px 6px 0px;
-  text-decoration: none;
-  font-size: 30px;
-  color: #c2fffb;
-  display: block;
-  border: none;
-  background: none;
-  width: 100%;
-  text-align: center;
-  cursor: pointer;
-  outline: none;
-}
-
-/* On mouse-over */
-.sidenav a:hover, .dropdown-btn:hover {
-  color: #ffbdbd;
-}
-
-/* Main content */
-.main {
-  margin-left: 200px; /* Same as the width of the sidenav */
-  font-size: 30px; /* Increased text to enable scrolling */
-  padding: 20px 10px;
-  text-align:center;
-  
-}
-
-/* Add an active class to the active dropdown button */
-.active {
-  background-color: green;
-  color: white;
-}
-
-/* Dropdown container (hidden by default). Optional: add a lighter background color and some left padding to change the design of the dropdown content */
-.dropdown-container {
-  display: none;
-  background-color: #262626;
-  padding-left: 8px;
-}
-
-/* Optional: Style the caret down icon */
-.fa-caret-down {
-  float: right;
-  padding-right: 8px;
-}
-
-/* Some media queries for responsiveness */
-@media screen and (max-height: 450px) {
-  .sidenav {padding-top: 15px;}
-  .sidenav a {font-size: 16px;}
-}
-
-body {
-  font-family: optima,"Lato", sans-serif;
-  background-image: url('./gp/bg/MT_bg.jpg');
-  <!background-color: rgba(233, 233, 200, 1);>
-}
-
-hr {
-  border: 1px solid red;
-}
-
-h2.new {
-  font: 100px/1 Optima,Palatino,times new roman;
-  color: black;
-  text-shadow: 10px 4px 10px rgba(0,0,0,0.2);
-  text-align:center;
-}
-</style>
   
 </head>
- 
-  
-  
-            <! BODY >
-  
-  
-  
 <body>
-<div class="sidenav">
-  <a href="#about">About</a>
+
+<div class="topnav" id="topnav">
+  <a class="active" href="./index.html">MTFS21</a>
+  <a href="./SP.html">SPHS20</a>
 </div>
 
-<div class="main">
+<div class="sidenav" id= "sidenav">
+  <a href="./index.html">Home</a>
+</div>
+
+<div class="main" id="main">
   <h2 class="new";>MTFS21</h2>
-  <p>Here are the links to the thesis documents.</p>
+  <p id = "demo"></p>
+  <p>Link hub of the thesis.</p>
 </div>
 
-  
-  
-               <! JS >
-  
-<script>
-/* Loop through all dropdown buttons to toggle between hiding and showing its dropdown content - This allows the user to have multiple dropdowns without any conflict */
-var dropdown = document.getElementsByClassName("dropdown-btn");
-var i;
-
-for (i = 0; i < dropdown.length; i++) {
-  dropdown[i].addEventListener("click", function() {
-  this.classList.toggle("active");
-  var dropdownContent = this.nextElementSibling;
-  if (dropdownContent.style.display === "block") {
-  dropdownContent.style.display = "none";
-  } else {
-  dropdownContent.style.display = "block";
-  }
-  });
-}
-</script>
+<script src="SP.js"></script>
 
 </body>
 </html>
