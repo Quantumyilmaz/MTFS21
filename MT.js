@@ -26,11 +26,20 @@ function resize()
 
 }
 
+var new_main;
+
 function myFunc(id){
-    var main  = document.getElementById("main");
-    main.style.display = "none";
-    main = document.getElementById("main_"+id);
-    main.style.display="block";
+    
+    if (new_main){
+        new_main.style.display = "none";
+    } else {
+        main.style.display = "none";
+    }
+    new_main = document.getElementById("main_"+id);
+    new_main.style.display="block";
+    if (new_main.className==="pdf"){
+        new_main.style.height = (screen.height - topnav.offsetHeight).toString() + "px";
+    }
 
     // main.style.width = (screen.width-sidenav.offsetWidth).toString() + "px";
     // main.style.height = (screen.height - topnav.offsetHeight).toString() + "px";
