@@ -1,0 +1,227 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{biblatex}
+\usepackage{hyperref}
+\hypersetup{colorlinks,%
+citecolor=black,%
+filecolor=black,%
+linkcolor=black,%
+urlcolor=black
+}
+\addbibresource{references.bib}
+\usepackage{amsmath}
+\usepackage{cleveref}
+\usepackage{physics}
+\usepackage{graphicx}
+\usepackage{mathtools}
+\usepackage[figurename=Fig.]{caption}
+\usepackage{subfig}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage[inline]{enumitem}
+\usepackage{amsfonts}
+\DeclareMathOperator*{\argminA}{arg\,min} 
+\usepackage{array}
+\usepackage{caption}
+\captionsetup[figure]{font=small}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{csquotes}
+
+\newcolumntype{?}{!{\vrule width 1pt}}
+
+\usepackage{datetime}
+
+\usepackage{amsthm}
+\newtheorem{definition}{Definition}
+\newtheorem{proposition}{Proposition}
+\newtheorem{example}{Example}
+
+
+\title{Literature Summary for Master's Thesis (WIP)}
+\author{ Ege Yilmaz}
+\setlength{\tabcolsep}{18pt}
+\renewcommand{\arraystretch}{1.5}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+\section{RNNs}
+\section{Reservoir Computing}
+
+\subsection{Echo State Networks \cite{jäger}}
+Discrete-time neural networks with
+\underline{K input} units with ativations yielding \textbf{u}(n) (n:time-step), \underline{N internal} recurrent units yielding \textbf{x}(n) and \underline{L output} units yielding \textbf{y}(n). \\\\
+
+\underline{\textbf {Connections}}:
+\begin{itemize}
+    \item $\text{Input to Reservoir with }\textbf{W}^{\text{in}}_{N\cross K}$
+    \item $\text{Reservoir to Reservoir with }\textbf{W}_{N\cross N}$
+    \item $\text{(Input + Reservoir + Output) to Output with }\textbf{W}^{\text{out}}_{L\cross (K+N+L)}$
+    \item $\text{Output to Input with }\textbf{W}^{\text{back}}_{N\cross L}$
+    
+\end{itemize}
+
+\begin{align}
+    \textbf{x}(n+1) = \textbf{f}(\textbf{W}^{\text{in}}\textbf u(n+1) + \textbf{W}\textbf{x}(n) + \textbf{W}^\text{back} y(n)), && \textbf{f}: \text{Reservoir activations}
+\end{align}
+
+\begin{align}
+    \textbf{y}(n+1) = \textbf{f}^{\text{out}}(\textbf{W}^{\text{out}} \cdot concat(\textbf{u}(n+1),\textbf{x}(n+1) ,\textbf{y}(n))), && \textbf{f}^{\text{out}}: \text{Output activations}
+\end{align}
+
+\begin{definition}
+\textbf{Standard compactness conditions}: \\
+(i) input is drawn from a compact input space U \\
+(ii) network states lie in a compact set A.
+\end{definition}
+
+\textit{\textbf{\textcolor{red}{\underline{From now on assume standard compactness conditions and a network without output feedback.}}}}
+
+\begin{definition}
+Iterator/state updater $T(\textbf x(n), \textbf y(n),\bar{\textbf u}^h) := \textbf x(n + h)
+$, where $\bar{\textbf{u}}^h$ is the input sequence $\textbf u(n + 1), . . . , \textbf u(n + h)$
+\end{definition}
+
+\begin{definition}
+Echo State Property (ESP) or Uniqueness of Solutions Property. Following statements are equivalent:
+
+- Echo States $\textbf{x}$ are states uniquely determined by any $\bar{\textbf{u}}^{-\infty}$ and $T$ if network has no output feedback $\textbf{W}^{\text{back}}$.\\
+
+- $\exists$ input echo functions $E = (e_1,...,e_N)$, where $e_i :\text{U}^{-N} \rightarrow R$, s.t. $\forall$ left-infinite input histories $..., u(n - 1), u(n) \in \text{U}^{- N}$ the current network state is $x(n) = E(..., u(n - 1), u(n))$.
+\end{definition}
+
+\begin{definition} Additional network properties
+
+\begin{enumerate}[label=\Roman*.]
+    \item Network is state contracting $\iff$ all reservoir states are similar on right-infinite inputs extending sufficiently far into the future.
+    
+    \item Network is state forgetting $\iff$ all reservoir states are similar on left-infinite inputs extending sufficiently far into the past.
+    
+    \item Network is state input forgetting $\iff \lim_{t\rightarrow \infty} \norm{H_U(\textbf{uz}_t^1) - H_U(\textbf{vz}_t^1)} = 0$, $H_U$ is functional associated to reservoir filter $U$, $\textbf{u,v}$ are semi-infinite sequences. $\textbf{z}_t^1$ is input at time t. So concatenating different inputs with the same input at infinite future yields indistinguishable output.
+\end{enumerate}
+
+\end{definition}
+
+\begin{proposition}
+Assume that T is continuous in state and input.
+State contracting + state forgetting + input forgetting $\iff$ \text{ESP}. 
+\end{proposition}
+
+\begin{example}
+$u(n) = sin(2\pi n/P)$, P: periodicity. Because of ESP the activations $x_i(n)$ are also periodic signals with the same period length P; but the network’s inhomogeneity induces conspicuous deviations from the input sinusoidal form. See paper for plots.
+
+The 100-unit network used in the example was randomly connected; weights were set to values of 0, +0.4 and -0.4 with probabilities 0.95, 0.025, 0.025 respectively. This means a sparse connectivity of $5\%$. The value of 0.4 for non-null weights resulted from a global scaling such that $| \lambda_{max} | \approx 0.88 < 1$ (spectral radius) was obtained. How to scale is explained in the paper.
+\end{example}
+
+\begin{example}
+(House of the Rising Sun) \underline{With output feedback with uniform random weigths}. $f^{out} = tanh$. A 400 unit sigmoid network was used. Internal connections were randomly as- signed values of 0, 0.4, -0.4 with probabilities 0.9875, 0.00625, 0.00625. This resulted in a weight matrix W with a sparse connectivity of 1.25\%. The maximal eigenvalue of W was $| \lambda_{max}| \approx 0.908$. The fact that spectral radius is close to 1 means that the network exhibits a long-lasting response to a unit impulse input. Generally, the closer spectral radius is to unity, the slower is the decay of the network’s response to an impulse input. A relatively long- lasting “echoing” of inputs in the internal network dynamics is a requisite for a sizable short-term memory performance of the network.
+
+Problem: Reservoir states become periodic. Thus, minimization problem yields less equations in effect (linear dependence). Less than the dimension of $W^{out}$ making the system of equations underdetermined. This results in many possible perfect solutions. The 'naive' solution is unstable. Answer is to add uniform noise to \textbf y(n) which results in 'wobbling' states \textbf x(n).
+\end{example}
+
+\subsubsection{Multiple attractor learning}
+TBP
+\subsubsection{ESNs with leaky integrator neurons}
+TBP
+
+\subsubsection{Key Takeaways}
+\begin{itemize}
+    \item Only the weights of connections leading to the output units are trained; all other connections remain un- changed. This makes it possible to employ any of the many available fast, constructive linear regression algorithms for the training. No special, iterative gradient-descent procedure is needed.
+    
+    \item We want that the eigenvalue of W with the largest absolute value (spectral radius) is smaller than 1. Otherwise network has an asymptotically unstable null state. This means no echo states for any input set U containing \textbf{0}. There should be no problem if the set does not contain \textbf{0}.
+    \item We want sparse and random connections.
+    
+    \item On one hand waste of units (400 reservoir units in ESN can be done by say 20 LSTMs with gradient descent), on the other hand multi-tasking possibilities.
+\end{itemize}
+
+\subsection{ESNs are universal \cite{ortega,grigoryeva2018universal}}
+ESNs can be used as universal approximants in the context of discrete-time fading memory filters with uniformly bounded inputs defined on negative infinite times. 
+
+A major breakthrough was the generalization to infinite time intervals carried out by Boyd and Chua in \cite{fadingmem}, who formulated a uniform approximation theorem using Volterra series for operators endowed with the so called \underline{fading memory property} on continuous time inputs. An input/output system is said to have fading memory when the outputs associated to inputs that are close in the recent past are close, even when those inputs may be very different in the distant past.
+
+\subsubsection{Notation and definitions}
+\begin{itemize}
+    \item $\textbf{Filters: } U:(D_n)^\mathbb{Z} \rightarrow \mathbb{R}^\mathbb{Z}$
+    \item $\textbf{Functionals: } H:(D_n)^\mathbb{Z} \rightarrow \mathbb{R}$
+    \item $\textbf{Causal: } z,w \in  (D_n)^\mathbb{Z}$ with $z_\tau=w_\tau, \forall \tau \leq t$ and $U(z)_t = U(w)_t \implies \text{Filter is causal}$
+    \item $\textbf{Time Delay Operator: } U_\tau(z)_t = z_{t-\tau}$
+    \item $\textbf{Time Invariant: } [U_\tau,U]=0$
+    \item $\textbf{Filter determined by reservoir map: } U^F: (D_n)^\mathbb{Z} \rightarrow (D_N)^\mathbb{Z}$
+    \item $\textbf{Reservoir Filter: } U^F_h(\textbf z)_t := h(U^F(\textbf z)_t)$, $h$:readout, F: Reservoir map
+    
+    \item $\textbf{Filter - Functional bijection: }$Given a time-invariant filter U, we can associate to it a functional $H_U(\textbf{z}):= U(\textbf{z}^e)_0$, where $\textbf{z}^e$ is an arbitrary extension of left-semi-infinite $\textbf{z}$ to infinity.
+    Conversely, for any functional H we can define a time-invariant causal filter $U_H(\textbf{z})_t := H(\mathbb{P}_{\mathbb{Z}_{-}} \circ U_{-t})(\textbf{z}))$, where $U_{-t}$ is the $(-t)$-time delay operator and $\mathbb{P}_{\mathbb{Z}_{-}} : (D_n)^\mathbb{Z} \rightarrow (D_n)^{\mathbb{Z}_-}$ is the natural projection.
+    
+    \item $\textbf{Weighted Norm (of left semi-infinite sequences): } \norm{\textbf{z}}_w := \sup_{t \in \mathbb{Z}_{-}} \norm{\textbf{z}_t w_{-t}}$ , where $w_{n \in \mathbb{N}} \in (0,1]$ a monotonous zero sequence.
+    
+    \item   $l^\infty_w$ is the bounded sequence space with the weighted norm and is a Banach space.
+    
+    \item $\textbf{(Exponential) Fading Memory Property: } (w_n = \lambda^n, \lambda \in (0,1) ) H_U:((D_n)^{\mathbb{Z}_-},\norm{\cdot}_w) \rightarrow \mathbb{R}$. If $\exists w$ s.t. $|H_U(\textbf{z})-H_U(\textbf{s})| < \epsilon$ with  $\norm{\textbf{z}-\textbf{s}}_w = \sup_{t \in \mathbb{Z}} \{ \norm{(\textbf{z}_t-\textbf{s}_t)w_{-t}} \} < \delta(\epsilon)$. That means whenever there is a w s.t. $H_U$ is continuous.
+    
+\end{itemize}
+\subsubsection{Key Takeaways}
+
+\begin{itemize}
+    \item Fading Memory Property implies input forgetting property.
+    
+    \item ESP and FMP imply uniqueness and continuity of solutions, respectively.
+    
+    \item ESP and FMP are difficult to check directly but there are other conditions that guarantee them such as local contractivity: If the reservoir map is a contraction and its contraction constant is less than 1. See also \cite{echo_index,Manjunath_2020}.
+
+    \item Echo state property of the reservoir map $F$ implies causality and invariance of the filter $U^F$. 
+    
+    \item When a filter is causal and time-invariant it suffices to work with the restriction $U:(D_n)^{\mathbb{Z}_-} \rightarrow (D_n)^{\mathbb{Z}_-}$ instead of the original $U:(D_n)^\mathbb{Z} \rightarrow (D_n)^\mathbb{Z}$ since the former uniquely determines the latter.
+    
+    \item ESNs can be used as universal approximants in the context of discrete-time fading memory filters with uniformly bounded inputs defined on negative infinite times. Proven with internal (approximating unique RC filters) and external approximation (approximating some filter in general) properties.
+    
+\end{itemize}
+
+\subsection{SigSAS \cite{teichmann}}
+
+\subsubsection{Key Takeaways}
+
+\begin{itemize}
+    \item Network (aka filter) can be approximated by volterra series on uniformly bounded left infinite inputs. When this filter has additionally FMP the truncation error can be quantified.
+    
+    \item There is a state system SigSAS with ESP and FMP on uniformly bounded inputs. The state map inducing SigSAS and the continuous, time-invariant and causal as- sociated filter have explicit forms. Any fading memory filter can be approximated up to monotonically decreasing rest term by this filter together with a trained linear readout. The quality of the approximation is not filter independent, as the decreasing sequence in the rest term depends on how fast the filter U “forgets” past inputs.
+    
+    \item The tensor space on which the SigSAS state filter is defined is high dimensional. This can be remedied by random projections in Johnson-Lindenstrauss Lemma. The random projections of the SigSAS system yield SAS systems with randomly generated coefficients in a poten- tially much smaller dimension which approximately pre- serve the good properties of the original SigSAS system. The loss in performance that one incurs because of the projection mechanism can be quantified using the Johnson-Lindenstrauss Lemma.
+    
+    
+\end{itemize}
+
+\subsection{Liquid State Machines (Maass) \cite{maass}}
+TBP
+
+\section{HFT}
+
+\subsection{Path Dependence \cite{pathdep} }
+We said we do not want to concentrate on it for now.
+
+\subsubsection{Zumbach effect \cite{zumbach}}
+Essentially this effect corresponds to the property that past squared returns forecast future volatilities better than past volatilities forecast future squared returns.
+
+\subsection{Hawkes Processes \cite{hawkes}}
+
+\subsection{Reinforcement Learning \cite{reinforcement}}
+
+\subsection{Irregular Time Intervals \cite{garch}}
+
+\subsection{Mid-Price Strategies \cite{midprice}}
+
+\subsection{Triple Barrier Method}
+\begin{enumerate}
+    \item The upper barrier (profit-take) is hit first. Label = “buy” or “1”.
+    
+    \item The lower barrier (stop-loss) is hit first. Label = “sell” or “-1”.
+    
+    \item The vertical barrier (expiration) is hit first. Label = “buy” or “sell” based on the return achieved at expiration.
+    
+\end{enumerate}
+
+
+
+\printbibliography
+\end{document}
