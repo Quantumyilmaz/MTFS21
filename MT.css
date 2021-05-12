@@ -151,7 +151,7 @@ li{
 }
 
 /* Some media queries for responsiveness */
-@media screen and (max-height: 600px) {
+@media screen and (max-height: 800px) {
   .sidenav {width: 10%;}
   .sidenav a {font-size: 10px;}
 }
