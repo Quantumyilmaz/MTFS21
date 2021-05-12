@@ -151,9 +151,7 @@ li{
 }
 
 /* Some media queries for responsiveness */
-@media only screen and (max-width: 600px) {
-  body {
-   transform: scale(0.6);
-   transform-origin: 0 0;
-}
+@media screen and (max-height: 600px) {
+  .sidenav {width: 10%;}
+  .sidenav a {font-size: 10px;}
 }
