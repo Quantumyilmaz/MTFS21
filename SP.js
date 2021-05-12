@@ -33,13 +33,9 @@ document.getElementById("demo").innerHTML= main.style.padding;
 
 function myFunc(id){
 
-    for (i = 0; i < mains.length; i++) {
-        mains[i].style.display = "none"
-    }
+    main.style.display = "none";
     main = document.getElementById("main_"+id);
-    
     main.style.display="block";
-    main.style.top = "1000px";
 
     main.style.width = (screen.width-sidenav.offsetWidth).toString() + "px";
     main.style.height = (screen.height - topnav.offsetHeight).toString() + "px";

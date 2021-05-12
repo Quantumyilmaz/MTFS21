@@ -17,18 +17,80 @@
 
 <div class="sidenav" id= "sidenav">
   <a href="./index.html">Home</a>
-  <a id ="litsum" onClick="myFunc(this.id);">Literature Summary</a>
+  <a id ="litsum" onClick="myFunc(this.id);">Literature Summary (WIP)</a>
+  <a id ="links" onClick="myFunc(this.id);">Links</a>
+  <a id ="log" onClick="myFunc(this.id);">Log</a>
 </div>
 
+<!-- MAIN -->
 <div class="main" id="main">
   <h2 class="new";>MTFS21</h2>
   <p id = "demo"></p>
-  <p>Link hub of the thesis.</p>
+  <p>Thesis page</p>
+  <div style="text-align: left;">
+    
+    <dl><h4>Contents</h4>
+      <dt><u>Home</u></dt>
+        <dd style="font-size: 25px;">
+          Homepage
+        </dd>
+      <br>
+      <dt><u>Literature Summary</u></dt>
+        <dd style="font-size: 25px;">
+          Research on literature. Currently work in progress.
+        </dd>
+        <dd style="font-size: 25px;">
+          An overleaf link is provided in <a id ="links" onClick="myFunc(this.id);">Links</a> section.
+        </dd>
+      <br>
+      <dt><u>Log</u></dt>
+        <dd style="font-size: 25px;">
+          Progress updates and changes made to website.
+        </dd>
+      <br>
+    </dl>
+
+    <ul><h4>ToDOs</h4>
+      <li> Finish literature research</li>
+      <li> Try to apply Reservoir Computing to SP.</li>
+      <li> Research on expressiveness of RNNs</li>
+      <li> Apply 3ple-Barrier to SP</li>
+      <li> Try to use machine learning to come up with better barrier rules</li>
+    </ul>
+    
+  </div>
 </div>
 
+<!-- LITERATURE SUMMARY -->
+<embed class="main" id="main_litsum" src="./pdf/MT_summary.pdf#view=FitH" style="display:none;"/>
 
-<embed type="application/pdf class="main" id="main_litsum" src="./pdf/MT_summary.pdf#view=FitH" style="display:none;"/>
+<!-- LINKS -->
+<div class="main" id="main_links" style="display:none;text-align: left;">
+<br><br><br>
+  <ul>
+    <li>
+      <a href="https://github.com/Quantumyilmaz/MTFS21" target="_blank"><b>GitHub</b></a>
+    </li>
+    <li>
+      <a href="https://www.overleaf.com/project/6091fa7289e443656164d389" target="_blank"><b>Literature Summary</b></a>
+    </li>
+</ul>
 
+</div>
+
+<!-- LOG -->
+<div class="main" id="main_log" style="display:none;text-align: left;">
+  <br><br><br><br>
+
+  <ul>
+    <li><b><u><i>Wednesday, 12 May 2021</i></u></b></li>
+    <ol>
+      <li>Created the webpage</li>
+      <li>Added literature summary</li>
+    </ol>
+  </ul>
+
+</div>
 
 <script type="text/javascript" src="SP.js"></script>
 
