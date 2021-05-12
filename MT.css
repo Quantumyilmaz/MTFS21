@@ -152,6 +152,7 @@ li{
 
 /* Some media queries for responsiveness */
 @media screen and (max-height: 800px) {
-  .sidenav {width: 10%;}
-  .sidenav a {font-size: 10px;}
+  .sidenav a , .dropdown-btn{font-size: 15px;}
+  h2.new{font-size: 50;}
+  .main{font-size: 10px;}
 }
