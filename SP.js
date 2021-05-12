@@ -28,8 +28,6 @@ for (i = 0; i < dropdown.length; i++) {
     });
 }
 
-document.getElementById("demo").innerHTML= main.style.padding;
-
 
 function myFunc(id){
 
@@ -41,5 +39,8 @@ function myFunc(id){
     main.style.height = (screen.height - topnav.offsetHeight).toString() + "px";
     main.style.marginLeft = (sidenav.offsetWidth-8).toString() + "px";
     main.style.marginTop = (topnav.offsetHeight).toString() + "px";
+    if (id==="litsum"){
+        myFunc(id+"2");
+    }
 }
 
