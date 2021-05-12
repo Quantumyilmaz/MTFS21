@@ -2,6 +2,7 @@
 <html>
 <head>
 <title>MTFS21</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="viewport" content="width=device-width, initial-scale=1" /> 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <link rel="stylesheet" href="MT.css">
@@ -24,41 +25,49 @@
 
 <!-- MAIN -->
 <div class="main" id="main">
-  <h2 class="new";>MTFS21</h2>
+  <h2 class="new" style="color: rgb(124, 53, 32);">MTFS21</h2>
   <p id = "demo"></p>
-  <p>Thesis page</p>
-  <div style="text-align: left;">
+  <h2 class="new" style="font-size: 25px;color: rgb(180, 78, 47);">Thesis Page</h2>
+  <br>
+  <div class="row">
+    <div class="column" style="border: 1px solid black;border-radius: 0%;">
+      <h4 class="new" style="color: darkmagenta;">Contents</h4>
+      <dl class="data_table">
+        <dt><u>Home</u></dt>
+          <dd>
+            Homepage.
+          </dd>
+        <dt><u>Literature Summary</u></dt>
+          <dd>Research on literature. Currently work in progress.</dd>
+          <dd>An overleaf link is provided in <a id ="links" onClick="myFunc(this.id);">Links</a> section.</dd>
+        <dt><u>Links</u></dt>
+          <dd>- Github.</dd>
+          <dd>- Literature Summary on Overleaf.</dd>
+        <dt><u>Log</u></dt>
+          <dd>Progress updates and changes made to website.</dd>
+      </dl>
+    </div>
     
-    <dl><h4>Contents</h4>
-      <dt><u>Home</u></dt>
-        <dd style="font-size: 25px;">
-          Homepage
-        </dd>
-      <br>
-      <dt><u>Literature Summary</u></dt>
-        <dd style="font-size: 25px;">
-          Research on literature. Currently work in progress.
-        </dd>
-        <dd style="font-size: 25px;">
-          An overleaf link is provided in <a id ="links" onClick="myFunc(this.id);">Links</a> section.
-        </dd>
-      <br>
-      <dt><u>Log</u></dt>
-        <dd style="font-size: 25px;">
-          Progress updates and changes made to website.
-        </dd>
-      <br>
-    </dl>
-
-    <ul style="float: left;font-size: 20px;width: 40%;"><h4>ToDOs</h4>
-      <li> Finish literature research.</li>
-      <li> Try to apply Reservoir Computing to SP.</li>
-      <li> Research on expressiveness of RNNs.</li>
-      <li> Apply 3ple-Barrier to SP.</li>
-      <li> Try to use machine learning to come up with better barrier rules.</li>
-    </ul>
-
-    
+    <div class="column" style="border: 1px solid black;border-radius: 10%;">
+      <h4 class="new" style="color: darkblue;">ToDOs</h4>
+      <div class="column_mini">
+        <h4 class="new2">Thesis</h4>
+        <ul style="font-size: 20px;">
+          <li> Finish literature research.</li>
+          <li> Try to apply Reservoir Computing to SP.</li>
+          <li> Research on expressiveness of RNNs.</li>
+          <li> Apply 3ple-Barrier to SP.</li>
+          <li> Try to use machine learning to come up with better barrier rules.</li>
+        </ul>
+      </div>
+      <div class="column_mini">
+        <h4 class="new2">Website</h4>
+        <ul style="font-size: 20px;">
+          <li> Add links of SPHS20.</li>
+          <li> Optimize for mobile devices.</li>
+        </ul>
+      </div>
+    </div>
   </div>
 </div>
 
