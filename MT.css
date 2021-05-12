@@ -68,6 +68,7 @@ li{
   .main {
     font-size: 30px; /* Increased text to enable scrolling */
     text-align:center;
+    padding-left: 1%;
     
   }
   

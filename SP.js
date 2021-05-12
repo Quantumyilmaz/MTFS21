@@ -6,10 +6,9 @@ var topnav = document.getElementById("topnav");
 var mains = document.getElementsByClassName("main");
 var main  = document.getElementById("main");
 var i;
-var parmak_payi = 40;
-main.style.marginLeft = (sidenav.offsetWidth+parmak_payi).toString() + "px";
+main.style.marginLeft = (sidenav.offsetWidth).toString() + "px";
 topnav.style.marginLeft = sidenav.offsetWidth.toString() + "px";
-topnav.style.width = (screen.width - sidenav.offsetWidth).toString() + "px";
+topnav.style.width = 100*(1 - sidenav.offsetWidth/screen.width).toString() + "%";
 
 
 for (i = 0; i < dropdown.length; i++) {
