@@ -151,7 +151,9 @@ li{
 }
 
 /* Some media queries for responsiveness */
-@media screen and (max-height: 450px) {
-  .data_table {
-    text-align: center;}
+@media only screen and (max-width: 600px) {
+  body {
+   transform: scale(0.6);
+   transform-origin: 0 0;
+}
 }
