@@ -43,6 +43,8 @@ h4.new2{
 }
 .data_table dt, .data_table dd {
   margin-bottom: 10px;
+  margin-right: 2%;
+  margin-left: 2%;
 
 }
 .data_table dt {
@@ -69,7 +71,9 @@ dd {
 }
 
 li{
-  margin: 10px 0;
+  margin-bottom: 10px;
+  margin-right: 2%;
+  margin-left: 2%;
 }
 
 /* Fixed sidenav, full height */
