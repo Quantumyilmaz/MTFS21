@@ -61,8 +61,6 @@ function myFunc(id){
     if (new_main.className==="pdf"){
         if (window.mobileCheck()) {
             myFunc(id+"2")
-        } else {
-            new_main.style.height = (screen.height - topnav.offsetHeight).toString() + "px";
         }
     }
 
