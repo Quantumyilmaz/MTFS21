@@ -198,5 +198,7 @@ li{
   .topnav a {font-size: 15px;}
   dd {font-size: 8px;}
   li{font-size: 8px;}
-  ul {padding-left: 15px;}
+  .column_mini ul {
+    padding-left: 15px;
+  }
 }
