@@ -162,6 +162,13 @@ li{
 
 }
 
+.pdf2{
+  margin-top: 3.45%;
+  margin-left: 19.7%;
+  width: 82%;
+
+}
+
 /* Add an active class to the active dropdown button */
 .active {
   background-color: green;
