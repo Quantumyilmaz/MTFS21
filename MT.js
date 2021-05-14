@@ -83,7 +83,6 @@ for (i=0;i<sidelinks.length;i++) {
         break;
     }
 }
-document.getElementById("demo").innerHTML = window.location.href
 
 var dropdown = document.getElementsByClassName("dropdown-btn");
 for (i = 0; i < dropdown.length; i++) {
