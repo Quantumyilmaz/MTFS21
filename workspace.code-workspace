@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../SPHS20"
+		}
+	],
+	"settings": {
+		"liveServer.settings.multiRootWorkspaceName": "MTFS21"
+	}
+}
