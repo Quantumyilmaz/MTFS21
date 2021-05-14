@@ -75,7 +75,6 @@ function myFunc(id){
 
 //###########   MAIN   ##############
 var i;
-// document.getElementById("demo").innerHTML = document.getElementById("sidenav").getElementsByTagName("a")[4].id;
 var sidelinks = document.getElementById("sidenav").getElementsByTagName("a");
 for (i=0;i<sidelinks.length;i++) {
     if (sidelinks[i].hasAttribute("id") && window.location.href.includes(sidelinks[i].id)){
