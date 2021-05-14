@@ -73,8 +73,19 @@ function myFunc(id){
     // }
 }
 
-var dropdown = document.getElementsByClassName("dropdown-btn");
+//###########   MAIN   ##############
 var i;
+document.getElementById("demo").innerHTML = document.getElementById("sidenav").getElementsByTagName("a")[4].id;
+var sidelinks = document.getElementById("sidenav").getElementsByTagName("a");
+for (i=0;i<sidelinks.length;i++) {
+    if (sidelinks[i].hasAttribute("id") && window.location.href.includes(sidelinks[i].id)){
+        myFunc(sidelinks[i].id);
+        break;
+    }
+}
+document.getElementById("demo").innerHTML = window.location.href
+
+var dropdown = document.getElementsByClassName("dropdown-btn");
 for (i = 0; i < dropdown.length; i++) {
     dropdown[i].addEventListener("click", function() {
     this.classList.toggle("active");
