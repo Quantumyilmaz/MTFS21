@@ -7,7 +7,30 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
 
+<script>
+(function() {
+  function addWidgetsRenderer() {
+    var mimeElement = document.querySelector('script[type="application/vnd.jupyter.widget-view+json"]');
+    var scriptElement = document.createElement('script');
+    var widgetRendererSrc = '@jupyter-widgets/html-manager@*/dist/embed-amd.js';
+    var widgetState;
 
+    // Fallback for older version:
+    try {
+      widgetState = mimeElement && JSON.parse(mimeElement.innerHTML);
+
+      if (widgetState && (widgetState.version_major < 2 || !widgetState.version_major)) {
+        widgetRendererSrc = 'jupyter-js-widgets@*/dist/embed.js';
+      }
+    } catch(e) {}
+
+    scriptElement.src = widgetRendererSrc;
+    document.body.appendChild(scriptElement);
+  }
+
+  document.addEventListener('DOMContentLoaded', addWidgetsRenderer);
+}());
+</script>
 
 <style type="text/css">
     /*!
@@ -13084,7 +13107,7 @@ div#notebook {
 <script>
 $( document ).ready(function(){
 
-            var cfg = {"base_numbering": 1, "nav_menu": {}, "number_sections": true, "sideBar": true, "skip_h1_title": false, "title_cell": "Table of Contents", "title_sidebar": "Contents", "toc_cell": false, "toc_position": {}, "toc_section_display": true, "toc_window_display": false};
+            var cfg = {"base_numbering": 1, "nav_menu": {"height": "749.333px", "width": "196px"}, "number_sections": true, "sideBar": true, "skip_h1_title": false, "title_cell": "Table of Contents", "title_sidebar": "Contents", "toc_cell": false, "toc_position": {}, "toc_section_display": true, "toc_window_display": false};
 
             // fire the main function with these parameters
             require(['nbextensions/toc2/toc2'], function (toc2) {
@@ -13102,6 +13125,7 @@ $( document ).ready(function(){
 <h1 id="Simple-ESN-from--Mantas-Luko&#353;evi&#269;ius-"><a href="https://mantas.info/code/simple_esn/">Simple ESN from  Mantas Luko&#353;evi&#269;ius </a><a class="anchor-link" href="#Simple-ESN-from--Mantas-Luko&#353;evi&#269;ius-">&#182;</a></h1><ul>
 <li>Apply RC on Mackey-Glass Delay Differential Equations</li>
 </ul>
+<p><a href="https://quantumyilmaz.github.io/MTFS21/index.html#LiteratureSummary">Information on notation</a></p>
 
 </div>
 </div>
@@ -13115,6 +13139,9 @@ $( document ).ready(function(){
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">from</span> <span class="nn">sklearn.linear_model</span> <span class="kn">import</span> <span class="n">Ridge</span><span class="p">,</span><span class="n">LinearRegression</span>
 <span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">linalg</span> <span class="c1"># for eigenvalue</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;./../&quot;</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">utils.timer</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
 </pre></div>
 
@@ -13135,14 +13162,53 @@ $( document ).ready(function(){
 <div class="prompt input_prompt">In&nbsp;[2]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="s1">&#39;./mgdata.txt&#39;</span><span class="p">)[:,</span><span class="mi">1</span><span class="p">]</span> <span class="c1">#1201 data points</span>
-<span class="c1"># data = np.loadtxt(&#39;./MackeyGlass_t17.txt&#39;) # 10000 data points</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span><span class="n">dpi</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">data</span><span class="p">[:</span><span class="mi">1000</span><span class="p">])</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Mackey-Glass delay differential equations solution with delay=17&quot;</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># data = np.loadtxt(&#39;./mgdata.txt&#39;)[:,1] #1201 data points</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="s1">&#39;./MackeyGlass_t17.txt&#39;</span><span class="p">)</span> <span class="c1"># 10000 data points</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Data size: &quot;</span><span class="p">,</span><span class="n">data</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
 <span class="c1">#1-D time series</span>
 <span class="n">inSize</span> <span class="o">=</span> <span class="n">outSize</span> <span class="o">=</span> <span class="mi">1</span>
-<span class="n">trainval_split</span><span class="o">=</span><span class="mf">0.7</span>
+<span class="c1"># Training-Validation split</span>
+<span class="n">trainval_split</span><span class="o">=</span><span class="mf">0.8</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Data size:  10000
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Plot">Plot<a class="anchor-link" href="#Plot">&#182;</a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[3]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span><span class="n">dpi</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">data</span><span class="p">[:</span><span class="mi">1000</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Mackey-Glass delay differential equations solution&quot;</span> <span class="o">+</span> <span class="nb">bool</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">size</span><span class="o">&gt;</span><span class="mi">1201</span><span class="p">)</span><span class="o">*</span><span class="s2">&quot; with delay=17&quot;</span><span class="p">);</span>
 </pre></div>
 
     </div>
@@ -13161,7 +13227,7 @@ $( document ).ready(function(){
 
 
 <div class="output_png output_subarea ">
-<img src="output_3_0.png"
+<img src="output_5_0.png"
 >
 </div>
 
@@ -13180,7 +13246,7 @@ $( document ).ready(function(){
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[3]:</div>
+<div class="prompt input_prompt">In&nbsp;[4]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">resSize</span> <span class="o">=</span> <span class="mi">1000</span>
@@ -13196,8 +13262,9 @@ $( document ).ready(function(){
 <span class="n">rhoW</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">linalg</span><span class="o">.</span><span class="n">eig</span><span class="p">(</span><span class="n">W</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Done: </span><span class="si">{</span><span class="n">rhoW</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Scaling matrix with spectral radius...&#39;</span><span class="p">)</span>
-<span class="n">W</span> <span class="o">*=</span> <span class="mf">1.25</span> <span class="o">/</span> <span class="n">rhoW</span>
+<span class="n">desired_spectral_radius</span> <span class="o">=</span> <span class="mf">1.25</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Scaling matrix to have spectral radius </span><span class="si">{</span><span class="n">desired_spectral_radius</span><span class="si">}</span><span class="s1">...&#39;</span><span class="p">)</span>
+<span class="n">W</span> <span class="o">*=</span> <span class="n">desired_spectral_radius</span> <span class="o">/</span> <span class="n">rhoW</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Recalculating spectral radius...&#39;</span><span class="p">)</span>
 <span class="n">rhoW</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">linalg</span><span class="o">.</span><span class="n">eig</span><span class="p">(</span><span class="n">W</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
@@ -13220,7 +13287,7 @@ $( document ).ready(function(){
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>Computing spectral radius...
 Done: 9.204778759016218
-Scaling matrix with spectral radius...
+Scaling matrix to have spectral radius 1.25...
 Recalculating spectral radius...
 Done: 1.2499999999999947
 </pre>
@@ -13234,8 +13301,17 @@ Done: 1.2499999999999947
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Training">Training<a class="anchor-link" href="#Training">&#182;</a></h2><p><u>We want to predict the next timestep using the previous one.</u> So the training procedure is as follows:</p>
+<p>$\textbf{W}^{out} = argmin_\textbf{W} ||y(n) -  \textbf{W} \cdot [1;u(n);x(n)]||^2 + \lambda ||\textbf{W}||^2$, where $n \in \mathbb{N}_{train}$ the time indices, $u$ the inputs and $x$ the reservoir states, ";" vertical concatenation, $\lambda$ ridge regularization parameter, $y(n):= u(n+1), u(n) = data(n)$.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
 <h3 id="Leaking-rate-$\alpha$">Leaking rate $\alpha$<a class="anchor-link" href="#Leaking-rate-$\alpha$">&#182;</a></h3><p>$\alpha$ can be regarded as the time interval in the continuous world between two consecutive time steps in the discrete realization. Small alpha $\rightarrow$ slow dynamics of x(n) $\rightarrow$ longer short term memory.</p>
-<h3 id="Recurrent-reservoir-unit-$\textbf-x(n)$-update-rule">Recurrent reservoir unit $\textbf x(n)$ update rule<a class="anchor-link" href="#Recurrent-reservoir-unit-$\textbf-x(n)$-update-rule">&#182;</a></h3><p>$\tilde{\textbf x}(n) = \tanh (\textbf{W}^{in} \cdot [1;u(n)] + \textbf{W} \cdot \textbf x(n − 1)) \\
+<h3 id="Recurrent-reservoir-units-$\textbf-x(n)$-update-rule">Recurrent reservoir units $\textbf x(n)$ update rule<a class="anchor-link" href="#Recurrent-reservoir-units-$\textbf-x(n)$-update-rule">&#182;</a></h3><p>$\tilde{\textbf x}(n) = \tanh (\textbf{W}^{in} \cdot [1;u(n)] + \textbf{W} \cdot \textbf x(n − 1)) \\
 \textbf x(n) = (1 − α)\textbf x(n − 1) + \alpha \tilde{\textbf x}(n)$</p>
 
 </div>
@@ -13243,7 +13319,7 @@ Done: 1.2499999999999947
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[4]:</div>
+<div class="prompt input_prompt">In&nbsp;[5]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Here X is the reservoir output, which the readout weights will be trained on vias ridge regression</span>
@@ -13253,7 +13329,7 @@ Done: 1.2499999999999947
 
 <span class="c1">#Array shapes: (column vector, time)</span>
 
-<span class="n">y_train</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span><span class="n">initLen</span><span class="o">+</span><span class="mi">1</span><span class="p">:</span><span class="n">trainLen</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">y_train</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span><span class="n">initLen</span><span class="o">+</span><span class="mi">1</span><span class="p">:</span><span class="n">trainLen</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="c1">#+1 since we want the ESN to predict the next timestep using the previous one.</span>
 <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">1</span><span class="o">+</span><span class="n">inSize</span><span class="o">+</span><span class="n">resSize</span><span class="p">,</span><span class="n">trainLen</span><span class="o">-</span><span class="n">initLen</span><span class="p">))</span> 
 <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">resSize</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>  <span class="c1">#reservoir states</span>
 <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">trainLen</span><span class="p">):</span>
@@ -13271,18 +13347,19 @@ Done: 1.2499999999999947
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Ridge-Regression">Ridge Regression<a class="anchor-link" href="#Ridge-Regression">&#182;</a></h2>
+<h3 id="Ridge-Regression">Ridge Regression<a class="anchor-link" href="#Ridge-Regression">&#182;</a></h3>
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[5]:</div>
+<div class="prompt input_prompt">In&nbsp;[6]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">regr</span> <span class="o">=</span> <span class="n">Ridge</span><span class="p">(</span><span class="mf">1e-8</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">fit_intercept</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">)</span>
-<span class="n">regr</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">T</span><span class="p">,</span><span class="n">y_train</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
-<span class="n">Wout</span> <span class="o">=</span> <span class="n">regr</span><span class="o">.</span><span class="n">coef_</span>
+<span class="k">with</span> <span class="n">timer</span><span class="p">(</span><span class="s2">&quot;Ridge Regression&quot;</span><span class="p">):</span>
+    <span class="n">regr</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">T</span><span class="p">,</span><span class="n">y_train</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+    <span class="n">Wout</span> <span class="o">=</span> <span class="n">regr</span><span class="o">.</span><span class="n">coef_</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;MSE train: </span><span class="si">{</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">Wout</span><span class="p">,</span><span class="n">X</span><span class="p">)</span><span class="o">-</span><span class="n">y_train</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 
@@ -13300,7 +13377,8 @@ Done: 1.2499999999999947
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>MSE train: 1.8778250289248138e-08
+<pre>Ridge Regression: 0.12073183059692383 seconds
+MSE train: 2.08200918825242e-09
 </pre>
 </div>
 </div>
@@ -13312,72 +13390,7 @@ Done: 1.2499999999999947
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Validation">Validation<a class="anchor-link" href="#Validation">&#182;</a></h2>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[6]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#Generative Mode</span>
-<span class="c1">#--------------</span>
-<span class="c1"># we use values of x from the training continuing from where we left off.</span>
-<span class="c1"># predicted outputs of the network become input for the next time step.</span>
-
-<span class="n">X_val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">resSize</span><span class="p">,</span><span class="n">valLen</span><span class="p">))</span> <span class="c1">#Just for plotting the reservoir states later on</span>
-<span class="n">y_val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">outSize</span><span class="p">,</span><span class="n">valLen</span><span class="p">))</span>
-<span class="n">u</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">trainLen</span><span class="p">]</span>
-<span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">valLen</span><span class="p">):</span>
-    <span class="n">x</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">alpha</span><span class="p">)</span><span class="o">*</span><span class="n">x</span> <span class="o">+</span> <span class="n">alpha</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">tanh</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span> <span class="n">Win</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="n">u</span><span class="p">))</span> <span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span> <span class="n">W</span><span class="p">,</span> <span class="n">x</span> <span class="p">)</span> <span class="p">)</span>
-    <span class="n">X_val</span><span class="p">[:,</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
-    <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span> <span class="n">Wout</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="n">u</span><span class="p">,</span><span class="n">x</span><span class="p">))</span> <span class="p">)</span>
-    <span class="n">y_val</span><span class="p">[:,</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">y</span>
-    <span class="c1"># generative mode:</span>
-    <span class="n">u</span> <span class="o">=</span> <span class="n">y</span>
-    <span class="c1">## this would be a predictive mode:</span>
-    <span class="c1">#u = data[trainLen+t+1] </span>
-
-<span class="n">errorLen</span> <span class="o">=</span> <span class="n">valLen</span>
-<span class="n">mse</span> <span class="o">=</span> <span class="p">((</span><span class="n">data</span><span class="p">[</span><span class="n">trainLen</span><span class="o">+</span><span class="mi">1</span><span class="p">:</span><span class="n">trainLen</span><span class="o">+</span><span class="n">errorLen</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">y_val</span><span class="p">[:,</span><span class="mi">1</span><span class="p">:</span><span class="n">errorLen</span><span class="p">]</span><span class="o">.</span><span class="n">ravel</span><span class="p">())</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;MSE validation: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span> <span class="n">mse</span> <span class="p">))</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>MSE validation: 0.0011704550435952354
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Plots">Plots<a class="anchor-link" href="#Plots">&#182;</a></h3>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h4 id="Prediction">Prediction<a class="anchor-link" href="#Prediction">&#182;</a></h4>
+<h3 id="Plot">Plot<a class="anchor-link" href="#Plot">&#182;</a></h3>
 </div>
 </div>
 </div>
@@ -13386,10 +13399,12 @@ Done: 1.2499999999999947
 <div class="prompt input_prompt">In&nbsp;[7]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span><span class="n">dpi</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">trainLen</span><span class="p">:</span><span class="n">trainLen</span><span class="o">+</span><span class="n">errorLen</span><span class="p">],</span><span class="s1">&#39;b&#39;</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;Ground Truth&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">y_val</span><span class="p">[:</span><span class="n">errorLen</span><span class="p">]</span><span class="o">.</span><span class="n">ravel</span><span class="p">(),</span><span class="s1">&#39;r.&#39;</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;Prediction&#39;</span><span class="p">);</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">15</span><span class="p">);</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span><span class="n">dpi</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+<span class="n">incr</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">trainLen</span><span class="o">-</span><span class="n">initLen</span><span class="p">,</span><span class="n">incr</span><span class="p">),</span><span class="n">data</span><span class="p">[</span><span class="n">initLen</span><span class="o">+</span><span class="mi">1</span><span class="p">:</span><span class="n">trainLen</span><span class="o">+</span><span class="mi">1</span><span class="p">][::</span><span class="n">incr</span><span class="p">],</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;Training Data&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">trainLen</span><span class="o">-</span><span class="n">initLen</span><span class="p">,</span><span class="n">incr</span><span class="p">),</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">Wout</span><span class="p">,</span><span class="n">X</span><span class="p">)</span><span class="o">.</span><span class="n">ravel</span><span class="p">()[::</span><span class="n">incr</span><span class="p">],</span><span class="s1">&#39;r.&#39;</span><span class="p">,</span><span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.8</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;Fit&#39;</span><span class="p">);</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;upper right&quot;</span><span class="p">);</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">trainLen</span><span class="o">-</span><span class="n">initLen</span><span class="p">);</span>
 </pre></div>
 
     </div>
@@ -13421,7 +13436,9 @@ Done: 1.2499999999999947
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h4 id="Reservoir-Unit-States">Reservoir Unit States<a class="anchor-link" href="#Reservoir-Unit-States">&#182;</a></h4>
+<h2 id="Validation">Validation<a class="anchor-link" href="#Validation">&#182;</a></h2><h3 id="Generative">Generative<a class="anchor-link" href="#Generative">&#182;</a></h3><p>We use previous states x from the training continuing from where we left off.</p>
+<p>Predicted outputs $\hat{y}(n) = \textbf{W}^{out} \cdot [1;u(n);x(n)], n \in \mathbb{N}_{val}$ of the network are used as input for the next time step $u(n+1)$.</p>
+
 </div>
 </div>
 </div>
@@ -13430,8 +13447,69 @@ Done: 1.2499999999999947
 <div class="prompt input_prompt">In&nbsp;[8]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span><span class="n">dpi</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">X_val</span><span class="p">[:</span><span class="mi">10</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">);</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">X_val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">resSize</span><span class="p">,</span><span class="n">valLen</span><span class="p">))</span> <span class="c1">#Just for plotting the reservoir states later on</span>
+<span class="n">y_val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">outSize</span><span class="p">,</span><span class="n">valLen</span><span class="p">))</span>
+<span class="n">errorLen</span> <span class="o">=</span> <span class="n">valLen</span><span class="o">-</span><span class="mi">1</span> <span class="c1"># We have valLen data points to use for predictions but valLen-1 to compare/validate. </span>
+
+
+<span class="n">x</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="mi">2</span><span class="p">:,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="kc">None</span><span class="p">]</span>
+<span class="n">u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span> <span class="n">Wout</span><span class="p">,</span> <span class="n">X</span><span class="p">[:,</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="p">)</span>
+<span class="k">with</span> <span class="n">timer</span><span class="p">(</span><span class="s2">&quot;RC Forecast time (Generative)&quot;</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">valLen</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">alpha</span><span class="p">)</span><span class="o">*</span><span class="n">x</span> <span class="o">+</span> <span class="n">alpha</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">tanh</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span> <span class="n">Win</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="n">u</span><span class="p">))</span> <span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span> <span class="n">W</span><span class="p">,</span> <span class="n">x</span> <span class="p">)</span> <span class="p">)</span>
+        <span class="n">X_val</span><span class="p">[:,</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+        <span class="n">y_val</span><span class="p">[:,</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span> <span class="n">Wout</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="n">u</span><span class="p">,</span><span class="n">x</span><span class="p">))</span> <span class="p">)</span>
+        <span class="c1"># generative mode:</span>
+        <span class="n">u</span> <span class="o">=</span> <span class="n">y_val</span><span class="p">[:,</span><span class="n">t</span><span class="p">]</span>
+        <span class="c1">## this would be predictive mode:</span>
+        <span class="c1">#u = data[trainLen+t+1] </span>
+    
+<span class="n">mse</span> <span class="o">=</span> <span class="p">((</span><span class="n">data</span><span class="p">[</span><span class="n">trainLen</span><span class="o">+</span><span class="mi">1</span><span class="p">:</span><span class="n">trainLen</span><span class="o">+</span><span class="n">errorLen</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">y_val</span><span class="p">[:,:</span><span class="n">errorLen</span><span class="p">]</span><span class="o">.</span><span class="n">ravel</span><span class="p">())</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;MSE validation: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span> <span class="n">mse</span> <span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>RC Forecast time (Generative): 0.34587717056274414 seconds
+MSE validation: 0.033267029188455886
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Plots">Plots<a class="anchor-link" href="#Plots">&#182;</a></h4>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[9]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span><span class="n">dpi</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+<span class="n">incr</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">errorLen</span><span class="p">,</span><span class="n">incr</span><span class="p">),</span><span class="n">data</span><span class="p">[</span><span class="n">trainLen</span><span class="o">+</span><span class="mi">1</span><span class="p">:</span><span class="n">trainLen</span><span class="o">+</span><span class="n">errorLen</span><span class="o">+</span><span class="mi">1</span><span class="p">][::</span><span class="n">incr</span><span class="p">],</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;Ground Truth&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">errorLen</span><span class="p">,</span><span class="n">incr</span><span class="p">),</span><span class="n">y_val</span><span class="p">[:,:</span><span class="n">errorLen</span><span class="p">]</span><span class="o">.</span><span class="n">ravel</span><span class="p">()[::</span><span class="n">incr</span><span class="p">],</span><span class="s1">&#39;r.&#39;</span><span class="p">,</span><span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.8</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;Prediction&#39;</span><span class="p">);</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;lower left&quot;</span><span class="p">);</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">errorLen</span><span class="p">);</span>
 </pre></div>
 
     </div>
@@ -13450,7 +13528,576 @@ Done: 1.2499999999999947
 
 
 <div class="output_png output_subarea ">
-<img src="output_16_0.png"
+<img src="output_18_0.png"
+>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Predictive">Predictive<a class="anchor-link" href="#Predictive">&#182;</a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[10]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">y_val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">outSize</span><span class="p">,</span><span class="n">valLen</span><span class="p">))</span>
+
+
+<span class="n">x</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="mi">2</span><span class="p">:,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="kc">None</span><span class="p">]</span>
+<span class="n">u</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">trainLen</span><span class="p">]</span>
+<span class="k">with</span> <span class="n">timer</span><span class="p">(</span><span class="s2">&quot;RC Forecast time (Predictive)&quot;</span><span class="p">):</span>
+    <span class="c1">#We could do valLen predictions but we dont have data to compare the last prediction with.</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">valLen</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">alpha</span><span class="p">)</span><span class="o">*</span><span class="n">x</span> <span class="o">+</span> <span class="n">alpha</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">tanh</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span> <span class="n">Win</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="n">u</span><span class="p">))</span> <span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span> <span class="n">W</span><span class="p">,</span> <span class="n">x</span> <span class="p">)</span> <span class="p">)</span>
+        <span class="n">X_val</span><span class="p">[:,</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+        <span class="n">y_val</span><span class="p">[:,</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span> <span class="n">Wout</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="n">u</span><span class="p">,</span><span class="n">x</span><span class="p">))</span> <span class="p">)</span>
+        <span class="c1">#predictive mode:</span>
+        <span class="n">u</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">trainLen</span><span class="o">+</span><span class="n">t</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+        <span class="c1">## this would be generative mode:</span>
+        <span class="c1">#u = y</span>
+
+<span class="n">mse</span> <span class="o">=</span> <span class="p">((</span><span class="n">data</span><span class="p">[</span><span class="n">trainLen</span><span class="o">+</span><span class="mi">1</span><span class="p">:</span><span class="n">trainLen</span><span class="o">+</span><span class="n">errorLen</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">y_val</span><span class="p">[:,:</span><span class="n">errorLen</span><span class="p">]</span><span class="o">.</span><span class="n">ravel</span><span class="p">())</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;MSE validation: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span> <span class="n">mse</span> <span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>RC Forecast time (Predictive): 0.35509586334228516 seconds
+MSE validation: 2.0358314007445718e-09
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Plots">Plots<a class="anchor-link" href="#Plots">&#182;</a></h4>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[11]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span><span class="n">dpi</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+<span class="n">incr</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">errorLen</span><span class="p">,</span><span class="n">incr</span><span class="p">),</span><span class="n">data</span><span class="p">[</span><span class="n">trainLen</span><span class="o">+</span><span class="mi">1</span><span class="p">:</span><span class="n">trainLen</span><span class="o">+</span><span class="n">errorLen</span><span class="o">+</span><span class="mi">1</span><span class="p">][::</span><span class="n">incr</span><span class="p">],</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;Ground Truth&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">errorLen</span><span class="p">,</span><span class="n">incr</span><span class="p">),</span><span class="n">y_val</span><span class="p">[:,:</span><span class="n">errorLen</span><span class="p">]</span><span class="o">.</span><span class="n">ravel</span><span class="p">()[::</span><span class="n">incr</span><span class="p">],</span><span class="s1">&#39;r.&#39;</span><span class="p">,</span><span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.8</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;Prediction&#39;</span><span class="p">);</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;lower left&quot;</span><span class="p">);</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">errorLen</span><span class="p">);</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+
+<div class="output_png output_subarea ">
+<img src="output_22_0.png"
+>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Reservoir-Unit-States-Plots">Reservoir Unit States Plots<a class="anchor-link" href="#Reservoir-Unit-States-Plots">&#182;</a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[12]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span><span class="n">dpi</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">X_val</span><span class="p">[:</span><span class="mi">10</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;State </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)]);</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+
+<div class="output_png output_subarea ">
+<img src="output_24_0.png"
+>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Comparison-with-RNN">Comparison with RNN<a class="anchor-link" href="#Comparison-with-RNN">&#182;</a></h1>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Importing-Tensorflow">Importing Tensorflow<a class="anchor-link" href="#Importing-Tensorflow">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[13]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
+<span class="kn">from</span> <span class="nn">tensorflow.keras</span> <span class="kn">import</span> <span class="n">Model</span><span class="p">,</span> <span class="n">Sequential</span>
+<span class="kn">from</span> <span class="nn">tensorflow.keras.layers</span> <span class="kn">import</span> <span class="n">Dense</span><span class="p">,</span> <span class="n">Dropout</span><span class="p">,</span> <span class="n">BatchNormalization</span><span class="p">,</span> <span class="n">Input</span><span class="p">,</span> <span class="n">Flatten</span><span class="p">,</span> <span class="n">LSTM</span>
+<span class="kn">from</span> <span class="nn">tensorflow.keras.optimizers</span> <span class="kn">import</span> <span class="n">Adam</span>
+<span class="kn">from</span> <span class="nn">tensorflow.keras.callbacks</span> <span class="kn">import</span> <span class="n">EarlyStopping</span><span class="p">,</span> <span class="n">ModelCheckpoint</span><span class="p">,</span> <span class="n">ReduceLROnPlateau</span><span class="p">,</span> <span class="n">Callback</span><span class="p">,</span> <span class="n">TensorBoard</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Create-the-RNN">Create the RNN<a class="anchor-link" href="#Create-the-RNN">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[14]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">Sequential</span><span class="p">()</span>
+<span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">LSTM</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="n">return_sequences</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">input_shape</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)))</span>
+<span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">BatchNormalization</span><span class="p">())</span>
+<span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">LSTM</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="n">return_sequences</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+<span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">BatchNormalization</span><span class="p">())</span>
+<span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="s1">&#39;relu&#39;</span><span class="p">))</span>
+<span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">BatchNormalization</span><span class="p">())</span>
+<span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="n">outSize</span><span class="p">))</span>
+<span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">optimizer</span><span class="o">=</span><span class="n">Adam</span><span class="p">(</span><span class="n">lr</span><span class="o">=</span><span class="mf">0.001</span><span class="p">),</span> <span class="n">loss</span><span class="o">=</span><span class="s1">&#39;mse&#39;</span><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">summary</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Model: &#34;sequential&#34;
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+lstm (LSTM)                  (None, 1, 20)             1760      
+_________________________________________________________________
+batch_normalization (BatchNo (None, 1, 20)             80        
+_________________________________________________________________
+lstm_1 (LSTM)                (None, 20)                3280      
+_________________________________________________________________
+batch_normalization_1 (Batch (None, 20)                80        
+_________________________________________________________________
+dense (Dense)                (None, 10)                210       
+_________________________________________________________________
+batch_normalization_2 (Batch (None, 10)                40        
+_________________________________________________________________
+dense_1 (Dense)              (None, 1)                 11        
+=================================================================
+Total params: 5,461
+Trainable params: 5,361
+Non-trainable params: 100
+_________________________________________________________________
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Training">Training<a class="anchor-link" href="#Training">&#182;</a></h2><p>Optimization Problem: $argmin_{\theta} ||\text{RNN}^\theta(data(n)) - data(n+1)||,n \in \mathbb{N}_{train}$</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[15]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">class</span> <span class="nc">CustomLogger</span><span class="p">(</span><span class="n">Callback</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">epochs_tot</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">epochs</span><span class="o">=</span><span class="n">epochs_tot</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span> <span class="o">=</span> <span class="mi">20</span>
+
+    <span class="k">def</span> <span class="nf">on_epoch_begin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">epoch</span><span class="p">,</span> <span class="n">logs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_begin</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">on_epoch_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">epoch</span><span class="p">,</span><span class="n">logs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">duration</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_begin</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">epoch</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">epoch</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The average </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">loss</span><span class="si">}</span><span class="s2"> in epoch </span><span class="si">{</span><span class="n">epoch</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2"> is </span><span class="si">{</span><span class="n">logs</span><span class="p">[</span><span class="s1">&#39;loss&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">1.8f</span><span class="si">}</span><span class="s2">. Duration: </span><span class="si">{</span><span class="n">duration</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">)</span>
+            
+<span class="n">epochs</span> <span class="o">=</span> <span class="mi">500</span>
+<span class="n">batch_size</span> <span class="o">=</span> <span class="mi">1024</span>
+<span class="n">reduceLR</span> <span class="o">=</span> <span class="n">ReduceLROnPlateau</span><span class="p">(</span><span class="n">monitor</span><span class="o">=</span><span class="s1">&#39;loss&#39;</span><span class="p">,</span> <span class="n">factor</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">patience</span><span class="o">=</span><span class="n">epochs</span><span class="o">//</span><span class="mi">10</span><span class="p">,</span> <span class="n">min_lr</span><span class="o">=</span><span class="mf">1e-7</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">earlyStopping</span> <span class="o">=</span> <span class="n">EarlyStopping</span><span class="p">(</span><span class="n">monitor</span><span class="o">=</span><span class="s1">&#39;loss&#39;</span><span class="p">,</span> <span class="n">patience</span><span class="o">=</span><span class="n">epochs</span><span class="o">//</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">CustomLogger</span><span class="p">(</span><span class="n">epochs</span><span class="p">)</span>
+<span class="k">with</span> <span class="n">timer</span><span class="p">(</span><span class="s2">&quot;RNN Training time&quot;</span><span class="p">):</span>
+    <span class="n">history</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">data</span><span class="p">[:</span><span class="n">trainLen</span><span class="p">,</span><span class="kc">None</span><span class="p">,</span><span class="kc">None</span><span class="p">],</span><span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="n">trainLen</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="kc">None</span><span class="p">,</span><span class="kc">None</span><span class="p">],</span><span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span><span class="n">epochs</span><span class="o">=</span><span class="n">epochs</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">callbacks</span><span class="o">=</span><span class="p">[</span><span class="n">earlyStopping</span><span class="p">,</span><span class="n">logger</span><span class="p">])</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>The average mse in epoch 1 is 0.21099700. Duration: 2.130035877227783 seconds
+The average mse in epoch 20 is 0.00251189. Duration: 0.03794598579406738 seconds
+The average mse in epoch 40 is 0.00216522. Duration: 0.0415651798248291 seconds
+The average mse in epoch 60 is 0.00190022. Duration: 0.038086891174316406 seconds
+The average mse in epoch 80 is 0.00153878. Duration: 0.03940892219543457 seconds
+The average mse in epoch 100 is 0.00122162. Duration: 0.038205862045288086 seconds
+The average mse in epoch 120 is 0.00127594. Duration: 0.03798198699951172 seconds
+The average mse in epoch 140 is 0.00120943. Duration: 0.040390729904174805 seconds
+The average mse in epoch 160 is 0.00123253. Duration: 0.037442922592163086 seconds
+The average mse in epoch 180 is 0.00121633. Duration: 0.03769803047180176 seconds
+The average mse in epoch 200 is 0.00114664. Duration: 0.040014028549194336 seconds
+The average mse in epoch 220 is 0.00120565. Duration: 0.038513898849487305 seconds
+The average mse in epoch 240 is 0.00117108. Duration: 0.037663936614990234 seconds
+The average mse in epoch 260 is 0.00118534. Duration: 0.03788495063781738 seconds
+The average mse in epoch 280 is 0.00112458. Duration: 0.03818321228027344 seconds
+The average mse in epoch 300 is 0.00110309. Duration: 0.039183855056762695 seconds
+The average mse in epoch 320 is 0.00113553. Duration: 0.03831076622009277 seconds
+The average mse in epoch 340 is 0.00108832. Duration: 0.03792691230773926 seconds
+The average mse in epoch 360 is 0.00116472. Duration: 0.03977704048156738 seconds
+The average mse in epoch 380 is 0.00109350. Duration: 0.03862118721008301 seconds
+The average mse in epoch 400 is 0.00106720. Duration: 0.03889775276184082 seconds
+The average mse in epoch 420 is 0.00112755. Duration: 0.03956794738769531 seconds
+The average mse in epoch 440 is 0.00107194. Duration: 0.038419246673583984 seconds
+The average mse in epoch 460 is 0.00111661. Duration: 0.03842878341674805 seconds
+The average mse in epoch 480 is 0.00109301. Duration: 0.038761138916015625 seconds
+The average mse in epoch 500 is 0.00103337. Duration: 0.03846096992492676 seconds
+RNN Training time: 21.97814702987671 seconds
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Plot">Plot<a class="anchor-link" href="#Plot">&#182;</a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[16]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span><span class="n">dpi</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+<span class="n">incr</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">trainLen</span><span class="p">,</span><span class="n">incr</span><span class="p">),</span><span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="n">trainLen</span><span class="o">+</span><span class="mi">1</span><span class="p">][::</span><span class="n">incr</span><span class="p">],</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;Ground Truth&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">trainLen</span><span class="p">,</span><span class="n">incr</span><span class="p">),</span><span class="n">history</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">data</span><span class="p">[:</span><span class="n">trainLen</span><span class="p">,</span><span class="kc">None</span><span class="p">,</span><span class="kc">None</span><span class="p">])[::</span><span class="n">incr</span><span class="p">],</span><span class="s1">&#39;r.&#39;</span><span class="p">,</span><span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.8</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;Prediction&#39;</span><span class="p">);</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;lower left&quot;</span><span class="p">);</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">trainLen</span><span class="p">);</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+
+<div class="output_png output_subarea ">
+<img src="output_33_0.png"
+>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Validation">Validation<a class="anchor-link" href="#Validation">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Generative">Generative<a class="anchor-link" href="#Generative">&#182;</a></h3><p>We take a generative approach same as in the case of RC, i.e. the model will predict based on previous predictions of itself.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[17]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">RNN_val</span> <span class="o">=</span> <span class="p">[];</span> <span class="n">RNN_se_val</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="k">with</span> <span class="n">timer</span><span class="p">(</span><span class="s2">&quot;RNN Forecast time (Generative)&quot;</span><span class="p">):</span>
+    <span class="n">pred</span> <span class="o">=</span> <span class="n">history</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">trainLen</span><span class="p">,</span><span class="kc">None</span><span class="p">,</span><span class="kc">None</span><span class="p">,</span><span class="kc">None</span><span class="p">])</span>
+    <span class="n">RNN_val</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="o">*</span><span class="n">pred</span><span class="o">.</span><span class="n">ravel</span><span class="p">())</span>
+    <span class="n">RNN_se_val</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">RNN_val</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">data</span><span class="p">[</span><span class="n">trainLen</span><span class="o">+</span><span class="mi">1</span><span class="p">:][</span><span class="mi">0</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">errorLen</span><span class="p">):</span>
+        <span class="n">pred</span> <span class="o">=</span> <span class="n">history</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">pred</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span>
+        <span class="n">RNN_val</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="o">*</span><span class="n">pred</span><span class="o">.</span><span class="n">ravel</span><span class="p">())</span>
+        <span class="n">RNN_se_val</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">RNN_val</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">data</span><span class="p">[</span><span class="n">trainLen</span><span class="o">+</span><span class="mi">1</span><span class="p">:][</span><span class="n">i</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+        
+<span class="n">RNN_mse</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">RNN_se_val</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;MSE validation: &#39;</span><span class="p">,</span> <span class="n">RNN_mse</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>RNN Forecast time (Generative): 35.36306285858154 seconds
+MSE validation:  0.08022835596233922
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Plot">Plot<a class="anchor-link" href="#Plot">&#182;</a></h4>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[18]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span><span class="n">dpi</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+<span class="n">incr</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">errorLen</span><span class="p">,</span><span class="n">incr</span><span class="p">),</span><span class="n">data</span><span class="p">[</span><span class="n">trainLen</span><span class="o">+</span><span class="mi">1</span><span class="p">:</span><span class="n">trainLen</span><span class="o">+</span><span class="n">errorLen</span><span class="o">+</span><span class="mi">1</span><span class="p">][::</span><span class="n">incr</span><span class="p">],</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;Ground Truth&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">errorLen</span><span class="p">,</span><span class="n">incr</span><span class="p">),</span><span class="n">RNN_val</span><span class="p">[::</span><span class="n">incr</span><span class="p">],</span><span class="s1">&#39;r.&#39;</span><span class="p">,</span><span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.8</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;Prediction&#39;</span><span class="p">);</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span><span class="n">loc</span> <span class="o">=</span><span class="s2">&quot;lower left&quot;</span><span class="p">);</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">errorLen</span><span class="p">);</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+
+<div class="output_png output_subarea ">
+<img src="output_38_0.png"
+>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Predictive">Predictive<a class="anchor-link" href="#Predictive">&#182;</a></h3><p>Now we take a predictive approach, i.e. the model will predict based on data at previous timestep to forecast the next.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[19]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">with</span> <span class="n">timer</span><span class="p">(</span><span class="s2">&quot;RNN Forecast time (Predictive)&quot;</span><span class="p">):</span>
+    <span class="n">RNN_val</span> <span class="o">=</span> <span class="n">history</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">trainLen</span><span class="p">:</span><span class="n">trainLen</span><span class="o">+</span><span class="n">errorLen</span><span class="o">+</span><span class="mi">1</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="kc">None</span><span class="p">,</span><span class="kc">None</span><span class="p">])</span>
+<span class="n">RNN_mse</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">RNN_val</span><span class="o">-</span><span class="n">data</span><span class="p">[</span><span class="n">trainLen</span><span class="o">+</span><span class="mi">1</span><span class="p">:</span><span class="n">trainLen</span><span class="o">+</span><span class="n">errorLen</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;MSE validation: &#39;</span><span class="p">,</span> <span class="n">RNN_mse</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>RNN Forecast time (Predictive): 0.08260393142700195 seconds
+MSE validation:  0.0968307039325284
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Plot">Plot<a class="anchor-link" href="#Plot">&#182;</a></h4>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[20]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span><span class="n">dpi</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+<span class="n">incr</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">errorLen</span><span class="p">,</span><span class="n">incr</span><span class="p">),</span><span class="n">data</span><span class="p">[</span><span class="n">trainLen</span><span class="o">+</span><span class="mi">1</span><span class="p">:</span><span class="n">trainLen</span><span class="o">+</span><span class="n">errorLen</span><span class="o">+</span><span class="mi">1</span><span class="p">][::</span><span class="n">incr</span><span class="p">],</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;Ground Truth&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">errorLen</span><span class="p">,</span><span class="n">incr</span><span class="p">),</span><span class="n">RNN_val</span><span class="p">[::</span><span class="n">incr</span><span class="p">],</span><span class="s1">&#39;r.&#39;</span><span class="p">,</span><span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.8</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;Prediction&#39;</span><span class="p">);</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span><span class="n">loc</span> <span class="o">=</span><span class="s2">&quot;lower left&quot;</span><span class="p">);</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">errorLen</span><span class="p">);</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+
+<div class="output_png output_subarea ">
+<img src="output_42_0.png"
 >
 </div>
 
@@ -13465,6 +14112,10 @@ Done: 1.2499999999999947
 </body>
 
  
+
+<script type="application/vnd.jupyter.widget-state+json">
+{"state": {}, "version_major": 2, "version_minor": 0}
+</script>
 
 
 </html>
