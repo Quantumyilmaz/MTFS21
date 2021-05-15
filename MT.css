@@ -196,6 +196,11 @@ li{
   font-weight: 300;
   font-size: 4.5em;
   color: #402d2d;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  margin-bottom: 0px;
+  margin-top: 0px;
 }
 
 .ml5 .text-wrapper {
@@ -239,6 +244,9 @@ li{
   font-size: 1.8em;
   text-transform: uppercase;
   letter-spacing: 0.5em;
+  left: 0;
+  top: 0;
+  bottom: 0;
 }
 
 .ml12 .letter {

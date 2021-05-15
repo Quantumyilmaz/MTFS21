@@ -4,33 +4,33 @@ anime.timeline({loop: false})
     opacity: [0.5,1],
     scaleX: [0, 1],
     easing: "easeInOutExpo",
-    duration: 700
+    duration: 300
   }).add({
     targets: '.ml5 .line',
-    duration: 600,
+    duration: 300,
     easing: "easeOutExpo",
     translateY: (el, i) => (-0.625 + 0.625*2*i) + "em"
   }).add({
     targets: '.ml5 .ampersand',
     opacity: [0,1],
     scaleY: [0.5, 1],
-    easing: "easeOutExpo",
-    duration: 600,
-    offset: '-=600'
+    easing: "easeInExpo",
+    duration: 200,
+    offset: '-=0'
   }).add({
     targets: '.ml5 .letters-left',
     opacity: [0,1],
     translateX: ["0.5em", 0],
     easing: "easeOutExpo",
-    duration: 600,
-    offset: '-=300'
+    duration: 100,
+    offset: '-=0'
   }).add({
     targets: '.ml5 .letters-right',
     opacity: [0,1],
     translateX: ["-0.5em", 0],
     easing: "easeOutExpo",
-    duration: 600,
-    offset: '-=600'
+    duration: 100,
+    offset: '-=0'
   }).add({
     targets: '.ml5',
     opacity: 1,
@@ -58,11 +58,11 @@ anime.timeline({loop: false})
   .add({
     targets: '.column',
     // translateX: [40,0],
-    translateZ: [40,0],
+    // translateZ: [40,1000],
     opacity: [0,1],
     easing: "easeOutExpo",
     duration: 1200,
-    delay: (el, i) => 500 + 30 * i
+    delay: (el, i) => 1000 + 30 * i
   });
 
   
