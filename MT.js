@@ -154,3 +154,14 @@ anime.timeline({loop: false})
     duration: 1200,
     delay: (el, i) => 500 + 30 * i
   });
+
+anime.timeline({loop: false})
+  .add({
+    targets: '.column',
+    // translateX: [40,0],
+    translateZ: [40,0],
+    opacity: [0,1],
+    easing: "easeOutExpo",
+    duration: 1200,
+    delay: (el, i) => 500 + 30 * i
+  });
