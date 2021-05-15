@@ -21,6 +21,9 @@
   <a href="#LiteratureSummary" id ="LiteratureSummary" onClick="myFunc(this.id);">Literature Summary (WIP)</a>
   <button class="dropdown-btn">Reservoir Computing Examples<i class="fa fa-caret-down"></i></button>
     <div class="dropdown-container">
+      <a href="./Examples/SinusESN/SinusESN.html">Sinusodial</a>
+    </div>
+    <div class="dropdown-container">
         <a href="./Examples/SimpleESN/large/SimpleESN_large.html">Mackey-Glass</a>
     </div>
   <a href="#Links" id ="Links" onClick="myFunc(this.id);">Links</a>
@@ -51,13 +54,23 @@
           <dd>
               <ul>
                 <li>
-                  <dt><b>Mackey-Glass</b>: 
-                    <dd> RC-RNN Comparison on Mackey-Glass equations. RC displays superiority over 
-                    RNN in terms of speed, generativity and robustness to smaller dataset.</dd>
+                  <dt><b>Sinusoidal</b>: 
+                    <dd> RC-RNN Comparison on Sine functions. RC displays superiority over 
+                    RNN in terms of speed and accuracy.</dd>
                   </dt>
                 </li>
               </ul>
           </dd>
+          <dd>
+            <ul>
+              <li>
+                <dt><b>Mackey-Glass</b>: 
+                  <dd> RC-RNN Comparison on Mackey-Glass equations. RC displays superiority over 
+                  RNN in terms of speed, accuracy, generativity and robustness to smaller dataset.</dd>
+                </dt>
+              </li>
+            </ul>
+        </dd>
         </dt>
 
         <dt><u>Links</u>
@@ -120,6 +133,7 @@
   <ul>
     <li><b><u><i>Saturday, 15 May 2021</i></u></b></li>
     <ol>
+      <li>Added ESN example (Sinusoidal)</li>
       <li>Improved ESN example (Mackey-Glass)</li>
     </ol>
     <li><b><u><i>Thursday, 13 May 2021</i></u></b></li>
