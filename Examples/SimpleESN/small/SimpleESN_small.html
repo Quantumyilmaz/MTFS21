@@ -13166,11 +13166,10 @@ $( document ).ready(function(){
 <body>
 
 <div class="topnav" id="topnav">
-  <a href="SimpleESN_large.html">Larger Dataset</a>
+  <a href="../SimpleESN_large.html">Larger Dataset</a>
   <a class="active" href="SimpleESN_small.html">Smaller Dataset</a>
   <a class="new" href="https://quantumyilmaz.github.io/MTFS21/">Home</a>
 </div>
-
   <div tabindex="-1" id="notebook" class="border-box-sizing">
     <div class="container" id="notebook-container">
 
@@ -13282,7 +13281,7 @@ $( document ).ready(function(){
 
 
 <div class="output_png output_subarea ">
-<img src="./small/output_5_0.png"
+<img src="output_5_0.png"
 >
 </div>
 
@@ -13432,7 +13431,7 @@ Done: 1.2499999999999947
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>Ridge Regression: 0.03131389617919922 seconds
+<pre>Ridge Regression: 0.031584978103637695 seconds
 MSE train: 1.73577079564096e-08
 </pre>
 </div>
@@ -13451,11 +13450,11 @@ MSE train: 1.73577079564096e-08
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[7]:</div>
+<div class="prompt input_prompt">In&nbsp;[21]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span><span class="n">dpi</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
-<span class="n">incr</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">incr</span> <span class="o">=</span> <span class="mi">2</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">trainLen</span><span class="o">-</span><span class="n">initLen</span><span class="p">,</span><span class="n">incr</span><span class="p">),</span><span class="n">data</span><span class="p">[</span><span class="n">initLen</span><span class="o">+</span><span class="mi">1</span><span class="p">:</span><span class="n">trainLen</span><span class="o">+</span><span class="mi">1</span><span class="p">][::</span><span class="n">incr</span><span class="p">],</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;Training Data&#39;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">trainLen</span><span class="o">-</span><span class="n">initLen</span><span class="p">,</span><span class="n">incr</span><span class="p">),</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">Wout</span><span class="p">,</span><span class="n">X</span><span class="p">)</span><span class="o">.</span><span class="n">ravel</span><span class="p">()[::</span><span class="n">incr</span><span class="p">],</span><span class="s1">&#39;r.&#39;</span><span class="p">,</span><span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.8</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;Fit&#39;</span><span class="p">);</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;upper right&quot;</span><span class="p">);</span>
@@ -13478,7 +13477,7 @@ MSE train: 1.73577079564096e-08
 
 
 <div class="output_png output_subarea ">
-<img src="./small/output_14_0.png"
+<img src="output_14_0.png"
 >
 </div>
 
@@ -13537,7 +13536,7 @@ MSE train: 1.73577079564096e-08
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>RC Forecast time (Generative): 0.05891013145446777 seconds
+<pre>RC Forecast time (Generative): 0.05634307861328125 seconds
 MSE validation: 0.0002128705309799163
 </pre>
 </div>
@@ -13560,7 +13559,7 @@ MSE validation: 0.0002128705309799163
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span><span class="n">dpi</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
-<span class="n">incr</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">incr</span> <span class="o">=</span> <span class="mi">1</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">errorLen</span><span class="p">,</span><span class="n">incr</span><span class="p">),</span><span class="n">data</span><span class="p">[</span><span class="n">trainLen</span><span class="o">+</span><span class="mi">1</span><span class="p">:</span><span class="n">trainLen</span><span class="o">+</span><span class="n">errorLen</span><span class="o">+</span><span class="mi">1</span><span class="p">][::</span><span class="n">incr</span><span class="p">],</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;Ground Truth&#39;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">errorLen</span><span class="p">,</span><span class="n">incr</span><span class="p">),</span><span class="n">y_val</span><span class="p">[:,:</span><span class="n">errorLen</span><span class="p">]</span><span class="o">.</span><span class="n">ravel</span><span class="p">()[::</span><span class="n">incr</span><span class="p">],</span><span class="s1">&#39;r.&#39;</span><span class="p">,</span><span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.8</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;Prediction&#39;</span><span class="p">);</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;lower left&quot;</span><span class="p">);</span>
@@ -13583,7 +13582,7 @@ MSE validation: 0.0002128705309799163
 
 
 <div class="output_png output_subarea ">
-<img src="./small/output_18_0.png"
+<img src="output_18_0.png"
 >
 </div>
 
@@ -13639,7 +13638,7 @@ MSE validation: 0.0002128705309799163
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>RC Forecast time (Predictive): 0.0639028549194336 seconds
+<pre>RC Forecast time (Predictive): 0.07089519500732422 seconds
 MSE validation: 6.393800753838671e-08
 </pre>
 </div>
@@ -13662,7 +13661,7 @@ MSE validation: 6.393800753838671e-08
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span><span class="n">dpi</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
-<span class="n">incr</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">incr</span> <span class="o">=</span> <span class="mi">1</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">errorLen</span><span class="p">,</span><span class="n">incr</span><span class="p">),</span><span class="n">data</span><span class="p">[</span><span class="n">trainLen</span><span class="o">+</span><span class="mi">1</span><span class="p">:</span><span class="n">trainLen</span><span class="o">+</span><span class="n">errorLen</span><span class="o">+</span><span class="mi">1</span><span class="p">][::</span><span class="n">incr</span><span class="p">],</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;Ground Truth&#39;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">errorLen</span><span class="p">,</span><span class="n">incr</span><span class="p">),</span><span class="n">y_val</span><span class="p">[:,:</span><span class="n">errorLen</span><span class="p">]</span><span class="o">.</span><span class="n">ravel</span><span class="p">()[::</span><span class="n">incr</span><span class="p">],</span><span class="s1">&#39;r.&#39;</span><span class="p">,</span><span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.8</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;Prediction&#39;</span><span class="p">);</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;lower left&quot;</span><span class="p">);</span>
@@ -13685,7 +13684,7 @@ MSE validation: 6.393800753838671e-08
 
 
 <div class="output_png output_subarea ">
-<img src="./small/output_22_0.png"
+<img src="output_22_0.png"
 >
 </div>
 
@@ -13708,8 +13707,8 @@ MSE validation: 6.393800753838671e-08
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span><span class="n">dpi</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">X_val</span><span class="p">[:</span><span class="mi">10</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;State </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)]);</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">X_val</span><span class="p">[:</span><span class="mi">10</span><span class="p">,:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;State </span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)]);</span>
 </pre></div>
 
     </div>
@@ -13728,7 +13727,7 @@ MSE validation: 6.393800753838671e-08
 
 
 <div class="output_png output_subarea ">
-<img src="./small/output_24_0.png"
+<img src="output_24_0.png"
 >
 </div>
 
@@ -13854,7 +13853,7 @@ _________________________________________________________________
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">epochs_tot</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">epochs</span><span class="o">=</span><span class="n">epochs_tot</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span> <span class="o">=</span> <span class="mi">20</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span> <span class="o">=</span> <span class="mi">1000</span>
 
     <span class="k">def</span> <span class="nf">on_epoch_begin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">epoch</span><span class="p">,</span> <span class="n">logs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">time_begin</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
@@ -13863,8 +13862,8 @@ _________________________________________________________________
         <span class="k">if</span> <span class="p">(</span><span class="n">epoch</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">epoch</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The average </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">loss</span><span class="si">}</span><span class="s2"> in epoch </span><span class="si">{</span><span class="n">epoch</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2"> is </span><span class="si">{</span><span class="n">logs</span><span class="p">[</span><span class="s1">&#39;loss&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">1.8f</span><span class="si">}</span><span class="s2">. Duration: </span><span class="si">{</span><span class="n">duration</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">)</span>
             
-<span class="n">epochs</span> <span class="o">=</span> <span class="mi">500</span>
-<span class="n">batch_size</span> <span class="o">=</span> <span class="mi">1024</span>
+<span class="n">epochs</span> <span class="o">=</span> <span class="mi">10000</span>
+<span class="n">batch_size</span> <span class="o">=</span> <span class="mi">1201</span>
 <span class="n">reduceLR</span> <span class="o">=</span> <span class="n">ReduceLROnPlateau</span><span class="p">(</span><span class="n">monitor</span><span class="o">=</span><span class="s1">&#39;loss&#39;</span><span class="p">,</span> <span class="n">factor</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">patience</span><span class="o">=</span><span class="n">epochs</span><span class="o">//</span><span class="mi">10</span><span class="p">,</span> <span class="n">min_lr</span><span class="o">=</span><span class="mf">1e-7</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 <span class="n">earlyStopping</span> <span class="o">=</span> <span class="n">EarlyStopping</span><span class="p">(</span><span class="n">monitor</span><span class="o">=</span><span class="s1">&#39;loss&#39;</span><span class="p">,</span> <span class="n">patience</span><span class="o">=</span><span class="n">epochs</span><span class="o">//</span><span class="mi">2</span><span class="p">)</span>
 <span class="n">logger</span> <span class="o">=</span> <span class="n">CustomLogger</span><span class="p">(</span><span class="n">epochs</span><span class="p">)</span>
@@ -13886,33 +13885,18 @@ _________________________________________________________________
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>The average mse in epoch 1 is 2.32789612. Duration: 2.0513179302215576 seconds
-The average mse in epoch 20 is 0.69028628. Duration: 0.005082130432128906 seconds
-The average mse in epoch 40 is 0.52754414. Duration: 0.005169868469238281 seconds
-The average mse in epoch 60 is 0.39642093. Duration: 0.00499725341796875 seconds
-The average mse in epoch 80 is 0.28937060. Duration: 0.005099058151245117 seconds
-The average mse in epoch 100 is 0.20323604. Duration: 0.005208253860473633 seconds
-The average mse in epoch 120 is 0.13633676. Duration: 0.005302906036376953 seconds
-The average mse in epoch 140 is 0.08684246. Duration: 0.005284786224365234 seconds
-The average mse in epoch 160 is 0.05236972. Duration: 0.005217075347900391 seconds
-The average mse in epoch 180 is 0.02997912. Duration: 0.005025148391723633 seconds
-The average mse in epoch 200 is 0.01650803. Duration: 0.005023956298828125 seconds
-The average mse in epoch 220 is 0.00903219. Duration: 0.004920005798339844 seconds
-The average mse in epoch 240 is 0.00520708. Duration: 0.005001068115234375 seconds
-The average mse in epoch 260 is 0.00340104. Duration: 0.0049152374267578125 seconds
-The average mse in epoch 280 is 0.00260972. Duration: 0.005102872848510742 seconds
-The average mse in epoch 300 is 0.00228104. Duration: 0.0050258636474609375 seconds
-The average mse in epoch 320 is 0.00214636. Duration: 0.005140066146850586 seconds
-The average mse in epoch 340 is 0.00208764. Duration: 0.004800081253051758 seconds
-The average mse in epoch 360 is 0.00205622. Duration: 0.005102872848510742 seconds
-The average mse in epoch 380 is 0.00203510. Duration: 0.00493311882019043 seconds
-The average mse in epoch 400 is 0.00201727. Duration: 0.005198955535888672 seconds
-The average mse in epoch 420 is 0.00200039. Duration: 0.0053501129150390625 seconds
-The average mse in epoch 440 is 0.00198312. Duration: 0.005197048187255859 seconds
-The average mse in epoch 460 is 0.00196567. Duration: 0.00498199462890625 seconds
-The average mse in epoch 480 is 0.00194894. Duration: 0.005155086517333984 seconds
-The average mse in epoch 500 is 0.00193253. Duration: 0.004982948303222656 seconds
-RNN Training time: 4.651370048522949 seconds
+<pre>The average mse in epoch 1 is 1.52553332. Duration: 2.046221971511841 seconds
+The average mse in epoch 1000 is 0.00115865. Duration: 0.004729032516479492 seconds
+The average mse in epoch 2000 is 0.00115615. Duration: 0.005995035171508789 seconds
+The average mse in epoch 3000 is 0.00115309. Duration: 0.004934787750244141 seconds
+The average mse in epoch 4000 is 0.00115849. Duration: 0.005274057388305664 seconds
+The average mse in epoch 5000 is 0.00125998. Duration: 0.004949092864990234 seconds
+The average mse in epoch 6000 is 0.00114436. Duration: 0.004997968673706055 seconds
+The average mse in epoch 7000 is 0.00114429. Duration: 0.00494384765625 seconds
+The average mse in epoch 8000 is 0.00114428. Duration: 0.0053632259368896484 seconds
+The average mse in epoch 9000 is 0.00114430. Duration: 0.005043983459472656 seconds
+The average mse in epoch 10000 is 0.00114410. Duration: 0.005009174346923828 seconds
+RNN Training time: 53.8672981262207 seconds
 </pre>
 </div>
 </div>
@@ -13934,7 +13918,7 @@ RNN Training time: 4.651370048522949 seconds
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span><span class="n">dpi</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
-<span class="n">incr</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">incr</span> <span class="o">=</span> <span class="mi">2</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">trainLen</span><span class="p">,</span><span class="n">incr</span><span class="p">),</span><span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="n">trainLen</span><span class="o">+</span><span class="mi">1</span><span class="p">][::</span><span class="n">incr</span><span class="p">],</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;Ground Truth&#39;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">trainLen</span><span class="p">,</span><span class="n">incr</span><span class="p">),</span><span class="n">history</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">data</span><span class="p">[:</span><span class="n">trainLen</span><span class="p">,</span><span class="kc">None</span><span class="p">,</span><span class="kc">None</span><span class="p">])[::</span><span class="n">incr</span><span class="p">],</span><span class="s1">&#39;r.&#39;</span><span class="p">,</span><span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.8</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;Prediction&#39;</span><span class="p">);</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;lower left&quot;</span><span class="p">);</span>
@@ -13957,7 +13941,7 @@ RNN Training time: 4.651370048522949 seconds
 
 
 <div class="output_png output_subarea ">
-<img src="./small/output_33_0.png"
+<img src="output_33_0.png"
 >
 </div>
 
@@ -14017,8 +14001,8 @@ RNN Training time: 4.651370048522949 seconds
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>RNN Forecast time (Generative): 4.646335124969482 seconds
-MSE validation:  1.2069248547558908
+<pre>RNN Forecast time (Generative): 4.561708927154541 seconds
+MSE validation:  0.2474497462546063
 </pre>
 </div>
 </div>
@@ -14040,7 +14024,7 @@ MSE validation:  1.2069248547558908
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span><span class="n">dpi</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
-<span class="n">incr</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">incr</span> <span class="o">=</span> <span class="mi">1</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">errorLen</span><span class="p">,</span><span class="n">incr</span><span class="p">),</span><span class="n">data</span><span class="p">[</span><span class="n">trainLen</span><span class="o">+</span><span class="mi">1</span><span class="p">:</span><span class="n">trainLen</span><span class="o">+</span><span class="n">errorLen</span><span class="o">+</span><span class="mi">1</span><span class="p">][::</span><span class="n">incr</span><span class="p">],</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;Ground Truth&#39;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">errorLen</span><span class="p">,</span><span class="n">incr</span><span class="p">),</span><span class="n">RNN_val</span><span class="p">[::</span><span class="n">incr</span><span class="p">],</span><span class="s1">&#39;r.&#39;</span><span class="p">,</span><span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.8</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;Prediction&#39;</span><span class="p">);</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span><span class="n">loc</span> <span class="o">=</span><span class="s2">&quot;lower left&quot;</span><span class="p">);</span>
@@ -14063,7 +14047,7 @@ MSE validation:  1.2069248547558908
 
 
 <div class="output_png output_subarea ">
-<img src="./small/output_38_0.png"
+<img src="output_38_0.png"
 >
 </div>
 
@@ -14106,8 +14090,8 @@ MSE validation:  1.2069248547558908
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>RNN Forecast time (Predictive): 0.028603076934814453 seconds
-MSE validation:  1.3485601339690458
+<pre>RNN Forecast time (Predictive): 0.03420615196228027 seconds
+MSE validation:  0.11024220912403683
 </pre>
 </div>
 </div>
@@ -14129,7 +14113,7 @@ MSE validation:  1.3485601339690458
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span><span class="n">dpi</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
-<span class="n">incr</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">incr</span> <span class="o">=</span> <span class="mi">1</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">errorLen</span><span class="p">,</span><span class="n">incr</span><span class="p">),</span><span class="n">data</span><span class="p">[</span><span class="n">trainLen</span><span class="o">+</span><span class="mi">1</span><span class="p">:</span><span class="n">trainLen</span><span class="o">+</span><span class="n">errorLen</span><span class="o">+</span><span class="mi">1</span><span class="p">][::</span><span class="n">incr</span><span class="p">],</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;Ground Truth&#39;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">errorLen</span><span class="p">,</span><span class="n">incr</span><span class="p">),</span><span class="n">RNN_val</span><span class="p">[::</span><span class="n">incr</span><span class="p">],</span><span class="s1">&#39;r.&#39;</span><span class="p">,</span><span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.8</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;Prediction&#39;</span><span class="p">);</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span><span class="n">loc</span> <span class="o">=</span><span class="s2">&quot;lower left&quot;</span><span class="p">);</span>
@@ -14152,7 +14136,7 @@ MSE validation:  1.3485601339690458
 
 
 <div class="output_png output_subarea ">
-<img src="./small/output_42_0.png"
+<img src="output_42_0.png"
 >
 </div>
 
