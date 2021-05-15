@@ -32,6 +32,54 @@
 }());
 </script>
 
+<!-- MY STYLE FOR TOPNAV-->
+<style>
+.topnav {
+  overflow: hidden;
+  position: static;
+  width: 79.5%;
+  height: auto;
+  margin-left: 20.5%;
+  top:0px;
+  left:0px;
+  background-color: #333;
+}
+  
+.topnav a {
+  float: left;
+  color: #f2f2f2;
+  text-align: center;
+  padding: 1% 3%;
+  text-decoration: none;
+  font-size: 25px;
+}
+.topnav a.new {
+  float: right;
+  color: #c9b3fa;
+  text-align: center;
+  padding: 1% 3%;
+  text-decoration: none;
+  font-size: 25px;
+  text-shadow:0px 0px 2px #ffffff ;
+  font-style: italic;
+}
+
+.topnav a.new:hover {
+  background-color: rgb(255, 135, 171);
+  color: black;
+  font-style: normal;
+}
+.topnav a:hover {
+  background-color: #ddd;
+  color: black;
+}
+
+.topnav a.active {
+  background-color: #04AA6D;
+  color: white;
+}
+</style>
+
 <style type="text/css">
     /*!
 *
@@ -13116,6 +13164,13 @@ $( document ).ready(function(){
     });
 </script>
 <body>
+
+<div class="topnav" id="topnav">
+  <a class="active" href="SimpleESN_large.html">Larger Dataset</a>
+  <a href="SimpleESN_small.html">Smaller Dataset</a>
+  <a class="new" href="https://quantumyilmaz.github.io/MTFS21/">Home</a>
+</div>
+
   <div tabindex="-1" id="notebook" class="border-box-sizing">
     <div class="container" id="notebook-container">
 
@@ -13227,7 +13282,7 @@ $( document ).ready(function(){
 
 
 <div class="output_png output_subarea ">
-<img src="output_5_0.png"
+<img src="/large/output_5_0.png"
 >
 </div>
 
@@ -13423,7 +13478,7 @@ MSE train: 2.08200918825242e-09
 
 
 <div class="output_png output_subarea ">
-<img src="output_14_0.png"
+<img src="/large/output_14_0.png"
 >
 </div>
 
@@ -13528,7 +13583,7 @@ MSE validation: 0.033267029188455886
 
 
 <div class="output_png output_subarea ">
-<img src="output_18_0.png"
+<img src="/large/output_18_0.png"
 >
 </div>
 
@@ -13630,7 +13685,7 @@ MSE validation: 2.0358314007445718e-09
 
 
 <div class="output_png output_subarea ">
-<img src="output_22_0.png"
+<img src="/large/output_22_0.png"
 >
 </div>
 
@@ -13673,7 +13728,7 @@ MSE validation: 2.0358314007445718e-09
 
 
 <div class="output_png output_subarea ">
-<img src="output_24_0.png"
+<img src="/large/output_24_0.png"
 >
 </div>
 
@@ -13902,7 +13957,7 @@ RNN Training time: 21.97814702987671 seconds
 
 
 <div class="output_png output_subarea ">
-<img src="output_33_0.png"
+<img src="/large/output_33_0.png"
 >
 </div>
 
@@ -14008,7 +14063,7 @@ MSE validation:  0.08022835596233922
 
 
 <div class="output_png output_subarea ">
-<img src="output_38_0.png"
+<img src="/large/output_38_0.png"
 >
 </div>
 
@@ -14097,7 +14152,7 @@ MSE validation:  0.0968307039325284
 
 
 <div class="output_png output_subarea ">
-<img src="output_42_0.png"
+<img src="/large/output_42_0.png"
 >
 </div>
 
