@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head><meta charset="utf-8" />
-
 <title>HouseESN</title>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+<link rel="stylesheet" href="../Examples.css">
 <script>
   function slowerAudio(){
     document.getElementById("myaudio").playbackRate = document.getElementById("myaudio").playbackRate * 0.5;
@@ -16,82 +15,11 @@
   }
       
   </script>
-<!-- MY STYLE FOR TOPNAV-->
-<style>
-  .topnav {
-    overflow: hidden;
-    position: static;
-    width: 79.5%;
-    height: auto;
-    margin-left: 20.5%;
-    top:0px;
-    left:0px;
-    background-color: #333;
-  }
-    
-  .topnav a {
-    float: left;
-    color: #f2f2f2;
-    text-align: center;
-    padding: 1% 3%;
-    text-decoration: none;
-    font-size: 25px;
-  }
-  .topnav a.new {
-    float: right;
-    color: #c9b3fa;
-    text-align: center;
-    padding: 1% 3%;
-    text-decoration: none;
-    font-size: 25px;
-    text-shadow:0px 0px 2px #ffffff ;
-    font-style: italic;
-  }
-  
-  .topnav a.new:hover {
-    background-color: rgb(255, 135, 171);
-    color: black;
-    font-style: normal;
-  }
-  .topnav a:hover {
-    background-color: #ddd;
-    color: black;
-  }
-  
-  .topnav a.active {
-    background-color: #04AA6D;
-    color: white;
-  }
-  </style>
 
-<!-- MY STYLE FOR AUDIO PLAYER FAST SLOW BUTTONS-->
-<style>
-  .btn-group button {
-    background-color: #04AA6D; /* Green background */
-    border: 1px solid green; /* Green border */
-    color: white; /* White text */
-    padding: 0px 4px; /* Some padding */
-    cursor: pointer; /* Pointer/hand icon */
-    float: left; /* Float the buttons side by side */
-    margin-bottom: 50px;
-  }
-  
-  /* Clear floats (clearfix hack) */
-  .btn-group:after {
-    content: "";
-    clear: both;
-    display: table;
-  }
-  
-  .btn-group button:not(:last-child) {
-    border-right: none; /* Prevent double borders */
-  }
-  
-  /* Add a background color on hover */
-  .btn-group button:hover {
-    background-color: #3e8e41;
-  }
-  </style>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
 
 <style type="text/css">
     /*!
@@ -13177,7 +13105,6 @@ $( document ).ready(function(){
     });
 </script>
 <body>
-
   <div class="topnav" id="topnav">
     <a class="new" href="https://quantumyilmaz.github.io/MTFS21/">Home</a>
   </div>
@@ -13190,9 +13117,8 @@ $( document ).ready(function(){
 <div class="text_cell_render border-box-sizing rendered_html">
 <h1 id="House-of-the-Rising-Sun-ESN-example-from--Herbert-J&#228;ger"><a href="https://www.researchgate.net/publication/215385037_The_echo_state_approach_to_analysing_and_training_recurrent_neural_networks-with_an_erratum_note'">House of the Rising Sun ESN example from  Herbert J&#228;ger</a><a class="anchor-link" href="#House-of-the-Rising-Sun-ESN-example-from--Herbert-J&#228;ger">&#182;</a></h1><ul>
 <li>Apply RC on vocals of House of the Rising Sun</li>
-<li>Example with output feedback
-## Problem:</li>
-</ul>
+<li>Example with output feedback</li></ul>
+<h2 id="Problem:">Problem:<a class="anchor-link" href="#Problem:">¶</a></h2>
 <div style="font-size:18px;">Reservoir states become periodic. Thus, minimization problem yields less effective equations due to linear dependence. Less than the dimension of $\textbf{W}^{out}$ making the system of equations underdetermined.
 This results in many possible perfect solutions. The ’naive’ solution is unstable. Answer is to add uniform
 noise to y(n) which results in ’wobbling’ states x(n) around the perfect periodic state sequence used in the naive approach..</div><p><a href="https://quantumyilmaz.github.io/MTFS21/index.html#LiteratureSummary">Information on notation</a></p>
