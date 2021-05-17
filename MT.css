@@ -287,7 +287,8 @@ li{
   line-height: 1em;
 }
 
-/* Some media queries for responsiveness */
+/* Some media queries for responsiveness 
+dont forget to change max height also in javascript*/
 @media screen and (max-height: 800px){
 
   .sidenav a , .dropdown-btn{

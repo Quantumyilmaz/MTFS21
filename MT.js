@@ -190,19 +190,20 @@ for (i = 0; i < dropdown.length; i++) {
     // main.style.marginLeft = sidenav.offsetWidth.toString() + "px";
     } else {
     
-    dropdownContent.style.height = "0%";
+    var dropdown_selection_h = document.getElementsByClassName("sidenav")[0].getElementsByTagName("a")[1].offsetHeight;
+    dropdownContent.style.height="0%"
     dropdownContent.style.display = "block";
     anime.timeline({loop: false}).add({
       targets: dropdownContent,
-      height: 10*dropdownContent.getElementsByTagName("a").length.toString()+"%",
+      height: (dropdown_selection_h*dropdownContent.getElementsByTagName("a").length).toString()+"px",
       easing: 'easeOutQuad',
-      duration: 300,
+      duration: 400,
     });
     anime.timeline({loop: false}).add({
       targets: dropdownContent.getElementsByTagName("a"),
       opacity: [0,1],
       easing: 'easeOutQuad',
-      duration: 400,
+      duration: 500,
     });
     };
     });
