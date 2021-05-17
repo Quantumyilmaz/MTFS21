@@ -292,8 +292,8 @@ dont forget to change max height also in javascript*/
 @media screen and (max-height: 800px){
 
   .sidenav a , .dropdown-btn{
-    font-size: 50%;
-    font-weight:800;
+    font-size: 30%;
+    font-weight:700;
   }
   .sidenav a.home {
     padding-bottom: 30%;
@@ -302,7 +302,7 @@ dont forget to change max height also in javascript*/
   }
   .ml12 {
       font-size: 0.9em;
-      letter-spacing: 0.2em;
+      letter-spacing: 0.1em;
       font-weight: 700;
     }
   h2.new{font-size: 40px;}
