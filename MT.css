@@ -173,6 +173,7 @@ li{
 
 .topnav a:hover {
   background-color: #ddd;
+  background: -webkit-gradient(linear, left bottom, left top, color-stop(0%,#824557), color-stop(1%,#914d61), color-stop(100%,#ffa4c0));
   color: black;
 }
 
