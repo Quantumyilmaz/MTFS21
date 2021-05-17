@@ -121,6 +121,11 @@ li{
   bottom: 0;
 }
 
+.sidenav a.home {
+  padding-bottom: 30%;
+  font-size:xx-large;
+}
+
 
 
 /* On mouse-over */
@@ -283,11 +288,25 @@ li{
 
 /* Some media queries for responsiveness */
 @media screen and (max-height: 800px){
-  .sidenav a , .dropdown-btn{font-size: 15px;}
+
+  .sidenav a , .dropdown-btn{font-size: 50%;}
+  .sidenav a.home {
+    padding-bottom: 30%;
+    font-size:80%;}
+  .ml12 {
+      z-index: 1;
+      font-weight: 200;
+      font-size: 0.9em;
+      text-transform: uppercase;
+      letter-spacing: 0.5em;
+      left: 0;
+      top: 0;
+      bottom: 0;
+    }
   h2.new{font-size: 40px;}
   h2.new2{font-size: 15px;}
   .main{font-size: 10px;}
-  .topnav a {font-size: 15px;}
+  .topnav a {font-size: 12px;}
   dd {font-size: 8px;}
   li{font-size: 8px;}
   .column_mini ul {
