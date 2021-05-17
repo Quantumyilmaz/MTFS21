@@ -189,7 +189,26 @@ for (i = 0; i < dropdown.length; i++) {
     // topnav.style.marginLeft = sidenav.offsetWidth.toString() + "px";
     // main.style.marginLeft = sidenav.offsetWidth.toString() + "px";
     } else {
+    
+    dropdownContent.style.height = "0%";
     dropdownContent.style.display = "block";
+    anime.timeline({loop: false}).add({
+      targets: '.dropdown-container',
+      // display: "block",
+      height: 10*dropdownContent.getElementsByTagName("a").length.toString()+"%",
+      // opacity: [0,1],
+      easing: 'easeInOutQuad',
+      duration: 300,
+      // delay: (el, i) => 1000 + 30 * i
+    });
+    anime.timeline({loop: false}).add({
+      targets: '.dropdown-container a',
+      // display: "block",
+      opacity: [0,1],
+      easing: 'easeInOutQuad',
+      duration: 400,
+      // delay: (el, i) => 1000 + 30 * i
+    });
     };
     });
 };
