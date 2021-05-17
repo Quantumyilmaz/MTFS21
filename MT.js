@@ -181,33 +181,42 @@ for (i=0;i<sidelinks.length;i++) {
 
 var dropdown = document.getElementsByClassName("dropdown-btn");
 for (i = 0; i < dropdown.length; i++) {
+    dropdown[i].style.height = "0%"
+    dropdown[i].style.display = "block";
     dropdown[i].addEventListener("click", function() {
     this.classList.toggle("active");
     var dropdownContent = this.nextElementSibling;
-    if (dropdownContent.style.display === "block") {
-    dropdownContent.style.display = "none";
+    if (dropdownContent.style.height != "0%") {
+    anime.timeline({loop: false}).add({
+      targets: dropdownContent,
+      height: "0%",
+      easing: 'easeOutQuad',
+      duration: 300,
+    });
+    // anime.timeline({loop: false}).add({
+    //   targets: '.dropdown-container a',
+    //   opacity: [0,1],
+    //   easing: 'easeInOutQuad',
+    //   duration: 400,
+    // });
+    // dropdownContent.style.display = "none";
     // topnav.style.marginLeft = sidenav.offsetWidth.toString() + "px";
     // main.style.marginLeft = sidenav.offsetWidth.toString() + "px";
     } else {
     
     dropdownContent.style.height = "0%";
-    dropdownContent.style.display = "block";
+    // dropdownContent.style.display = "block";
     anime.timeline({loop: false}).add({
-      targets: '.dropdown-container',
-      // display: "block",
+      targets: dropdownContent,
       height: 10*dropdownContent.getElementsByTagName("a").length.toString()+"%",
-      // opacity: [0,1],
-      easing: 'easeInOutQuad',
+      easing: 'easeOutQuad',
       duration: 300,
-      // delay: (el, i) => 1000 + 30 * i
     });
     anime.timeline({loop: false}).add({
-      targets: '.dropdown-container a',
-      // display: "block",
+      targets: dropdownContent.getElementsByTagName("a"),
       opacity: [0,1],
-      easing: 'easeInOutQuad',
+      easing: 'easeOutQuad',
       duration: 400,
-      // delay: (el, i) => 1000 + 30 * i
     });
     };
     });
