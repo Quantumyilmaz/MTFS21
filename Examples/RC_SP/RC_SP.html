@@ -13385,7 +13385,7 @@ Done: 0.9751086939293491
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Training">Training<a class="anchor-link" href="#Training">&#182;</a></h2><p>$\textbf x(n) = (1 − α)\textbf x(n − 1) + \alpha \sigma (\textbf{W}^{in} \cdot[1;u(n)] \textbf{W} \cdot \textbf x(n − 1) + \textbf{W}^\text{back} \cdot (\textbf y(n − 1) + \nu(n-1)) )$</p>
+<h2 id="Training">Training<a class="anchor-link" href="#Training">&#182;</a></h2><p>$\textbf x(n) = (1 − α)\textbf x(n − 1) + \alpha \sigma (\textbf{W}^{in} \cdot[1;u(n)] + \textbf{W} \cdot \textbf x(n − 1) + \textbf{W}^\text{back} \cdot (\textbf y(n − 1) + \nu(n-1)) )$</p>
 
 </div>
 </div>
@@ -13492,7 +13492,7 @@ MSE train: 1.9971839254323212e-05
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Generative">Generative<a class="anchor-link" href="#Generative">&#182;</a></h3><p>$\textbf x(n) = (1 − α)\textbf x(n − 1) + \alpha \sigma (\textbf{W}^{in} \cdot[1;u(n)] \textbf{W} \cdot \textbf x(n − 1) + \textbf{W}^\text{back} (\textbf{W}^{out} \cdot [1;u(n-1);x(n-1)] + \nu(n-1)) )$</p>
+<h3 id="Generative">Generative<a class="anchor-link" href="#Generative">&#182;</a></h3><p>$\textbf x(n) = (1 − α)\textbf x(n − 1) + \alpha \sigma (\textbf{W}^{in} \cdot[1;u(n)] + \textbf{W} \cdot \textbf x(n − 1) + \textbf{W}^\text{back} (\textbf{W}^{out} \cdot [1;u(n-1);x(n-1)] + \nu(n-1)) )$</p>
 
 </div>
 </div>
@@ -13590,7 +13590,7 @@ MAPE validation: 0.033%
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Predictive">Predictive<a class="anchor-link" href="#Predictive">&#182;</a></h3><p>$\textbf x(n) = (1 − α)\textbf x(n − 1) + \alpha \sigma (\textbf{W}^{in} \cdot[1;u(n)] \textbf{W} \cdot \textbf x(n − 1) + \textbf{W}^\text{back} \cdot (\textbf y(n − 1) + \nu(n-1)) )$</p>
+<h3 id="Predictive">Predictive<a class="anchor-link" href="#Predictive">&#182;</a></h3><p>$\textbf x(n) = (1 − α)\textbf x(n − 1) + \alpha \sigma (\textbf{W}^{in} \cdot[1;u(n)] + \textbf{W} \cdot \textbf x(n − 1) + \textbf{W}^\text{back} \cdot (\textbf y(n − 1) + \nu(n-1)) )$</p>
 
 </div>
 </div>
