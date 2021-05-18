@@ -179,6 +179,7 @@ li{
 
 .topnav a.active {
   background-color: #04aa6da5;
+  background: -webkit-gradient(linear, left bottom, left top, color-stop(0%,#1a3221), color-stop(1%,#2d5544), color-stop(100%,#5f945e));
   color: white;
 }
 
@@ -214,6 +215,7 @@ li{
 /* Add an active class to the active dropdown button */
 .active {
   background-color: green;
+  background: -webkit-gradient(linear, left bottom, left top, color-stop(0%,#1a3221), color-stop(1%,#2d5544), color-stop(100%,#5f945e));
   color: white;
 }
 
