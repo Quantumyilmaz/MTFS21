@@ -46,7 +46,7 @@ body {
 .topnav a.active {
   background-color: #04aa6da5;
   /* background: -webkit-gradient(linear, left bottom, left top, color-stop(0%,#045501), color-stop(1%,#034b01), color-stop(100%,#07ad02)); */
-  background: -webkit-gradient(linear, left bottom, left top, color-stop(0%,#1a3221), color-stop(1%,#2d5544), color-stop(100%,#5f945e));
+  background: -webkit-gradient(linear, left bottom, left top, color-stop(0%,#0f2b18), color-stop(1%,#1f543e), color-stop(100%,#448b41));
   color: white;
 }
   .topnav a.new {
