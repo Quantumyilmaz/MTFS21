@@ -256,7 +256,20 @@ li{
   height: 3px;
   width: 100%;
   background-color: #ffffff;
-  transform-origin: 0.5 0;
+  /* transform-origin: 0.5 0; */
+}
+
+.ml5 .line::after {
+  content: attr(title);
+  position: absolute;
+  text-align: center;
+  font-size: 20%;
+  /* top: -70px; */
+  top: -2400%;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  /* text-transform: uppercase; */
 }
 
 .ml5 .ampersand {
@@ -271,6 +284,7 @@ li{
 .ml5 .letters {
   display: inline-block;
   opacity: 1;
+  margin-bottom: 5%;
 }
 
 .ml12 {
@@ -282,6 +296,7 @@ li{
   left: 0;
   top: 0;
   bottom: 0;
+  margin-top: 0px;
 }
 
 .ml12 .letter {
@@ -315,5 +330,13 @@ dont forget to change max height also in javascript*/
   li{font-size: 8px;}
   .column_mini ul {
     padding-left: 15px;
+  }
+  .ml5 .line::after {
+    font-size: 20%;
+    top: -1000%;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    /* text-transform: uppercase; */
   }
 }
