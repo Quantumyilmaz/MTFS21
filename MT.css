@@ -236,7 +236,28 @@ li{
   bottom: 0;
   margin-bottom: 0px;
   margin-top: 0px;
+  /* animation: myanim 3s ease-in; */
+  animation: fadeIn 1s ease-in-out 1s;
+  /* animation-direction: reverse; */
+  animation-fill-mode: forwards; 
+  /* text-shadow: 10px -10px 10px rgba(117, 71, 56, 0.445); */
 }
+@keyframes fadeIn {
+  0% {
+    text-shadow: 0px 0px 0px rgba(117, 71, 56, 0.445);
+  }
+  50% {
+    text-shadow: 10px -10px 4px rgba(117, 71, 56, 0.445);
+  }
+  100% {
+    text-shadow: 10px -10px 12px rgba(117, 71, 56, 0.445);
+  }
+}
+/* @keyframes myanim {
+  30% {
+    text-shadow: 10px -10px 10px rgba(117, 71, 56, 0.445);
+  }
+} */
 
 .ml5 .text-wrapper {
   position: relative;
@@ -261,6 +282,9 @@ li{
 
 .ml5 .line::after {
   content: attr(title);
+  /* text-shadow:  -30px 10px 10px #000, -30px -10px 10px rgb(80, 21, 11); */
+  /* text-shadow: 4px 10px 9px rgba(117, 71, 56, 0.445),-4px -10px 9px rgba(117, 71, 56, 0.397); */
+  /* text-shadow: 10px -10px 10px rgba(117, 71, 56, 0.445); */
   position: absolute;
   text-align: center;
   font-size: 20%;
@@ -269,7 +293,23 @@ li{
   left: 0;
   right: 0;
   bottom: 0;
+  opacity: 0;
   /* text-transform: uppercase; */
+  animation: fadeIn 1s ease-in-out 1.25s;
+  /* animation-direction: reverse; */
+  animation-fill-mode: forwards; 
+}
+@keyframes fadeIn {
+  0% {
+    text-shadow: 0px 0px 0px rgba(117, 71, 56, 0.445);
+  }
+  50% {
+    text-shadow: 10px -10px 4px rgba(117, 71, 56, 0.445);
+  }
+  100% {
+    opacity: 1;
+    text-shadow: 10px -10px 12px rgba(117, 71, 56, 0.445);
+  }
 }
 
 .ml5 .ampersand {
@@ -284,7 +324,15 @@ li{
 .ml5 .letters {
   display: inline-block;
   opacity: 1;
-  margin-bottom: 5%;
+  margin-bottom: 1%;
+  animation: myanim 1s ease-in-out 1s;
+  /* animation-direction: reverse; */
+  animation-fill-mode: forwards; 
+}
+@keyframes myanim {
+  100% {
+    margin-bottom: 5%;
+  }
 }
 
 .ml12 {
