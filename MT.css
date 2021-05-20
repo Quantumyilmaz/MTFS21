@@ -325,7 +325,7 @@ li{
   display: inline-block;
   opacity: 1;
   margin-bottom: 1%;
-  animation: myanim 1s ease-in-out 1s;
+  animation: myanim 0.5s ease-in-out 1s;
   /* animation-direction: reverse; */
   animation-fill-mode: forwards; 
 }
