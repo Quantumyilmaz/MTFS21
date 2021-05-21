@@ -13107,49 +13107,7 @@ $( document ).ready(function(){
 </div>
 </div>
 </div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Echo-State-Network">Echo State Network<a class="anchor-link" href="#Echo-State-Network">&#182;</a></h2><p>An echo state network class for python is written for the thesis. This notebook showcases its current capabilities.</p>
-<h3 id="Training-modes:">Training modes:<a class="anchor-link" href="#Training-modes:">&#182;</a></h3><p>f: activation function</p>
-<p>$\alpha$: leaking rate</p>
-<h4 id="Regular-(With-inputs):"><u>Regular (With inputs):</u><a class="anchor-link" href="#Regular-(With-inputs):">&#182;</a></h4><ul>
-<li>Teacher Forced: Uses output data at past timesteps during training.</li>
-</ul>
-<p>$x(n+1) = (1-\alpha)  \cdot  x(n) + \alpha \cdot f(\textbf W^\text{in}  \cdot  u(n+1) + \textbf W  \cdot  x(n) + \textbf W^\text{back}  \cdot  y(n))$</p>
-<ul>
-<li>Input Driven: Not teacher forced. Just inputs.</li>
-</ul>
-<p>$x(n+1) = (1-\alpha)  \cdot  x(n) + \alpha \cdot f(\textbf W^\text{in}  \cdot  u(n+1) + \textbf W  \cdot  x(n))$</p>
-<h4 id="Output-Feedback-(No-inputs):"><u>Output Feedback (No inputs):</u><a class="anchor-link" href="#Output-Feedback-(No-inputs):">&#182;</a></h4><ul>
-<li>Teacher Forced: Feedback is past versions of the data to be predicted.</li>
-</ul>
-<p>$x(n+1) = (1-\alpha)  \cdot  x(n) + \alpha \cdot f(\textbf W  \cdot  x(n) + \textbf W^\text{back}  \cdot  y(n))$</p>
-<h4 id="Self-Feedback:-No-inputs,-no-outputs.-Reservoir-dynamics-depends-on-itself."><u>Self Feedback: No inputs, no outputs. Reservoir dynamics depends on itself.</u><a class="anchor-link" href="#Self-Feedback:-No-inputs,-no-outputs.-Reservoir-dynamics-depends-on-itself.">&#182;</a></h4><p>$x(n+1) = (1-\alpha)  \cdot  x(n) + \alpha \cdot f(\textbf W  \cdot  x(n))$</p>
-<h3 id="Forecast-modes:">Forecast modes:<a class="anchor-link" href="#Forecast-modes:">&#182;</a></h3><h4 id="Regular-(With-inputs):"><u>Regular (With inputs):</u><a class="anchor-link" href="#Regular-(With-inputs):">&#182;</a></h4><ul>
-<li>Generative: Reservoir states are updated by using reservoir's outputs.</li>
-</ul>
-<p>$x(n+1) = (1-\alpha)  \cdot  x(n) + \alpha \cdot f(\textbf W^\text{in}  \cdot  u(n+1) + \textbf W  \cdot  x(n) + \textbf W^\text{back} * \textbf W^\text{out}  \cdot  (1;u(n);y_{predicted}(n-1);x(n)))$</p>
-<ul>
-<li>Predictive: Reservoir states are updated by using past versions of the data to be predicted.</li>
-</ul>
-<p>$x(n+1) = (1-\alpha)  \cdot  x(n) + \alpha \cdot f(\textbf W^\text{in}  \cdot  u(n+1) + \textbf W  \cdot  x(n) + \textbf W^\text{back} \cdot y(n))$</p>
-<ul>
-<li>Input Driven: Inputs are the only external contributers to the dynamics of the reservoir.</li>
-</ul>
-<p>$x(n+1) = (1-\alpha)  \cdot  x(n) + \alpha \cdot f(\textbf W^\text{in}  \cdot  u(n+1) + \textbf W  \cdot  x(n) )$</p>
-<h4 id="Output-Feedback-(No-inputs):"><u>Output Feedback (No inputs):</u><a class="anchor-link" href="#Output-Feedback-(No-inputs):">&#182;</a></h4><ul>
-<li>Teacher Forced: Feedback is the past version of the data to be predicted.</li>
-</ul>
-<p>$x(n+1) = (1-\alpha)  \cdot  x(n) + \alpha \cdot f(\textbf W  \cdot  x(n) + \textbf W^\text{back}  \cdot  y(n))$</p>
-<ul>
-<li>Autonomous: Feedback is reservoir's predictions of the past version of the data to be predicted.</li>
-</ul>
-<p>$x(n+1) = (1-\alpha)  \cdot  x(n) + \alpha \cdot f(\textbf W  \cdot  x(n) + \textbf W^\text{back}  \cdot  \textbf W^\text{out} \cdot (1;y_{predicted}(n-1);x(n)))$</p>
 
-</div>
-</div>
-</div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
