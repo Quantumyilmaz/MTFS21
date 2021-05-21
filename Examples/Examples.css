@@ -91,19 +91,22 @@ body {
         #262626, 
         rgb(247, 247, 247)
       ) 1 100%;
-    height: 100%;
+    height: auto;
     width: 10%;
     position:inherit;
     /* z-index: 2; */
     margin-left: 89.65%;
     left: 0;
     background-color: rgba(0,0,255,0.3);
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#487480), color-stop(50%,#487480d5), color-stop(80%,#4483959c), color-stop(100%,#ffffff62));
-    overflow-x: hidden;
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#487480), color-stop(50%,#487480d5), color-stop(80%,#448395b9), color-stop(100%,#448395ba));
+    overflow: visible;
     border: none;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
     padding-top: 0%;
     background: -webkit-repeating-radial-gradient();
     display: none;
+    box-shadow: 0 2px 10px #333;
     }
     
   /* Style the mysidenav links and the mydropdown button */
