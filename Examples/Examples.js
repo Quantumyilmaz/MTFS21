@@ -36,14 +36,14 @@ document.write(`
 }else if (page==="RC_SP_LIQ.html"){
 
   document.write(`
-  <a href="RC_SP_LOB.html">LOB</a>
+  <a href="../LOB/RC_SP_LOB.html">LOB</a>
   <a class="active" href="RC_SP_LIQ.html">LIQ</a>
   <a href="../LOB+LIQ/RC_SP_LOB+LIQ.html">LOB+LIQ</a>
   `);
 }else if (page==="RC_SP_LOB+LIQ.html"){
 
   document.write(`
-  <a href="RC_SP_LOB.html">LOB</a>
+  <a href="../LOB/RC_SP_LOB.html">LOB</a>
   <a href="../LIQ/RC_SP_LIQ.html">LIQ</a>
   <a class="active" href="RC_SP_LOB+LIQ.html">LOB+LIQ</a>
   `);
