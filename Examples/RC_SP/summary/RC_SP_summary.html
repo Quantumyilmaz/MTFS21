@@ -2,7 +2,7 @@
 <html>
 <head><meta charset="utf-8" />
 
-<title>RC_SP_LIQ</title>
+<title>RC_SP_summary</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
@@ -13085,7 +13085,7 @@ div#notebook {
 <script>
 $( document ).ready(function(){
 
-            var cfg = {"base_numbering": 1, "nav_menu": {"height": "367px", "width": "298px"}, "number_sections": true, "sideBar": true, "skip_h1_title": false, "title_cell": "Table of Contents", "title_sidebar": "Contents", "toc_cell": false, "toc_position": {}, "toc_section_display": true, "toc_window_display": false};
+            var cfg = {"base_numbering": 1, "nav_menu": {}, "number_sections": true, "sideBar": true, "skip_h1_title": false, "title_cell": "Table of Contents", "title_sidebar": "Contents", "toc_cell": false, "toc_position": {}, "toc_section_display": true, "toc_window_display": false};
 
             // fire the main function with these parameters
             require(['nbextensions/toc2/toc2'], function (toc2) {
@@ -13097,23 +13097,6 @@ $( document ).ready(function(){
   <div tabindex="-1" id="notebook" class="border-box-sizing">
     <div class="container" id="notebook-container">
 
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="Mid-Price-forecasting-with-Reservoir-Computing-using-Liquidity-Measures">Mid Price forecasting with Reservoir Computing using <a href="https://quantumyilmaz.github.io/SPHS20/LiqVarsDemo.html">Liquidity Measures</a><a class="anchor-link" href="#Mid-Price-forecasting-with-Reservoir-Computing-using-Liquidity-Measures">&#182;</a></h1><ul>
-<li>Analogous to <a href="https://quantumyilmaz.github.io/SPHS20/">this</a>, which is done with Deep Feedforward Neural Networks. Here the reservoir approach without rolling windows is investigated.</li>
-</ul>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Importing-Data">Importing Data<a class="anchor-link" href="#Importing-Data">&#182;</a></h2>
-</div>
-</div>
-</div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">In&nbsp;[1]:</div>
@@ -13121,176 +13104,68 @@ $( document ).ready(function(){
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">sys</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;./../../&quot;</span><span class="p">)</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">linalg</span><span class="p">,</span><span class="n">stats</span> <span class="c1"># for eigenvalue</span>
-<span class="kn">from</span> <span class="nn">utils.ESN</span> <span class="kn">import</span> <span class="n">EchoStateNetwork</span>
-<span class="kn">from</span> <span class="nn">utils.plotter</span> <span class="kn">import</span> <span class="n">plotter</span>
-<span class="kn">from</span> <span class="nn">SP_data</span> <span class="kn">import</span> <span class="o">*</span>
-
-<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
-
-<span class="n">X_t_RC</span> <span class="p">,</span> <span class="n">y_t_RC</span> <span class="p">,</span> <span class="n">X_v_RC</span> <span class="p">,</span> <span class="n">y_v_RC</span> <span class="p">,</span> <span class="n">midprices</span><span class="p">,</span><span class="n">bidprices</span><span class="p">,</span><span class="n">askprices</span> <span class="p">,</span> <span class="n">error_dict</span> <span class="o">=</span> <span class="n">get_data</span><span class="p">()</span>
-
-<span class="c1">#Some reshaping</span>
-<span class="n">X_t_RC</span> <span class="o">=</span> <span class="n">X_t_RC</span><span class="o">.</span><span class="n">T</span>
-<span class="n">X_t_RC</span> <span class="o">=</span> <span class="n">X_t_RC</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="o">*</span><span class="nb">range</span><span class="p">(</span><span class="mi">21</span><span class="p">,</span><span class="mi">44</span><span class="p">)),:]</span>
-
-<span class="n">X_v_RC</span> <span class="o">=</span> <span class="n">X_v_RC</span><span class="o">.</span><span class="n">T</span>
-<span class="n">X_v_RC</span> <span class="o">=</span> <span class="n">X_v_RC</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="o">*</span><span class="nb">range</span><span class="p">(</span><span class="mi">21</span><span class="p">,</span><span class="mi">44</span><span class="p">)),:]</span>
-<span class="n">y_t_RC</span> <span class="o">=</span> <span class="n">y_t_RC</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">y_v_RC</span> <span class="o">=</span> <span class="n">y_v_RC</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-
-
-<span class="c1"># #scaling inputs</span>
-<span class="n">scaler</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">X_t_RC</span><span class="p">[</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">19</span><span class="p">)]</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span><span class="n">X_v_RC</span><span class="p">[</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">19</span><span class="p">)]</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
-<span class="n">X_t_RC</span><span class="p">[</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">19</span><span class="p">)]</span> <span class="o">/=</span> <span class="n">scaler</span><span class="o">*</span><span class="mi">2</span>
-<span class="n">X_v_RC</span><span class="p">[</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">19</span><span class="p">)]</span> <span class="o">/=</span> <span class="n">scaler</span><span class="o">*</span><span class="mi">2</span>
-
-<span class="c1">#scaling outputs</span>
-<span class="n">scaler</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">y_t_RC</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span><span class="n">y_v_RC</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
-<span class="n">y_t_RC</span> <span class="o">/=</span> <span class="n">scaler</span><span class="o">*</span><span class="mi">2</span>
-<span class="n">y_v_RC</span> <span class="o">/=</span> <span class="n">scaler</span><span class="o">*</span><span class="mi">2</span>
+<span class="kn">from</span> <span class="nn">utils.df_handler</span> <span class="kn">import</span> <span class="n">get_significant_figures</span>
+<span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">HTML</span>
+<span class="k">def</span> <span class="nf">hide_code</span><span class="p">():</span> <span class="k">return</span> <span class="n">HTML</span><span class="p">(</span><span class="s1">&#39;&#39;&#39;&lt;script&gt;code_show=true; function code_toggle() {if (code_show){$(&#39;div.input&#39;).hide();} else {$(&#39;div.input&#39;).show();}code_show = !code_show} $( document ).ready(code_toggle);&lt;/script&gt;&lt;form action=&quot;javascript:code_toggle()&quot;&gt;&lt;input type=&quot;submit&quot; value=&quot;Click here to toggle on/off the raw code.&quot;&gt;&lt;/form&gt;&#39;&#39;&#39;</span><span class="p">)</span>
+<span class="n">hide_code</span><span class="p">()</span>
 </pre></div>
 
     </div>
 </div>
 </div>
 
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[1]:</div>
+
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<script>code_show=true; function code_toggle() {if (code_show){$('div.input').hide();} else {$('div.input').show();}code_show = !code_show} $( document ).ready(code_toggle);</script><form action="javascript:code_toggle()"><input type="submit" value="Click here to toggle on/off the raw code."></form>
 </div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Mid/Bid/Ask-Price-graphs-of-GARAN-in-2017">Mid/Bid/Ask Price graphs of GARAN in 2017<a class="anchor-link" href="#Mid/Bid/Ask-Price-graphs-of-GARAN-in-2017">&#182;</a></h2><p>The best bid and best ask prices are meant by bid and ask.</p>
+
+</div>
 
 </div>
 </div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">In&nbsp;[2]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">get_axis_args</span><span class="p">(</span><span class="n">obs_name</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>  
-    <span class="n">obs_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Mid Price&#39;</span><span class="p">:</span><span class="mi">0</span><span class="p">,</span><span class="s1">&#39;Bid Price&#39;</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span><span class="s1">&#39;Ask Price&#39;</span><span class="p">:</span><span class="mi">2</span><span class="p">}</span>
-    <span class="n">n</span> <span class="o">=</span> <span class="n">obs_dict</span><span class="p">[</span><span class="n">obs_name</span><span class="p">]</span>
-    <span class="n">obs</span> <span class="o">=</span> <span class="p">[</span><span class="n">midprices</span><span class="p">,</span><span class="n">bidprices</span><span class="p">,</span><span class="n">askprices</span><span class="p">][</span><span class="n">n</span><span class="p">]</span>
-    <span class="n">obs_color</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;b&#39;</span><span class="p">,</span><span class="s1">&#39;orange&#39;</span><span class="p">,</span><span class="s1">&#39;r&#39;</span><span class="p">][</span><span class="n">n</span><span class="p">]</span>
-    <span class="n">ylabel</span> <span class="o">=</span> <span class="s1">&#39;Price in TL&#39;</span>
-    <span class="n">xlabel</span> <span class="o">=</span> <span class="s2">&quot;Minutes&quot;</span> <span class="k">if</span> <span class="n">n</span><span class="o">==</span><span class="mi">2</span> <span class="k">else</span> <span class="kc">None</span> 
-    <span class="n">axis_args</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="p">[</span> <span class="p">[</span><span class="n">obs</span><span class="p">,</span><span class="n">obs_color</span><span class="p">,</span><span class="nb">dict</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="n">obs_name</span><span class="p">,</span><span class="n">linewidth</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)],[</span><span class="o">-</span><span class="mi">200</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">obs</span><span class="p">)],[</span><span class="n">xlabel</span><span class="p">],[</span><span class="n">ylabel</span><span class="p">],[</span><span class="nb">dict</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">)],[]</span>
-                <span class="p">]</span>
-                <span class="p">]</span>
-    <span class="k">return</span> <span class="n">axis_args</span>
-
-<span class="n">args</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="k">for</span> <span class="n">obs_name</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;Mid Price&#39;</span><span class="p">,</span><span class="s1">&#39;Bid Price&#39;</span><span class="p">,</span><span class="s1">&#39;Ask Price&#39;</span><span class="p">]:</span>
-    <span class="n">args</span> <span class="o">+=</span> <span class="n">get_axis_args</span><span class="p">(</span><span class="n">obs_name</span><span class="p">)</span>
-        
-<span class="n">attrs</span> <span class="o">=</span> <span class="p">[</span>
-          <span class="s1">&#39;plot&#39;</span>
-         <span class="p">,</span><span class="s1">&#39;set_xlim&#39;</span>
-         <span class="p">,</span><span class="s1">&#39;set_xlabel&#39;</span><span class="p">,</span><span class="s1">&#39;set_ylabel&#39;</span>
-<span class="c1">#             ,&#39;set_title&#39;</span>
-         <span class="p">,</span><span class="s1">&#39;legend&#39;</span><span class="p">,</span><span class="s1">&#39;grid&#39;</span>
-<span class="p">]</span>
-
-<span class="n">fig</span><span class="o">=</span><span class="n">plotter</span><span class="p">(</span><span class="n">args</span><span class="p">,</span><span class="n">attrs</span><span class="p">,</span><span class="n">fig_title</span><span class="o">=</span><span class="s1">&#39;Mid/Bid/Ask Price graphs of GARAN in 2017&#39;</span><span class="p">,</span><span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="n">ncols</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">suptitle_x</span><span class="o">=</span><span class="mf">0.51</span><span class="p">,</span><span class="n">ypad</span><span class="o">=-</span><span class="mi">12</span><span class="p">)</span><span class="c1">#,save_path = os.getcwd());</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">LOB_errors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;./errors/LOB.npy&quot;</span><span class="p">,</span><span class="n">allow_pickle</span><span class="o">=</span><span class="s1">&#39;TRUE&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+<span class="n">LIQ_errors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;./errors/LIQ.npy&quot;</span><span class="p">,</span><span class="n">allow_pickle</span><span class="o">=</span><span class="s1">&#39;TRUE&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+<span class="n">LOB_LIQ_errors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;./errors/LOB+LIQ.npy&quot;</span><span class="p">,</span><span class="n">allow_pickle</span><span class="o">=</span><span class="s1">&#39;TRUE&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
 </pre></div>
 
     </div>
 </div>
 </div>
 
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-
-
-
- 
- 
-<div id="fc365a9e-3e82-4236-9d2b-587d89098563"></div>
-<div class="output_subarea output_widget_view ">
-<script type="text/javascript">
-var element = $('#fc365a9e-3e82-4236-9d2b-587d89098563');
-</script>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "cc17fabdcbcd4334a241b3c956eaba49", "version_major": 2, "version_minor": 0}
-</script>
-</div>
-
-</div>
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>
-</pre>
-</div>
-</div>
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-
-
-<div class="output_png output_subarea ">
-<img src="output_4_2.png"
->
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Generate-the-reservoir">Generate the reservoir<a class="anchor-link" href="#Generate-the-reservoir">&#182;</a></h2>
-</div>
-</div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">In&nbsp;[3]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">reservoir</span> <span class="o">=</span> <span class="n">EchoStateNetwork</span><span class="p">(</span><span class="n">resSize</span><span class="o">=</span><span class="mi">450</span><span class="p">,</span><span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">columns</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">MultiIndex</span><span class="o">.</span><span class="n">from_tuples</span><span class="p">([(</span><span class="n">l</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">k</span><span class="p">,</span><span class="n">m</span><span class="p">)</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">LOB_errors</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+                                                    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">LOB_errors</span><span class="p">[</span><span class="n">l</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>\
+                                                         <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">LOB_errors</span><span class="p">[</span><span class="n">l</span><span class="p">][</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> \
+                                                                 <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">LOB_errors</span><span class="p">[</span><span class="n">l</span><span class="p">][</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span>
+                                                                        <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">LOB_errors</span><span class="p">[</span><span class="n">l</span><span class="p">][</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">][</span><span class="n">k</span><span class="p">]])</span>
+<span class="n">values</span> <span class="o">=</span> <span class="p">[[</span><span class="n">err_type</span><span class="p">[</span><span class="n">col</span><span class="p">[</span><span class="mi">0</span><span class="p">]][</span><span class="n">col</span><span class="p">[</span><span class="mi">1</span><span class="p">]][</span><span class="n">col</span><span class="p">[</span><span class="mi">2</span><span class="p">]][</span><span class="n">col</span><span class="p">[</span><span class="mi">3</span><span class="p">]][</span><span class="n">col</span><span class="p">[</span><span class="mi">4</span><span class="p">]]</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">columns</span><span class="p">]</span> \
+                      <span class="k">for</span> <span class="n">err_type</span> <span class="ow">in</span> <span class="p">[</span><span class="n">LOB_errors</span><span class="p">,</span><span class="n">LIQ_errors</span><span class="p">,</span><span class="n">LOB_LIQ_errors</span><span class="p">]]</span>
 </pre></div>
 
     </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>Reservoir generated. Spectral Radius: 0.9751086939293491
-</pre>
-</div>
-</div>
-
 </div>
 </div>
 
@@ -13298,8 +13173,8 @@ var element = $('#fc365a9e-3e82-4236-9d2b-587d89098563');
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Training:-Regular/Teacher-Forced">Training: Regular/Teacher Forced<a class="anchor-link" href="#Training:-Regular/Teacher-Forced">&#182;</a></h2><p>$\nu$: random uniform noise</p>
-<p>$\textbf x(n) = (1 − α)\textbf x(n − 1) + \alpha \sigma (\textbf{W}^{in} \cdot[1;u(n)] + \textbf{W} \cdot \textbf x(n − 1) + \textbf{W}^\text{back} \cdot (\textbf y(n − 1) + \nu(n-1)) )$</p>
+<h1 id="Error-Table">Error Table<a class="anchor-link" href="#Error-Table">&#182;</a></h1><p>Error summary of reservoir computers trained with different datasets.
+Output Feedback validations are same for each type since these validations are independent of input data.</p>
 
 </div>
 </div>
@@ -13309,11 +13184,7 @@ var element = $('#fc365a9e-3e82-4236-9d2b-587d89098563');
 <div class="prompt input_prompt">In&nbsp;[4]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">reservoir</span><span class="o">.</span><span class="n">excite</span><span class="p">(</span><span class="n">X_t_RC</span><span class="p">,</span><span class="n">y_t_RC</span><span class="p">,</span><span class="n">wobble</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">bias</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">mse</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">scaler</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">reservoir</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">y_t_RC</span><span class="p">[:,</span><span class="n">reservoir</span><span class="o">.</span><span class="n">initLen</span><span class="p">:],</span><span class="n">ridge_param</span><span class="o">=</span><span class="mf">3e-6</span><span class="p">,</span><span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-<span class="c1"># error_dict[&quot;Training&quot;][&quot;Regular/Teacher Forced&quot;][&quot;MSE&quot;] = mse</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;MSE: &quot;</span><span class="p">,</span><span class="n">mse</span><span class="p">)</span>
-<span class="n">plot_training</span><span class="p">(</span><span class="n">reservoir</span><span class="p">,</span><span class="n">y_t_RC</span><span class="p">,</span><span class="n">scaler</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">get_significant_figures</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span> <span class="n">values</span><span class="p">,</span><span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;LOB&quot;</span><span class="p">,</span><span class="s2">&quot;LIQ&quot;</span><span class="p">,</span><span class="s2">&quot;LOB+LIQ&quot;</span><span class="p">],</span><span class="n">columns</span><span class="o">=</span><span class="n">columns</span><span class="p">)</span><span class="o">.</span><span class="n">ffill</span><span class="p">(),</span><span class="mi">2</span><span class="p">,</span><span class="mf">0.001</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -13326,25 +13197,108 @@ var element = $('#fc365a9e-3e82-4236-9d2b-587d89098563');
 
 <div class="output_area">
 
-    <div class="prompt"></div>
+    <div class="prompt output_prompt">Out[4]:</div>
 
 
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>MSE:  3.612837110807143e-05
-</pre>
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead tr th {
+        text-align: left;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr>
+      <th></th>
+      <th colspan="10" halign="left">Training</th>
+    </tr>
+    <tr>
+      <th></th>
+      <th colspan="4" halign="left">Regular/Teacher Forced</th>
+      <th colspan="2" halign="left">Regular/Input Driven</th>
+      <th colspan="4" halign="left">Output Feedback/Teacher Forced</th>
+    </tr>
+    <tr>
+      <th></th>
+      <th colspan="4" halign="left">Validation</th>
+      <th colspan="2" halign="left">Validation</th>
+      <th colspan="4" halign="left">Validation</th>
+    </tr>
+    <tr>
+      <th></th>
+      <th colspan="2" halign="left">Regular/Generative</th>
+      <th colspan="2" halign="left">Regular/Predictive</th>
+      <th colspan="2" halign="left">Regular/Input Driven</th>
+      <th colspan="2" halign="left">Output Feedback/Teacher Forced</th>
+      <th colspan="2" halign="left">Output Feedback/Autonomous</th>
+    </tr>
+    <tr>
+      <th></th>
+      <th>MSE</th>
+      <th>MAPE (%)</th>
+      <th>MSE</th>
+      <th>MAPE (%)</th>
+      <th>MSE</th>
+      <th>MAPE (%)</th>
+      <th>MSE</th>
+      <th>MAPE (%)</th>
+      <th>MSE</th>
+      <th>MAPE (%)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>LOB</th>
+      <td>5.58•E-4</td>
+      <td>13.42•E-2</td>
+      <td>6.73•E-5</td>
+      <td>36.04•E-3</td>
+      <td>35.86•E-4</td>
+      <td>34.56•E-2</td>
+      <td>8.54•E-5</td>
+      <td>5.08•E-2</td>
+      <td>30.16•E-2</td>
+      <td>4.66</td>
+    </tr>
+    <tr>
+      <th>LIQ</th>
+      <td>19.53•E-4</td>
+      <td>29.96•E-2</td>
+      <td>8.32•E-5</td>
+      <td>5.23•E-2</td>
+      <td>16.14•E-4</td>
+      <td>2.96•E-1</td>
+      <td>8.54•E-5</td>
+      <td>5.08•E-2</td>
+      <td>30.16•E-2</td>
+      <td>4.66</td>
+    </tr>
+    <tr>
+      <th>LOB+LIQ</th>
+      <td>6.67•E-4</td>
+      <td>15.02•E-2</td>
+      <td>0.71•E-4</td>
+      <td>0.38•E-1</td>
+      <td>33.45•E-4</td>
+      <td>28.04•E-2</td>
+      <td>8.54•E-5</td>
+      <td>5.08•E-2</td>
+      <td>30.16•E-2</td>
+      <td>4.66</td>
+    </tr>
+  </tbody>
+</table>
 </div>
-</div>
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-
-
-<div class="output_png output_subarea ">
-<img src="output_8_1.png"
->
 </div>
 
 </div>
@@ -13356,297 +13310,45 @@ var element = $('#fc365a9e-3e82-4236-9d2b-587d89098563');
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Validation:-Regular/Generative">Validation: Regular/Generative<a class="anchor-link" href="#Validation:-Regular/Generative">&#182;</a></h3><p>$\textbf x(n) = (1 − α)\textbf x(n − 1) + \alpha \sigma (\textbf{W}^{in} \cdot[1;u(n)]</p>
-<ul>
-<li>\textbf{W} \cdot \textbf x(n − 1) + \textbf{W}^\text{back} (\textbf{W}^{out} \cdot [1;u(n-1);x(n-1)]) )$</li>
+<h1 id="Echo-State-Network">Echo State Network<a class="anchor-link" href="#Echo-State-Network">&#182;</a></h1><p>An echo state network class for python is written for the thesis. The notebooks showcase its current capabilities.</p>
+<h2 id="Training-modes:">Training modes:<a class="anchor-link" href="#Training-modes:">&#182;</a></h2><p>f: activation function</p>
+<p>$\alpha$: leaking rate</p>
+<h3 id="Regular-(With-inputs):"><u>Regular (With inputs):</u><a class="anchor-link" href="#Regular-(With-inputs):">&#182;</a></h3><ul>
+<li>Teacher Forced: Uses output data at past timesteps during training.</li>
 </ul>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[5]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">reservoir_prediction</span> <span class="o">=</span> <span class="n">reservoir</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_v_RC</span><span class="p">,</span><span class="n">wobble</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="n">mse</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">scaler</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">y_v_RC</span> <span class="o">-</span> <span class="n">reservoir_prediction</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
-<span class="n">mape</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">reservoir_prediction</span><span class="o">/</span><span class="n">y_v_RC</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">*</span><span class="mi">100</span>
-<span class="n">error_dict</span><span class="p">[</span><span class="s2">&quot;Training&quot;</span><span class="p">][</span><span class="s2">&quot;Regular/Teacher Forced&quot;</span><span class="p">][</span><span class="s2">&quot;Validation&quot;</span><span class="p">][</span><span class="s1">&#39;Regular/Generative&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;MSE&#39;</span><span class="p">:</span> <span class="n">mse</span><span class="p">,</span> <span class="s1">&#39;MAPE (%)&#39;</span><span class="p">:</span> <span class="n">mape</span><span class="p">})</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;MSE: &quot;</span><span class="p">,</span><span class="n">mse</span><span class="p">)</span> <span class="p">;</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;MAPE: &quot;</span><span class="p">,</span><span class="n">mape</span><span class="p">,</span><span class="s2">&quot;%&quot;</span><span class="p">)</span>
-<span class="n">plot_validation</span><span class="p">(</span><span class="n">reservoir</span><span class="p">,</span><span class="n">y_v_RC</span><span class="p">,</span><span class="n">reservoir_prediction</span><span class="p">,</span><span class="n">scaler</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>MSE:  0.001953340620089355
-MAPE:  0.2995571335753643 %
-</pre>
-</div>
-</div>
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-
-
-<div class="output_png output_subarea ">
-<img src="output_10_1.png"
->
-</div>
-
-</div>
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-
-
-<div class="output_png output_subarea ">
-<img src="output_10_2.png"
->
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Validation:-Regular/Predictive">Validation: Regular/Predictive<a class="anchor-link" href="#Validation:-Regular/Predictive">&#182;</a></h3><p>$\textbf x(n) = (1 − α)\textbf x(n − 1) + \alpha \sigma (\textbf{W}^{in} \cdot[1;u(n)]</p>
+<p>$x(n+1) = (1-\alpha)  \cdot  x(n) + \alpha \cdot f(\textbf W^\text{in}  \cdot  u(n+1) + \textbf W  \cdot  x(n) + \textbf W^\text{back}  \cdot  y(n))$</p>
 <ul>
-<li>\textbf{W} \cdot \textbf x(n − 1) + \textbf{W}^\text{back} \cdot (\textbf y(n − 1)) )$</li>
+<li>Input Driven: Not teacher forced. Just inputs.</li>
 </ul>
+<p>$x(n+1) = (1-\alpha)  \cdot  x(n) + \alpha \cdot f(\textbf W^\text{in}  \cdot  u(n+1) + \textbf W  \cdot  x(n))$</p>
+<h3 id="Output-Feedback-(No-inputs):"><u>Output Feedback (No inputs):</u><a class="anchor-link" href="#Output-Feedback-(No-inputs):">&#182;</a></h3><ul>
+<li>Teacher Forced: Feedback is past versions of the data to be predicted.</li>
+</ul>
+<p>$x(n+1) = (1-\alpha)  \cdot  x(n) + \alpha \cdot f(\textbf W  \cdot  x(n) + \textbf W^\text{back}  \cdot  y(n))$</p>
+<h3 id="Self-Feedback:-No-inputs,-no-outputs.-Reservoir-dynamics-depends-on-itself."><u>Self Feedback: No inputs, no outputs. Reservoir dynamics depends on itself.</u><a class="anchor-link" href="#Self-Feedback:-No-inputs,-no-outputs.-Reservoir-dynamics-depends-on-itself.">&#182;</a></h3><p>$x(n+1) = (1-\alpha)  \cdot  x(n) + \alpha \cdot f(\textbf W  \cdot  x(n))$</p>
+<h2 id="Forecast-modes:">Forecast modes:<a class="anchor-link" href="#Forecast-modes:">&#182;</a></h2><h3 id="Regular-(With-inputs):"><u>Regular (With inputs):</u><a class="anchor-link" href="#Regular-(With-inputs):">&#182;</a></h3><ul>
+<li>Generative: Reservoir states are updated by using reservoir's outputs.</li>
+</ul>
+<p>$x(n+1) = (1-\alpha)  \cdot  x(n) + \alpha \cdot f(\textbf W^\text{in}  \cdot  u(n+1) + \textbf W  \cdot  x(n) + \textbf W^\text{back} * \textbf W^\text{out}  \cdot  (1;u(n);y_{predicted}(n-1);x(n)))$</p>
+<ul>
+<li>Predictive: Reservoir states are updated by using past versions of the data to be predicted.</li>
+</ul>
+<p>$x(n+1) = (1-\alpha)  \cdot  x(n) + \alpha \cdot f(\textbf W^\text{in}  \cdot  u(n+1) + \textbf W  \cdot  x(n) + \textbf W^\text{back} \cdot y(n))$</p>
+<ul>
+<li>Input Driven: Inputs are the only external contributers to the dynamics of the reservoir.</li>
+</ul>
+<p>$x(n+1) = (1-\alpha)  \cdot  x(n) + \alpha \cdot f(\textbf W^\text{in}  \cdot  u(n+1) + \textbf W  \cdot  x(n) )$</p>
+<h3 id="Output-Feedback-(No-inputs):"><u>Output Feedback (No inputs):</u><a class="anchor-link" href="#Output-Feedback-(No-inputs):">&#182;</a></h3><ul>
+<li>Teacher Forced: Feedback is the past version of the data to be predicted.</li>
+</ul>
+<p>$x(n+1) = (1-\alpha)  \cdot  x(n) + \alpha \cdot f(\textbf W  \cdot  x(n) + \textbf W^\text{back}  \cdot  y(n))$</p>
+<ul>
+<li>Autonomous: Feedback is reservoir's predictions of the past version of the data to be predicted.</li>
+</ul>
+<p>$x(n+1) = (1-\alpha)  \cdot  x(n) + \alpha \cdot f(\textbf W  \cdot  x(n) + \textbf W^\text{back}  \cdot  \textbf W^\text{out} \cdot (1;y_{predicted}(n-1);x(n)))$</p>
 
 </div>
 </div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[6]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">reservoir_prediction</span> <span class="o">=</span> <span class="n">reservoir</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_v_RC</span><span class="p">,</span><span class="n">y_v_RC</span><span class="p">,</span><span class="n">wobble</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="n">mse</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">scaler</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">y_v_RC</span> <span class="o">-</span> <span class="n">reservoir_prediction</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
-<span class="n">mape</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">reservoir_prediction</span><span class="o">/</span><span class="n">y_v_RC</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">*</span><span class="mi">100</span>
-<span class="n">error_dict</span><span class="p">[</span><span class="s2">&quot;Training&quot;</span><span class="p">][</span><span class="s2">&quot;Regular/Teacher Forced&quot;</span><span class="p">][</span><span class="s2">&quot;Validation&quot;</span><span class="p">][</span><span class="s1">&#39;Regular/Predictive&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;MSE&#39;</span><span class="p">:</span> <span class="n">mse</span><span class="p">,</span> <span class="s1">&#39;MAPE (%)&#39;</span><span class="p">:</span> <span class="n">mape</span><span class="p">})</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;MSE: &quot;</span><span class="p">,</span><span class="n">mse</span><span class="p">)</span> <span class="p">;</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;MAPE: &quot;</span><span class="p">,</span><span class="n">mape</span><span class="p">,</span><span class="s2">&quot;%&quot;</span><span class="p">)</span>
-<span class="n">plot_validation</span><span class="p">(</span><span class="n">reservoir</span><span class="p">,</span><span class="n">y_v_RC</span><span class="p">,</span><span class="n">reservoir_prediction</span><span class="p">,</span><span class="n">scaler</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>MSE:  8.315483365612094e-05
-MAPE:  0.05225687328882797 %
-</pre>
-</div>
-</div>
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-
-
-<div class="output_png output_subarea ">
-<img src="output_12_1.png"
->
-</div>
-
-</div>
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-
-
-<div class="output_png output_subarea ">
-<img src="output_12_2.png"
->
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Training:-Regular/Input-Driven">Training: Regular/Input Driven<a class="anchor-link" href="#Training:-Regular/Input-Driven">&#182;</a></h2>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[7]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">reservoir</span> <span class="o">=</span> <span class="n">EchoStateNetwork</span><span class="p">(</span><span class="n">resSize</span><span class="o">=</span><span class="mi">450</span><span class="p">,</span><span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
-<span class="n">reservoir</span><span class="o">.</span><span class="n">excite</span><span class="p">(</span><span class="n">X_t_RC</span><span class="p">,</span><span class="n">bias</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">mse</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">scaler</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">reservoir</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">y_t_RC</span><span class="p">[:,</span><span class="n">reservoir</span><span class="o">.</span><span class="n">initLen</span><span class="p">:],</span><span class="n">ridge_param</span><span class="o">=</span><span class="mf">3e-6</span><span class="p">,</span><span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-<span class="c1"># error_dict[&quot;Training&quot;][&quot;Regular/Input Driven&quot;][&quot;MSE&quot;] = mse</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;MSE: &quot;</span><span class="p">,</span><span class="n">mse</span><span class="p">)</span>
-<span class="n">plot_training</span><span class="p">(</span><span class="n">reservoir</span><span class="p">,</span><span class="n">y_t_RC</span><span class="p">,</span><span class="n">scaler</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>Reservoir generated. Spectral Radius: 0.9751086939293491
-MSE:  0.0013854040633018714
-</pre>
-</div>
-</div>
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-
-
-<div class="output_png output_subarea ">
-<img src="output_14_1.png"
->
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Validation:-Regular/Input-Driven">Validation: Regular/Input Driven<a class="anchor-link" href="#Validation:-Regular/Input-Driven">&#182;</a></h3>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[8]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">reservoir_prediction</span> <span class="o">=</span> <span class="n">reservoir</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_v_RC</span><span class="p">,</span><span class="n">bias</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">wobble</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="n">mse</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">scaler</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">y_v_RC</span> <span class="o">-</span> <span class="n">reservoir_prediction</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
-<span class="n">mape</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">reservoir_prediction</span><span class="o">/</span><span class="n">y_v_RC</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">*</span><span class="mi">100</span>
-<span class="n">error_dict</span><span class="p">[</span><span class="s2">&quot;Training&quot;</span><span class="p">][</span><span class="s2">&quot;Regular/Input Driven&quot;</span><span class="p">][</span><span class="s2">&quot;Validation&quot;</span><span class="p">][</span><span class="s1">&#39;Regular/Input Driven&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;MSE&#39;</span><span class="p">:</span> <span class="n">mse</span><span class="p">,</span> <span class="s1">&#39;MAPE (%)&#39;</span><span class="p">:</span> <span class="n">mape</span><span class="p">})</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;MSE: &quot;</span><span class="p">,</span><span class="n">mse</span><span class="p">)</span> <span class="p">;</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;MAPE: &quot;</span><span class="p">,</span><span class="n">mape</span><span class="p">,</span><span class="s2">&quot;%&quot;</span><span class="p">)</span>
-<span class="n">plot_validation</span><span class="p">(</span><span class="n">reservoir</span><span class="p">,</span><span class="n">y_v_RC</span><span class="p">,</span><span class="n">reservoir_prediction</span><span class="p">,</span><span class="n">scaler</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>MSE:  0.001613986203725408
-MAPE:  0.2958664126534777 %
-</pre>
-</div>
-</div>
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-
-
-<div class="output_png output_subarea ">
-<img src="output_16_1.png"
->
-</div>
-
-</div>
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-
-
-<div class="output_png output_subarea ">
-<img src="output_16_2.png"
->
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[9]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;./errors/</span><span class="si">{</span><span class="s2">&quot;LIQ&quot;</span><span class="si">}</span><span class="s1">.npy&#39;</span><span class="p">,</span> <span class="n">error_dict</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
 </div>
     </div>
   </div>
