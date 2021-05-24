@@ -13046,7 +13046,8 @@ div#notebook {
 </style>
 
 <!-- Custom stylesheet, it must be in the same directory as the html file -->
-<link rel="stylesheet" href="custom.css">
+<link rel="stylesheet" href="../Examples.css">
+<script src="../Examples.js"></script>
 
 <!-- Loading mathjax macro -->
 <!-- Load mathjax -->
@@ -13190,13 +13191,13 @@ $
 
  
  
-<div id="86dcdd33-0d37-4f04-83ed-b25bf4cb5119"></div>
+<div id="a1ff1aaa-1ce6-4aa5-b51b-70dc65271942"></div>
 <div class="output_subarea output_widget_view ">
 <script type="text/javascript">
-var element = $('#86dcdd33-0d37-4f04-83ed-b25bf4cb5119');
+var element = $('#a1ff1aaa-1ce6-4aa5-b51b-70dc65271942');
 </script>
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "8de4196917ba471b85ab4f00cf8a6846", "version_major": 2, "version_minor": 0}
+{"model_id": "a02786768fde49f5818a5d182fdc24b8", "version_major": 2, "version_minor": 0}
 </script>
 </div>
 
@@ -13478,13 +13479,13 @@ Length: 30934, dtype: float64</pre>
 
  
  
-<div id="632923ba-0632-4a78-b2d4-7f6132778830"></div>
+<div id="4aa7fea8-bc9b-4f40-a7b2-0c27337d2597"></div>
 <div class="output_subarea output_widget_view ">
 <script type="text/javascript">
-var element = $('#632923ba-0632-4a78-b2d4-7f6132778830');
+var element = $('#4aa7fea8-bc9b-4f40-a7b2-0c27337d2597');
 </script>
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "6e4742e9e5b34b32b976bc4947780836", "version_major": 2, "version_minor": 0}
+{"model_id": "4f31d4742c854933a858f49b03463235", "version_major": 2, "version_minor": 0}
 </script>
 </div>
 
@@ -13648,8 +13649,10 @@ var element = $('#632923ba-0632-4a78-b2d4-7f6132778830');
         <span class="n">y</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">elif</span> <span class="n">ptsl</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s2">&quot;pt&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timedelta</span><span class="p">(</span><span class="mi">0</span><span class="p">):</span>
         <span class="n">y</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
-    <span class="k">else</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="n">ptsl</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s2">&quot;sl&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timedelta</span><span class="p">(</span><span class="mi">0</span><span class="p">):</span>
         <span class="n">y</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">y</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">((</span><span class="n">ptsl</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s2">&quot;pt&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">ptsl</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s2">&quot;sl&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timedelta</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span> <span class="o">-</span> <span class="mf">0.5</span><span class="p">)</span>
 <span class="n">y</span>
 </pre></div>
 
@@ -13680,7 +13683,7 @@ var element = $('#632923ba-0632-4a78-b2d4-7f6132778830');
 2017-12-29 17:52:00    1.0
 2017-12-29 17:57:00    1.0
 2017-12-29 17:58:00    1.0
-2017-12-29 17:59:00    1.0
+2017-12-29 17:59:00   -1.0
 Length: 25522, dtype: float64</pre>
 </div>
 
@@ -13786,7 +13789,7 @@ Length: 25522, dtype: float64</pre>
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>array([0., 0., 0., ..., 1., 1., 0.])</pre>
+<pre>array([0., 0., 0., ..., 1., 0., 0.])</pre>
 </div>
 
 </div>
@@ -13804,7 +13807,7 @@ Length: 25522, dtype: float64</pre>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[11]:</div>
+<div class="prompt input_prompt">In&nbsp;[10]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># from sklearn.metrics import confusion_matrix</span>
@@ -13829,7 +13832,7 @@ Length: 25522, dtype: float64</pre>
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[11]:</div>
+    <div class="prompt output_prompt">Out[10]:</div>
 
 
 
@@ -13861,10 +13864,10 @@ Length: 25522, dtype: float64</pre>
   <tbody>
     <tr>
       <th>Score</th>
-      <td>0.920554</td>
-      <td>0.922581</td>
-      <td>0.922581</td>
-      <td>0.922581</td>
+      <td>0.923292</td>
+      <td>0.930025</td>
+      <td>0.922107</td>
+      <td>0.914321</td>
     </tr>
   </tbody>
 </table>
