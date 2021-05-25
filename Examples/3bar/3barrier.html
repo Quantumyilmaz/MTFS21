@@ -13192,13 +13192,13 @@ $
 
  
  
-<div id="870c9b24-8851-402b-9b6a-447aa53f8c20"></div>
+<div id="2c889b3c-285a-4fc2-b851-2adf3e610c40"></div>
 <div class="output_subarea output_widget_view ">
 <script type="text/javascript">
-var element = $('#870c9b24-8851-402b-9b6a-447aa53f8c20');
+var element = $('#2c889b3c-285a-4fc2-b851-2adf3e610c40');
 </script>
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "cf314ba140134d63bd758bdc09789a68", "version_major": 2, "version_minor": 0}
+{"model_id": "d911ae604f9c40598d45eb4944acd6cc", "version_major": 2, "version_minor": 0}
 </script>
 </div>
 
@@ -13480,13 +13480,13 @@ Length: 30934, dtype: float64</pre>
 
  
  
-<div id="a70dbc3a-0867-46a2-8c8b-e1828afb596e"></div>
+<div id="705e0977-857c-4a36-afd3-352acd62a116"></div>
 <div class="output_subarea output_widget_view ">
 <script type="text/javascript">
-var element = $('#a70dbc3a-0867-46a2-8c8b-e1828afb596e');
+var element = $('#705e0977-857c-4a36-afd3-352acd62a116');
 </script>
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "5671d3476db0417aa2d8bb17cd2e4298", "version_major": 2, "version_minor": 0}
+{"model_id": "12c3357e450a44e9926defef6feeeb8f", "version_major": 2, "version_minor": 0}
 </script>
 </div>
 
@@ -13640,7 +13640,7 @@ var element = $('#a70dbc3a-0867-46a2-8c8b-e1828afb596e');
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[26]:</div>
+<div class="prompt input_prompt">In&nbsp;[6]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">y</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">barriers</span><span class="o">.</span><span class="n">index</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;float64&quot;</span><span class="p">)</span>
@@ -13667,7 +13667,7 @@ var element = $('#a70dbc3a-0867-46a2-8c8b-e1828afb596e');
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[26]:</div>
+    <div class="prompt output_prompt">Out[6]:</div>
 
 
 
@@ -13703,7 +13703,7 @@ Length: 25522, dtype: float64</pre>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[27]:</div>
+<div class="prompt input_prompt">In&nbsp;[7]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">reservoir</span> <span class="o">=</span> <span class="n">EchoStateNetwork</span><span class="p">(</span><span class="n">resSize</span><span class="o">=</span><span class="mi">450</span><span class="p">,</span><span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
@@ -13741,14 +13741,14 @@ Length: 25522, dtype: float64</pre>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[28]:</div>
+<div class="prompt input_prompt">In&nbsp;[8]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">y_t</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)</span><span class="o">*</span><span class="mi">8</span><span class="o">//</span><span class="mi">10</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">;</span> <span class="n">X_t</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">copy</span><span class="p">()[:,:</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)</span><span class="o">*</span><span class="mi">8</span><span class="o">//</span><span class="mi">10</span><span class="p">]</span> <span class="o">/</span> <span class="n">X</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">/</span> <span class="mi">2</span>
-<span class="n">y_v</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)</span><span class="o">*</span><span class="mi">8</span><span class="o">//</span><span class="mi">10</span><span class="p">:]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">;</span> <span class="n">X_v</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">copy</span><span class="p">()[:,</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)</span><span class="o">*</span><span class="mi">8</span><span class="o">//</span><span class="mi">10</span><span class="p">:]</span> <span class="o">/</span> <span class="n">X</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">/</span> <span class="mi">2</span>
-<span class="n">reservoir</span><span class="o">.</span><span class="n">excite</span><span class="p">(</span><span class="n">X_t</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span><span class="n">y_t</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span><span class="n">wobble</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">bias</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="c1"># reservoir.excite(X_t.copy(),y_t.copy(),f=np.tanh,wobble=True,bias=1)</span>
-<span class="n">reservoir</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">y_t</span><span class="o">.</span><span class="n">copy</span><span class="p">()[:,</span><span class="n">reservoir</span><span class="o">.</span><span class="n">initLen</span><span class="p">:]</span> <span class="p">,</span><span class="n">ridge_param</span><span class="o">=</span><span class="mf">3e-6</span><span class="p">,</span><span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">);</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">y_t</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">values</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)</span><span class="o">*</span><span class="mi">8</span><span class="o">//</span><span class="mi">10</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">;</span> <span class="n">X_t</span> <span class="o">=</span> <span class="n">X</span><span class="p">[:,:</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)</span><span class="o">*</span><span class="mi">8</span><span class="o">//</span><span class="mi">10</span><span class="p">]</span> <span class="o">/</span> <span class="n">X</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">/</span> <span class="mi">2</span>
+<span class="n">y_v</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)</span><span class="o">*</span><span class="mi">8</span><span class="o">//</span><span class="mi">10</span><span class="p">:]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">;</span> <span class="n">X_v</span> <span class="o">=</span> <span class="n">X</span><span class="p">[:,</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)</span><span class="o">*</span><span class="mi">8</span><span class="o">//</span><span class="mi">10</span><span class="p">:]</span> <span class="o">/</span> <span class="n">X</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">/</span> <span class="mi">2</span>
+<span class="n">reservoir</span><span class="o">.</span><span class="n">excite</span><span class="p">(</span><span class="n">X_t</span><span class="p">,</span><span class="n">y_t</span><span class="p">,</span><span class="n">wobble</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">bias</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="c1"># reservoir.excite(X_t,y_t,f=np.tanh,wobble=True,bias=1)</span>
+<span class="n">reservoir</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">y_t</span><span class="p">[:,</span><span class="n">reservoir</span><span class="o">.</span><span class="n">initLen</span><span class="p">:]</span> <span class="p">,</span><span class="n">ridge_param</span><span class="o">=</span><span class="mf">3e-6</span><span class="p">,</span><span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">);</span>
 <span class="c1"># reservoir.train(y_t[:,reservoir.initLen:],f_out_inverse = lambda x: np.arctanh(x-x*1e-16) ,ridge_param=3e-6,verbose=0);</span>
 </pre></div>
 
@@ -13766,7 +13766,7 @@ Length: 25522, dtype: float64</pre>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[29]:</div>
+<div class="prompt input_prompt">In&nbsp;[9]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">reservoir_prediction</span> <span class="o">=</span> <span class="n">reservoir</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_v</span><span class="p">,</span><span class="n">y_v</span><span class="p">,</span><span class="n">wobble</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -13786,7 +13786,7 @@ Length: 25522, dtype: float64</pre>
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[29]:</div>
+    <div class="prompt output_prompt">Out[9]:</div>
 
 
 
@@ -13810,7 +13810,7 @@ Length: 25522, dtype: float64</pre>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[30]:</div>
+<div class="prompt input_prompt">In&nbsp;[10]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># from sklearn.metrics import confusion_matrix</span>
@@ -13835,7 +13835,7 @@ Length: 25522, dtype: float64</pre>
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[30]:</div>
+    <div class="prompt output_prompt">Out[10]:</div>
 
 
 
@@ -13907,7 +13907,7 @@ Length: 25522, dtype: float64</pre>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[31]:</div>
+<div class="prompt input_prompt">In&nbsp;[11]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">reservoir_meta</span> <span class="o">=</span> <span class="n">EchoStateNetwork</span><span class="p">(</span><span class="n">resSize</span><span class="o">=</span><span class="mi">450</span><span class="p">,</span><span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
@@ -13946,14 +13946,14 @@ Length: 25522, dtype: float64</pre>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[32]:</div>
+<div class="prompt input_prompt">In&nbsp;[12]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">X_t_meta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">X_t</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span><span class="n">reservoir</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_t</span><span class="p">,</span><span class="n">y_t</span><span class="p">,</span><span class="n">wobble</span><span class="o">=</span><span class="kc">False</span><span class="p">)])</span>
-<span class="n">X_v_meta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">X_v</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span><span class="n">reservoir</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_v</span><span class="p">,</span><span class="n">y_v</span><span class="p">,</span><span class="n">wobble</span><span class="o">=</span><span class="kc">False</span><span class="p">)])</span>
-<span class="c1"># reservoir_meta.excite(X_t_meta.copy(),y_t.copy(),wobble=True,bias=1)</span>
-<span class="n">reservoir_meta</span><span class="o">.</span><span class="n">excite</span><span class="p">(</span><span class="n">X_t_meta</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span><span class="n">y_t</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span><span class="n">f</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">tanh</span><span class="p">,</span><span class="n">wobble</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">bias</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">reservoir_meta</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">y_t</span><span class="o">.</span><span class="n">copy</span><span class="p">()[:,</span><span class="n">reservoir_meta</span><span class="o">.</span><span class="n">initLen</span><span class="p">:]</span> <span class="p">,</span><span class="n">ridge_param</span><span class="o">=</span><span class="mf">3e-6</span><span class="p">,</span><span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">);</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">X_t_meta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">X_t</span><span class="p">,</span><span class="n">reservoir</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_t</span><span class="p">,</span><span class="n">y_t</span><span class="p">,</span><span class="n">wobble</span><span class="o">=</span><span class="kc">False</span><span class="p">)])</span>
+<span class="n">X_v_meta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">X_v</span><span class="p">,</span><span class="n">reservoir</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_v</span><span class="p">,</span><span class="n">y_v</span><span class="p">,</span><span class="n">wobble</span><span class="o">=</span><span class="kc">False</span><span class="p">)])</span>
+<span class="c1"># reservoir_meta.excite(X_t_meta,y_t,wobble=True,bias=1)</span>
+<span class="n">reservoir_meta</span><span class="o">.</span><span class="n">excite</span><span class="p">(</span><span class="n">X_t_meta</span><span class="p">,</span><span class="n">y_t</span><span class="p">,</span><span class="n">f</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">tanh</span><span class="p">,</span><span class="n">wobble</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">bias</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">reservoir_meta</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">y_t</span><span class="p">[:,</span><span class="n">reservoir_meta</span><span class="o">.</span><span class="n">initLen</span><span class="p">:]</span> <span class="p">,</span><span class="n">ridge_param</span><span class="o">=</span><span class="mf">3e-6</span><span class="p">,</span><span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">);</span>
 <span class="c1"># reservoir_meta.train(y_t[:,reservoir_meta.initLen:],f_out_inverse = lambda x: np.arctanh(x-x*1e-16) ,ridge_param=3e-6,verbose=0);</span>
 </pre></div>
 
@@ -13971,7 +13971,7 @@ Length: 25522, dtype: float64</pre>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[33]:</div>
+<div class="prompt input_prompt">In&nbsp;[13]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">reservoir_prediction_meta</span> <span class="o">=</span> <span class="n">reservoir_meta</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_v_meta</span><span class="p">,</span><span class="n">y_v</span><span class="p">,</span><span class="n">wobble</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -13991,7 +13991,7 @@ Length: 25522, dtype: float64</pre>
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[33]:</div>
+    <div class="prompt output_prompt">Out[13]:</div>
 
 
 
@@ -14008,7 +14008,7 @@ Length: 25522, dtype: float64</pre>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[34]:</div>
+<div class="prompt input_prompt">In&nbsp;[14]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">res_pred_comb</span> <span class="o">=</span> <span class="n">reservoir_prediction_meta</span> <span class="o">*</span> <span class="n">reservoir_prediction</span>
@@ -14033,7 +14033,7 @@ Length: 25522, dtype: float64</pre>
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[34]:</div>
+    <div class="prompt output_prompt">Out[14]:</div>
 
 
 
