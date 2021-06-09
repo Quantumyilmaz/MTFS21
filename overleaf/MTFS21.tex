@@ -287,7 +287,7 @@ Triple Barrier method is used to learn the side of each trade. It is a path-depe
     \item The vertical barrier (expiration) is hit first. Label = sign of the return or a 0.
 \end{enumerate}
 
-The idea is to teach the these labels to a machine learning algorithm in a supervised setting, where \textbf{Exponentially Weighted Standard Deviations (EWSD)} (\ref{EWSD}) computed from returns inside a predetermined time frame prior to each barrier are used to determine the horizontal barrier widths. A front (vertical) barrier is also placed acting as an expiration limit. If it is hit first and the corresponding label is chosen as 0, then it indicates that there is no trading opportunity.
+The idea is to teach these labels to a machine learning algorithm in a supervised setting, where \textbf{Exponentially Weighted Standard Deviations (EWSD)} (\ref{EWSD}) computed from returns inside a predetermined time frame prior to each barrier are used to determine the horizontal barrier widths. A front (vertical) barrier is also placed acting as an expiration limit. If it is hit first and the corresponding label is chosen as 0, then it indicates that there is no trading opportunity.
 
 
 \begin{equation} \label{EWSD}
@@ -305,16 +305,16 @@ The idea is to teach the these labels to a machine learning algorithm in a super
 
 After the data is divided into windows with predetermined time frames and triple barrier labels are attached to these, a model is given previous prices as input and trained to learn the labels. 
 
-In our case, the data is divided into 30 minute windows. Looking at prior 30 minutes a standard deviation (\ref{EWSD}) is calculated. Using this, the horizontal barriers are placed. A vertical barrier at 30 minutes ahead is placed. This is done for each bar in the Limit Order Book (LOB) starting from 30 minutes after the first bar in LOB. The model is given the previous 30 minutes' prices as input, including the price at the minute, where it is expected to yield a label, i.e. forecast the correct position: long, short or do nothing. So each input consists of 31 prices. The windows for which exactly 31 bars are not available in the LOB are removed during data preparation as well as time bars before 10:00 AM and after 18:00 PM, belonging to single price auctions in Borsa Istanbul.
+In our case, the data is divided into 30 minute windows. Looking at previous 30 minutes, a standard deviation (\ref{EWSD}) is calculated. Using this, the horizontal barriers are placed at $\text{price}_{t_{k}} \cdot (1 \pm \text{EWSD}_{t_{k}})$, where $t_{k}$ is the time of the barrier start/position entry. A vertical barrier at 30 minutes ahead is placed. This is done for each bar in the Limit Order Book (LOB) starting from 30 minutes after the first bar in LOB. The model is given the previous 30 minutes' prices as input, including the price at the minute, where it is expected to yield a label, i.e. forecast the correct position: long, short or do nothing. So each input consists of 31 prices. The windows for which exactly 31 bars are not available in the LOB are removed during data preparation as well as time bars before 10:00 AM and after 18:00 PM, belonging to single price auctions in Borsa Istanbul.
 
 \subsubsection{Meta-Labelling}\label{sec::meta}
-A secondary model could be used to assess the confidence in the labels from the primary model described previously. In our case, binary confidences are calculated, i.e. for each prediction from the primary model a label $\in \{0,1 \}$ is given by the secondary model. The continuous case $(0,1)$ will be explored soon. 
+A secondary model could be used to assess the confidence in the labels from the primary model described previously. In our case, binary confidences are calculated, i.e. for each prediction from the primary model a label $\in \{0,1 \}$ is given by the secondary model. The continuous case $[0,1]$ will be explored soon. 
 
 The goal here is to reduce false positives which could be costly in some trades, at the expense of true positives, where true positive rate (TPR) will be reduced and the precision will be increased. It takes the predictions of the primary model as input and the correct labels are given as output. In our case this is done by training reservoirs. The results are shown in Figure \ref{fig:triple_label_scores}.
 
 \begin{figure}[!htbp]
   \centering
-  \subfloat[a][Scores of reservoirs trained with different activation functions.]{\includegraphics[scale=0.3]{label_scores.png} \label{fig:label_scores}} \\
+  \subfloat[a][Scores of reservoirs trained with different activation functions. "id" stands for identity map. "f\_out=tanh" means that a sigmoid activation as reservoir activation and tanh as output activation is chosen.]{\includegraphics[scale=0.3]{label_scores.png} \label{fig:label_scores}} \\
   \subfloat[b][Scores of meta-reservoirs trained with different activation functions on labels of different reservoirs.]{\includegraphics[scale=0.4]{meta_scores.png} \label{fig:meta_scores}}
   \caption{Triple Barrier label scores. TTPR is given by TP/(TP+FTP) and FTP is the number of correct identification of trading opportunities with incorrect side.} \label{fig:triple_label_scores}
 \end{figure}
@@ -322,10 +322,10 @@ The goal here is to reduce false positives which could be costly in some trades,
 \subsubsection{Barrier Widths}\label{sec::barr_widths}
 Learning the side of the trade, we needed to be fair to both possible positions (long and short) and for that we have utilized symmetrical horizontal barriers. Once a model knows the correct side of a trade, putting actual profit taking and stop-loss barriers is the next step, which do not need to be symmetrical. For this purpose a model is trained to forecast the maximum available return inside a given window as well as the minimum return observed before hitting this maximum return.
 
-In our case the model takes previous 31 prices including the price at the minute of position taking, the return of the previous 30 minute interval (see $x_{t_k}$ in (\ref{EWSD})), EWSD and EWMA as input of length 34.
+In our case the model takes previous 31 prices including the price at the minute of position taking, the return of the previous 30 minute interval (see $x_{t_k}$ in (\ref{EWSD})), EWSD and EWMA as input with a length of 34.
 
 \subsubsection{Application}\label{sec::application}
-Once (meta-labelled) side predictions, profit taking targets and stop-loss thresholds are available, a trading experiment can bu run.
+Once (meta-labelled) side predictions, profit taking targets and stop-loss thresholds are available, a trading experiment can be performed.
 
 The data is divided into three subsets: 
 \begin{enumerate*}
@@ -334,11 +334,11 @@ The data is divided into three subsets:
     \item Meta
 \end{enumerate*}.
 A primary model is trained on the blue part in Figure \ref{fig::data_split} to learn the labels of sides. These labels are filtered through a meta-labelling model described in \ref{sec::meta}.
-This meta-label model is trained on the orange part in Figure \ref{fig::data_split}, i.e. on the first half of the validation of the primary model. Lastly another model is taught the barrier widths described in \ref{sec::barr_widths} with a training domain of blue+orange in Figure \ref{fig::data_split}. Its validation domain is the same as meta-labelling model's validation domain, the green part. This is where the experiment is run.
+This meta-label model is trained on the orange part in Figure \ref{fig::data_split}, i.e. on the first half of the validation of the primary model. For meta-/labelling "meta\_f=sigmoid/f\_out=tanh" hyperparameters are chosen. Lastly another model is taught the barrier widths described in \ref{sec::barr_widths} with a training domain of blue+orange in Figure \ref{fig::data_split}. Its validation domain is the same as meta-labelling model's validation domain, the green part. This is where the experiment is run.
 
-Each minute in the green domain, using the resulting predictions from previously described stages, we look at 30 minute windows. If the profit taking barrier is exceeded during this period given that the stop-loss barrier is not hit prior to that, the model executes the trade at that minute. If the stop-loss barrier is hit first, then the position is ended there. If none of the non-symmetrical barriers are hit, the position is ended at the vertical barrier, i.e. after 30 minutes and the positive (negative) return at that point is added (subtracted) from the wallet. The bet size is given by the total capital divided by the price of the asset at the time of the position. 
+Each minute in the green domain, using the resulting predictions from previously described stages, we look at 30 minute windows. If the profit taking barrier is exceeded during this period given that the stop-loss barrier is not hit prior to that, the model executes the trade at that minute. If the stop-loss barrier is hit first, then the position is ended there. If none of the non-symmetrical barriers are hit, the position is ended at the vertical barrier, i.e. after 30 minutes. In each case the positive (negative) return at that point is added (subtracted) from the wallet. The bet size is given by the total capital divided by the price of the asset at the time of the position. 
 
-Currently, the experiment is run on bid prices. A more realistic case where both bid and ask prices are used for buying and selling the asset will be investigated. Furthermore, a scenario where the algorithm is only allowed to invest $\frac{\text{available volumes} \cdot \text{bid/ask price}}{100}$ TL will also be investigated. The current setting yields 223.5 B with an initial capital of 100 within a trading period of approx. 51 days.
+Currently, the experiment is performed on bid prices. A more realistic case where both bid and ask prices are used for buying and selling the asset will be investigated. Furthermore, a scenario where the algorithm is only allowed to invest $\frac{\text{available volumes} \cdot \text{bid/ask price}}{100}$ TL will also be investigated. The current setting yields 223.5 B with an initial capital of 100 within a trading period of approx. 51 days.
 \clearpage
 
 \begin{figure}[!htbp]
