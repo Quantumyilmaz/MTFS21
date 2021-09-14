@@ -40,6 +40,8 @@ urlcolor=black
 
 \usepackage{subfig}
 
+\usepackage{comment}
+
 \setcounter{secnumdepth}{4}
 \titleformat{\paragraph}
 {\normalfont\normalsize\bfseries}{\theparagraph}{1em}{}
@@ -269,6 +271,7 @@ The number of shares traded is a function of the actual value exchanged. Therefo
 \subsubsection{Sampling}
 \paragraph{CUSUM Filter}
 
+\begin{comment}
 \subsection{Triple Barrier Method \cite{advances_in_ml}}
 
 \begin{figure}[!htbp]
@@ -305,7 +308,7 @@ The idea is to teach these labels to a machine learning algorithm in a supervise
 
 After the data is divided into windows with predetermined time frames and triple barrier labels are attached to these, a model is given previous prices as input and trained to learn the labels. 
 
-In our case, the data is divided into 30 minute windows. Looking at previous 30 minutes, a standard deviation (\ref{EWSD}) is calculated. Using this, the horizontal barriers are placed at $\text{price}_{t_{k}} \cdot (1 \pm \text{EWSD}_{t_{k}})$, where $t_{k}$ is the time of the barrier start/position entry. A vertical barrier at 30 minutes ahead is placed. This is done for each bar in the Limit Order Book (LOB) starting from 30 minutes after the first bar in LOB. The model is given the previous 30 minutes' prices as input, including the price at the minute, where it is expected to yield a label, i.e. forecast the correct position: long, short or do nothing. So each input consists of 31 prices. The windows for which exactly 31 bars are not available in the LOB are removed during data preparation as well as time bars before 10:00 AM and after 18:00 PM, belonging to single price auctions in Borsa Istanbul.
+In our case, the data is divided into 30 minute windows. Looking at previous 30 minutes, a standard deviation (\ref{EWSD}) is calculated. Using this, the horizontal barriers are placed at $\text{price}_{t_{k}} \cdot (1 \pm \text{EWSD}_{t_{k}})$, where $t_{k}$ is the time of the barrier start/position entry. A vertical barrier at 30 minutes ahead is placed. This is done for each bar in the Limit Order Book (LOB) starting from 30 minutes after the first bar in LOB. The model is given the previous 30 minutes' prices as input, including the price at the minute, where it is expected to yield a label, i.e. forecast the correct position: long, short or do nothing. So each input consists of 31 prices. The windows for which exactly 31 bars are not available in the LOB are removed during data preparation as well as time bars before 10:00 and after 18:00, belonging to single price auctions in Borsa Istanbul.
 
 \subsubsection{Meta-Labelling}\label{sec::meta}
 A secondary model could be used to assess the confidence in the labels from the primary model described previously. In our case, binary confidences are calculated, i.e. for each prediction from the primary model a label $\in \{0,1 \}$ is given by the secondary model. The continuous case $[0,1]$ will be explored soon. 
@@ -370,6 +373,7 @@ Currently, the experiment is performed on bid prices. A more realistic case wher
   \caption{Plots from the experiment described in \ref{sec::application}} \label{fig:AB}
 \end{figure}
 
+\end{comment}
 
 
 
