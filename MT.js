@@ -208,6 +208,19 @@ for (i = 0; i < dropdown.length; i++) {
     };
     });
 };
+
+var main_Log_list = document.getElementsByClassName("dd2")
+// document.getElementById("demo").innerHTML = main_Log_list.length;
+for (i = 0; i < main_Log_list.length; i++) {
+  main_Log_list[i].addEventListener("click", function() {
+    var dropdownContent = this.nextElementSibling;
+    if (dropdownContent.style.display === "none") {
+    dropdownContent.style.display = "block";
+    } else {
+      dropdownContent.style.display = "none";  
+    };
+    });
+};
 resize()
 
 

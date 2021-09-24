@@ -70,9 +70,13 @@ dd {
   padding-left: 30px;
 }
 
-li{
+li, .dropdown-btn2{
   margin-bottom: 10px;
   text-align: left;
+}
+
+ul.li {
+  margin-bottom: 100px;
 }
 
 /* Fixed sidenav, full height */
