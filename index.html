@@ -30,8 +30,10 @@
   <a href="#Log" id ="Log" onClick="myFunc(this.id);">Log</a>
 </div>
 
+
 <!-- MAIN -->
 <div class="main" id="main">
+  <p id="demo"></p>
   <h1 class="ml5" style="color: rgb(124, 53, 32);">
     <span class="text-wrapper">
       <span class="line line1" style="background-color: rgb(124, 53, 32);"></span>
@@ -45,63 +47,48 @@
   <script type="text/javascript" src="extra.js"></script>
   <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/2.0.2/anime.min.js"></script> -->
   <!-- <h2 class="new" style="color: rgb(124, 53, 32);">MTFS21</h2> -->
-  <p id = "demo"></p>
+
   <!-- <h2 class="new2" style="color: rgb(180, 78, 47);">Thesis Page</h2> -->
   <!-- <br> -->
   <div class="row">
     <div class="column" style="border: 1px solid black;border-radius: 0%;">
-      <h4 class="new" style="color: darkmagenta;">Contents</h4>
+      <h4 class="new dd2" style="color: darkmagenta;">Contents</h4>
       <dl class="data_table">
 
         <!-- <dt><u>Home</u>
           <dd>Homepage.</dd>
         </dt> -->
 
-        <dt><u>Literature Summary</u>
-          <dd>Research on literature. Currently work in progress.</dd>
-          <dd>An overleaf link is provided in <a id ="Links" onClick="myFunc(this.id);">Links</a> section.</dd>
+        <dt class="dd2"><u>Literature Summary</u>
+          <dd>Research on literature. Currently work in progress. <br>An overleaf link is provided in <a id ="Links" onClick="myFunc(this.id);">Links</a> section.</dd>
         </dt>
 
-        <dt><u>Reservoir Computing Examples</u>
-          <dd>
-              <ul>
-                <li>
-                  <dt><b>Sinusoidal</b>: 
-                    <dd> Features RC-RNN Comparison on Sine functions. RC displays superiority over 
-                    RNN in terms of speed and accuracy.</dd>
-                  </dt>
-                </li>
-              </ul>
-          </dd>
+        <dt class="dd2"><u>Reservoir Computing Examples</u>
           <dd>
             <ul>
               <li>
-                <dt><b>House of the Rising Sun</b>: 
+                <dt class="dd2"><b>Sinusoidal</b>: 
+                  <dd> Features RC-RNN Comparison on Sine functions. RC displays superiority over 
+                  RNN in terms of speed and accuracy.</dd>
+                </dt>
+              </li>
+              <li>
+                <dt class="dd2"><b>House of the Rising Sun</b>: 
                   <dd> Features RC on learning melodies using output feedback method. Showcases the problem with periodic inputs and how to tackle it. Includes RC-RNN comparison.</dd>
                 </dt>
               </li>
-            </ul>
-          </dd>
-            <dd>
-              <ul>
-                <li>
-                  <dt><b>Mackey-Glass Equations</b>: 
-                    <dd> Features RC-RNN Comparison on Mackey-Glass equations. RC displays superiority over 
-                    RNN in terms of speed, accuracy, generativity and robustness to smaller dataset.</dd>
-                  </dt>
-                </li>
-              </ul>
-          </dd>
-          <dd>
-            <ul>
               <li>
-                <dt><b> Mid-price Forecasting</b>: 
+                <dt class="dd2"><b>Mackey-Glass Equations</b>: 
+                  <dd> Features RC-RNN Comparison on Mackey-Glass equations. RC displays superiority over 
+                  RNN in terms of speed, accuracy, generativity and robustness to smaller dataset.</dd>
+                </dt>
+              </li>
+              <li>
+                <dt class="dd2"><b> Mid-price Forecasting</b>: 
                   <dd> Features a Reservoir Computing approach to the work done in SPHS20.</dd>
                 </dt>
               </li>
             </ul>
-          </dd>
-          <!-- <dd> -->
             <!-- <ul> -->
               <!-- <li> -->
                 <!-- <dt><b> Triple-Barrier Method</b>:  -->
@@ -109,23 +96,19 @@
                 <!-- </dt> -->
               <!-- </li> -->
             <!-- </ul> -->
-          <!-- </dd> -->
+          </dd>
         </dt>
 
-        <dt><u>Links</u>
+        <dt class="dd2"><u>Links</u>
           <dd>
             <ul>
               <li>
-                <dt><b>Github</b>: 
+                <dt class="dd2"><b>Github</b>: 
                   <dd> Currently contains the Literature Summary pdf file and the Echo State Network class python file written for thesis purposes.</dd>
                 </dt>
               </li>
-            </ul>
-          </dd>
-          <dd>
-            <ul>
               <li>
-                <dt><b>Literature Summary</b>:
+                <dt class="dd2"><b>Literature Summary</b>:
                   <dd> Literature Summary on Overleaf.</dd>
                 </dt>
               </li>
@@ -133,7 +116,7 @@
           </dd>
         </dt>
 
-        <dt><u>Log</u>
+        <dt class="dd2"><u>Log</u>
           <dd> Progress updates and changes made to website.</dd>
         </dt>
       </dl>
@@ -160,6 +143,8 @@
   </div>
 </div>
 
+
+
 <!-- LITERATURE SUMMARY -->
 <iframe class="pdf2" id="main_LiteratureSummary2" src="./overleaf/MT_litsum.pdf#view=FitH" style="display:none;" type="application/pdf"/></iframe>
 <embed class="pdf" id="main_LiteratureSummary" src="./overleaf/MT_litsum.pdf#view=FitH" style="display:none;" type="application/pdf"/>
@@ -179,7 +164,7 @@
 
 </div>
 
-<!-- <p id="demo"></p> -->
+
 
 <!-- LOG -->
 <div class="main" id="main_Log" style="display:none;text-align: left;">

@@ -209,18 +209,24 @@ for (i = 0; i < dropdown.length; i++) {
     });
 };
 
+
+var i; var j;
 var main_Log_list = document.getElementsByClassName("dd2")
 // document.getElementById("demo").innerHTML = main_Log_list.length;
 for (i = 0; i < main_Log_list.length; i++) {
   main_Log_list[i].addEventListener("click", function() {
     var dropdownContent = this.nextElementSibling;
     if (dropdownContent.style.display === "none") {
-    dropdownContent.style.display = "block";
+      dropdownContent.style.display = "block";
+      this.style.opacity = "1"
     } else {
-      dropdownContent.style.display = "none";  
+      dropdownContent.style.display = "none";
+      this.style.opacity = "0.2"
     };
     });
 };
+
+
 resize()
 
 
