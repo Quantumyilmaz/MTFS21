@@ -125,6 +125,9 @@ ul.li {
   bottom: 0;
 }
 
+.dd2 {
+  cursor: pointer;
+}
 .sidenav a.home {
   padding-bottom: 30%;
   font-size:xx-large;
@@ -139,7 +142,10 @@ ul.li {
 
 /* Dropdown container (hidden by default). Optional: add a lighter background color and some left padding to change the design of the dropdown content */
 .dropdown-container {
-  display: none;
+  pointer-events: none;
+  height: 0%;
+  overflow: auto;
+  opacity: 0;
   background-color: #262626;
   background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#262626), color-stop(50%,#262626dd), color-stop(80%,#262626b8), color-stop(100%,#26262693));
 }
@@ -358,7 +364,9 @@ ul.li {
 
 /* Some media queries for responsiveness 
 dont forget to change max height also in javascript*/
-@media screen and (max-height: 800px){
+@media screen and (max-height: 800px),
+      screen and (max-width: 700px)
+{
 
   .sidenav a , .dropdown-btn{
     font-size: 30%;

@@ -128,20 +128,6 @@ window.mobileCheck = function() {
     return check;
   };
 
-// document.getElementById("demo").innerHTML = window.mobileCheck();
-// (function() {
-//     window.onresize = displayWindowSize;
-//     window.onload = displayWindowSize;
-  
-//     function displayWindowSize() {
-//       let myWidth = window.innerWidth;
-//       let myHeight = window.innerHeight;
-//       // your size calculation code here
-//       document.getElementById("demo").innerHTML = myWidth + "x" + myHeight;
-//     };
-  
-  
-//   })();
 
 var new_main;
 
@@ -159,15 +145,10 @@ function myFunc(id){
             myFunc(id+"2")
         }
     }
-
-    // main.style.width = (screen.width-sidenav.offsetWidth).toString() + "px";
-    // main.style.height = (screen.height - topnav.offsetHeight).toString() + "px";
-    // main.style.marginLeft = (sidenav.offsetWidth-8).toString() + "px";
-    // main.style.marginTop = (topnav.offsetHeight).toString() + "px";
-    // if (id==="litsum"){
-    //     myFunc(id+"2");
-    // }
+    
 }
+
+
 
 //###########   MAIN   ##############
 var i;
@@ -181,50 +162,87 @@ for (i=0;i<sidelinks.length;i++) {
 
 var dropdown = document.getElementsByClassName("dropdown-btn");
 for (i = 0; i < dropdown.length; i++) {
-    dropdown[i].addEventListener("click", function() {
-    this.classList.toggle("active");
-    var dropdownContent = this.nextElementSibling;
-    if (dropdownContent.style.display === "block") {
-    dropdownContent.style.display = "none";
-    // topnav.style.marginLeft = sidenav.offsetWidth.toString() + "px";
-    // main.style.marginLeft = sidenav.offsetWidth.toString() + "px";
-    } else {
-    
-    var dropdown_selection_h = document.getElementsByClassName("sidenav")[0].getElementsByTagName("a")[1].offsetHeight;
-    dropdownContent.style.height="0%"
-    dropdownContent.style.display = "block";
-    anime.timeline({loop: false}).add({
+  var temp_dropdown = dropdown[i];
+  temp_dropdown.expanded = 0
+  temp_dropdown.addEventListener("click", function() {
+  this.classList.toggle("active");
+  var dropdownContent = this.nextElementSibling;
+  if (this.expanded == 1) {
+    dropdownContent.style.pointerEvents= "none";
+    anime({
       targets: dropdownContent,
-      height: (dropdown_selection_h*dropdownContent.getElementsByTagName("a").length).toString()+"px",
-      easing: 'easeOutQuad',
-      duration: 400,
+      height: "0px",
+      easing: 'linear',
+      duration: 300,
     });
-    anime.timeline({loop: false}).add({
-      targets: dropdownContent.getElementsByTagName("a"),
-      opacity: [0,1],
-      easing: 'easeOutQuad',
-      duration: 500,
+    anime({
+      targets: dropdownContent.children,
+      opacity: [1,0],
+      easing: 'linear',
+      duration: 100,
     });
-    };
-    });
-};
-
-
-var i; var j;
-var main_Log_list = document.getElementsByClassName("dd2")
-// document.getElementById("demo").innerHTML = main_Log_list.length;
-for (i = 0; i < main_Log_list.length; i++) {
-  main_Log_list[i].addEventListener("click", function() {
-    var dropdownContent = this.nextElementSibling;
-    if (dropdownContent.style.display === "none") {
-      dropdownContent.style.display = "block";
-      this.style.opacity = "1"
     } else {
-      dropdownContent.style.display = "none";
-      this.style.opacity = "0.2"
+    height = dropdownContent.children[dropdownContent.children.length-1].offsetHeight*dropdownContent.children.length;
+    dropdownContent.style.opacity=1;
+    dropdownContent.style.pointerEvents= "auto";
+    anime({
+      targets: dropdownContent,
+      height: ["0px",height],
+      easing: 'linear',
+      duration: 300,
+    });
+    anime({
+      targets: dropdownContent.children,
+      opacity: [0,1],
+      easing: 'linear',
+      duration: 500,
+      delay: function(el, i, l) {
+        return i * 50;
+      }
+    });
     };
+  this.expanded = Math.abs(this.expanded - 1);
+  });
+};
+
+
+
+
+var dd2 = document.getElementsByClassName("dd2");
+for (i = 0; i < dd2.length; i++) {
+  var temp_dropdown = dd2[i];
+  temp_dropdown.expanded = 1
+  temp_dropdown.addEventListener("dblclick", function() {
+    var target = this.nextElementSibling
+    if (this.expanded == 1) {
+      anime({
+        targets: target,
+        height: "0px",
+        opacity: [1,0],
+        easing: 'linear',
+        duration: 200,
+        complete: function() {
+          target.style.display = 'none';
+        },
+      });
+      this.style.opacity = "0.2"
+      } else {
+      anime({
+        targets: target,
+        height: ["0px","100%"],
+        opacity: [0,1],
+        easing: 'linear',
+        duration: 300,
+        begin: function() {
+          target.style.display = 'block';
+        },
+      });
+      this.style.opacity = "1"
+      };
+    this.expanded = Math.abs(this.expanded - 1);
     });
 };
+
 
 
 resize()
