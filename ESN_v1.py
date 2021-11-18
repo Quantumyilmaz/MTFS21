@@ -1,6 +1,4 @@
-from _typeshed import Self
 import numpy as np
-from numpy.lib.arraysetops import isin
 from scipy import linalg,stats
 from sklearn.linear_model import Ridge,LinearRegression
 import warnings
