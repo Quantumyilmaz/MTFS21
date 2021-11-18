@@ -1,3 +1,4 @@
+from operator import le
 import numpy as np
 from scipy import linalg,stats
 from sklearn.linear_model import Ridge,LinearRegression
@@ -147,9 +148,9 @@ class EchoStateNetwork:
         self._outSize = None
 
         if custom_initState is None:
-            self.reservoir_layer = np.zeros((self.resSize,)) if null_state_init else np.random.rand(self.resSize,)
+            self.reservoir_layer = np.zeros((self.resSize,1)) if null_state_init else np.random.rand(self.resSize,1)
         else:
-            assert custom_initState.shape == (self.resSize,),f"Please give custom initial state with shape ({self.resSize},)."
+            assert custom_initState.shape == (self.resSize,1),f"Please give custom initial state with shape ({self.resSize},1)."
             self.reservoir_layer = custom_initState
 
         self.W = 0.1 * stats.rv_discrete(name='sparse', \
@@ -164,6 +165,7 @@ class EchoStateNetwork:
         self.leak_rate = kwargs.get("leak_rate",None)
         self.leak_version = kwargs.get("leak_version",None)
         self.bias = kwargs.get("bias",None)
+        self._bias_vec = bool(self.bias)*[self.bias]
         self.states = None
         self.val_states = None
         self._update_rule_id_train = None
@@ -283,12 +285,11 @@ class EchoStateNetwork:
                 # Bias
                 if self.bias is None:
                     self.bias = bias
+                    self._bias_vec = bool(self.bias)*[self.bias]
                 assert isinstance(self.bias,(int,float)), "You did not specify bias strength neither at reservoir initialization nor when calling 'excite' method."
                 # Input Connection
                 if self.Win is None:
-                    self.Win = kwargs.get("Win",np.random.rand(self.resSize,self.bias+inSize) - 0.5)
-                    # Win = np.random.uniform(size=(self.resSize,inSize+bias))<0.5
-                    # self.Win = np.where(Win==0, -1, Win)
+                    self.Win = kwargs.get("Win",self._generate_Win(inSize))
 
             if update_rule_id % 2:  #if y is not None:
                 assert len(y.shape) == 2
@@ -296,7 +297,7 @@ class EchoStateNetwork:
                 trainLen = y.shape[-1] if trainLen is None else trainLen
                 # Feedback Connection
                 if self.Wback is None:
-                    self.Wback = kwargs.get("Wback",np.random.uniform(-2,2,size=(self.resSize,outSize)))
+                    self.Wback = kwargs.get("Wback",self._generate_Wback(outSize))
 
                 """Wobbler"""
                 assert isinstance(wobble,bool),"wobble parameter must be boolean."
@@ -372,7 +373,7 @@ class EchoStateNetwork:
                     y_temp = self.output_transformer(self.f_out(np.dot(self.Wout, self.reg_X[:,-1])))
                     for t in range(trainLen):
                         self.update_reservoir_layer(None,y_temp,leak_version=leak_version)
-                        X[:,t] =  np.concatenate((bool(self.bias)*[self.bias],y_temp,self.reservoir_layer)).ravel()
+                        X[:,t] =  self._pack_internal_state(None,y_temp)
                         y_temp = self.output_transformer(self.f_out(np.dot(self.Wout, X[:,t])) + self._wobbler[:,t])
                     states = X[self.bias+outSize:,:]
 
@@ -383,7 +384,7 @@ class EchoStateNetwork:
                     u_temp = self.output_transformer(self.f_out(np.dot(self.Wout, self.reg_X[:,-1])))
                     for t in range(trainLen):
                         self.update_reservoir_layer(u_temp,None,leak_version=leak_version)
-                        X[:,t] = np.concatenate((bool(self.bias)*[self.bias],u_temp,self.reservoir_layer)).ravel()
+                        X[:,t] = self._pack_internal_state(u_temp)
                         u_temp = self.output_transformer(self.f_out(np.dot(self.Wout, X[:,t])))
                     states = X[inSize+self.bias:,:] 
 
@@ -391,13 +392,13 @@ class EchoStateNetwork:
                     # training was with no u, no y
                     for t in range(trainLen):
                         self.update_reservoir_layer()
-                        X[:,t] = np.concatenate((bool(self.bias)*[self.bias],self.reservoir_layer)).ravel()
+                        X[:,t] = self._pack_internal_state()
                     states = X[self.bias:,:]
             else:
                 for t in range(1,trainLen):
                     self.update_reservoir_layer()
                     if t >= initLen:
-                        X[:,t-initLen] = np.concatenate((bool(self.bias)*[self.bias],self.reservoir_layer)).ravel()
+                        X[:,t-initLen] = self._pack_internal_state()
                 states = X[self.bias:,:]
         # no u, yes y
         elif update_rule_id == 1:
@@ -407,13 +408,13 @@ class EchoStateNetwork:
                 y_temp = self._y_train_last
                 for t in range(trainLen):
                     self.update_reservoir_layer(None,y_temp,leak_version=leak_version)
-                    X[:,t-initLen] = np.concatenate((bool(self.bias)*[self.bias],y_temp,self.reservoir_layer)).ravel()
+                    X[:,t-initLen] = self._pack_internal_state(None,y_temp)
                     y_temp = y[:,t]  + self._wobbler[:,t]
             else:
                 for t in range(1,trainLen):
                     self.update_reservoir_layer(None,y_[:,t-1],leak_version=leak_version)
                     if t >= initLen:
-                        X[:,t-initLen] = np.concatenate((bool(self.bias)*[self.bias],y_[:,t-1],self.reservoir_layer)).ravel()
+                        X[:,t-initLen] = self._pack_internal_state(None,y_[:,t-1])
                 self._outSize = outSize
                 self._y_train_last = y_[:,-1]
             states = X[outSize+self.bias:,:]
@@ -427,20 +428,20 @@ class EchoStateNetwork:
                     y_temp = self.output_transformer(self.f_out(np.dot(self.Wout, self.reg_X[:,-1])))
                     for t in range(trainLen):
                         self.update_reservoir_layer(u[:,t],y_temp,leak_version=leak_version)
-                        X[:,t] = np.concatenate((bool(self.bias)*[self.bias],u[:,t],y_temp,self.reservoir_layer)).ravel()
+                        X[:,t] = self._pack_internal_state(u[:,t],y_temp)
                         y_temp = self.output_transformer(self.f_out(np.dot(self.Wout, X[:,t])) + self._wobbler[:,t])
                     states = X[self.bias+inSize+outSize:,:]
                 else:
                     # yes u, no y
                     for t in range(trainLen):
                         self.update_reservoir_layer(u[:,t],leak_version=leak_version)
-                        X[:,t] = np.concatenate((bool(self.bias)*[self.bias],u[:,t],self.reservoir_layer)).ravel()
+                        X[:,t] = self._pack_internal_state(u[:,t])
                     states = X[inSize+self.bias:,:]
             else:
                 for t in range(1,trainLen):
                     self.update_reservoir_layer(u[:,t],None,leak_version=leak_version)
                     if t >= initLen:
-                        X[:,t-initLen] = np.concatenate((bool(self.bias)*[self.bias],u[:,t],self.reservoir_layer)).ravel()
+                        X[:,t-initLen] = self._pack_internal_state(u[:,t])
                 self._inSize = inSize
                 states = X[inSize+self.bias:,:] 
         # yes u, yes y
@@ -451,13 +452,13 @@ class EchoStateNetwork:
                 y_temp = self._y_train_last
                 for t in range(trainLen):
                     self.update_reservoir_layer(u[:,t],y_temp,leak_version=leak_version)
-                    X[:,t] = np.concatenate((bool(self.bias)*[self.bias],u[:,t],y_temp,self.reservoir_layer)).ravel()
+                    X[:,t] = self._pack_internal_state(u[:,t],y_temp)
                     y_temp = y[:,t] + self._wobbler[:,t]
             else:
                 for t in range(1,trainLen):
                     self.update_reservoir_layer(u[:,t],y_[:,t-1],leak_version=leak_version)
                     if t >= initLen:
-                        X[:,t-initLen] = np.concatenate((bool(self.bias)*[self.bias],u[:,t],y_[:,t-1],self.reservoir_layer)).ravel()
+                        X[:,t-initLen] = self._pack_internal_state(u[:,t],y_[:,t-1])
                 self._inSize = inSize
                 self._outSize = outSize
                 self._y_train_last = y_[:,-1]
@@ -629,6 +630,7 @@ class EchoStateNetwork:
             assert self._outSize == y.shape[0], "Please give output consistent with training output."
         if self.bias != int(bias):
             self.bias = bias
+            self._bias_vec = bool(self.bias)*[self.bias]
             warnings.warn(f"You have used {self.bias} during training but now you are using {int(bias)}.")
         if self.f != f:
             self.f = f
@@ -750,8 +752,12 @@ class EchoStateNetwork:
 
                 - leak_rate: Leaking rate in x(n) = (1-leak_rate)*x(n-1) + leak_rate*f(...).
 
-                - leak_rate_val: Leaking rate in x(n) = (1-leak_rate)*x(n-1) + leak_rate*f(...) . Default is leak_rate used in training.
+                - leak_rate_val: Leaking rate in x(n) = (1-leak_rate)*x(n-1) + leak_rate*f(...) during validation. Default is leak_rate used in training.
                 
+                - leak_version: Give 0 for Jaeger's recursion formula, give 1 for recursion formula in ESNRLS paper.
+                
+                - leak_version_val: Leaking version for validation. Default is the one used in training.
+
                 - wobble_val: For enabling random noise. Default is False.
                 
                 - wobbler_val: User can provide custom noise. Disabled per default.
@@ -782,14 +788,15 @@ class EchoStateNetwork:
         self.f_out = None
         self.f_out_inverse = None
         self.bias = kwargs.get("bias",self.bias)
+        self._bias_vec = bool(self.bias)*[self.bias]
         self.leak_rate = kwargs.get("leak_rate",self.leak_rate)
         self.leak_version = kwargs.get("leak_version",self.leak_version)
         self.output_transformer = None
 
         if custom_initState is None:
-            self.reservoir_layer = np.zeros((self.resSize,)) if null_state_init else np.random.rand(self.resSize,)
+            self.reservoir_layer = np.zeros((self.resSize,1)) if null_state_init else np.random.rand(self.resSize,1)
         else:
-            assert custom_initState.shape == (self.resSize,),f"Please give custom initial state with shape ({self.resSize},)."
+            assert custom_initState.shape == (self.resSize,1),f"Please give custom initial state with shape ({self.resSize},1)."
             self.reservoir_layer = custom_initState
 
         self.excite(u=X_t,
@@ -822,6 +829,7 @@ class EchoStateNetwork:
                     bias=kwargs.get("bias_val",self.bias),
                     f=kwargs.get("f_val",self.f),
                     leak_rate=kwargs.get("leak_rate_val",self.leak_rate),
+                    leak_version=kwargs.get("leak_version_val",self.leak_version),
                     wobble = kwargs.get("wobble_val",False),
                     wobbler = kwargs.get("wobbler_val",None)
                     )
@@ -847,7 +855,7 @@ class EchoStateNetwork:
         - mode: Optional. Set to 'train' if you are updating the reservoir layer for training purposes. Set to 'val' if you are doing so for validation purposes. \
                 This will allow the ESN to name the training/validation modes, which can be accessed from 'training_type' and 'val_type' attributes.
         """
-        assert [0,1].count(leak_version)
+        assert len(self.reservoir_layer.shape)>1 and self.reservoir_layer.shape[1]==1,self.reservoir_layer.shape
 
         if mode == "train":
             update_rule_id = self._get_update_rule_id(in_,out_)
@@ -864,34 +872,120 @@ class EchoStateNetwork:
         else:
             assert mode is None,"You have given unsupported input for the 'mode' argument."
 
+        self.reservoir_layer = self._get_update(self.reservoir_layer,in_=in_,out_=out_,leak_version=leak_version)
+
+    def _get_update(self,x,in_:np.ndarray=None,out_:np.ndarray=None,leak_version:int = 0):
+
+        assert [0,1].count(leak_version)
+
         # no u, no y
         if in_ is None and out_ is None:
-            self.reservoir_layer = (1-self.leak_rate)*self.reservoir_layer + self.leak_rate*self.f(np.dot( self.W, self.reservoir_layer ))    
+            return (1-self.leak_rate)*x + self.leak_rate*self.f(np.dot( self.W, x ))    
         # no u, yes y
         elif in_ is None and out_ is not None:
+            if self.Wback is None:
+                self.Wback = self._generate_Wback(out_.shape[0])
             if leak_version:
-                self.reservoir_layer = (1-self.leak_rate)*self.reservoir_layer + \
-                                self.f(self.leak_rate*np.dot( self.W, self.reservoir_layer ) + np.dot(self.Wback, out_))
+                return (1-self.leak_rate)*x + \
+                                self.f(self.leak_rate*np.dot( self.W, x ) + np.dot(self.Wback, out_[:,None]))
             else:
-                self.reservoir_layer = (1-self.leak_rate)*self.reservoir_layer + \
-                                self.leak_rate*self.f(np.dot( self.W, self.reservoir_layer ) + np.dot(self.Wback, out_))
+                return (1-self.leak_rate)*x + \
+                                self.leak_rate*self.f(np.dot( self.W, x ) + np.dot(self.Wback, out_[:,None]))
         # yes u, no y
         elif in_ is not None and out_ is None:
+            if self.Win is None:
+                self.Win = self._generate_Win(in_.shape[0])
             if leak_version:
-                self.reservoir_layer = (1-self.leak_rate)*self.reservoir_layer + \
-                                self.f(self.leak_rate*np.dot( self.W, self.reservoir_layer ) + np.dot(self.Win, np.concatenate((bool(self.bias)*[self.bias],in_)).T))
+                return (1-self.leak_rate)*x + \
+                                self.f(self.leak_rate*np.dot( self.W, x ) + np.dot(self.Win, np.vstack((self._bias_vec,in_[:,None]))))
             else:
-                self.reservoir_layer = (1-self.leak_rate)*self.reservoir_layer + \
-                                self.leak_rate*self.f(np.dot( self.W, self.reservoir_layer ) + np.dot(self.Win, np.concatenate((bool(self.bias)*[self.bias],in_)).T))
+                return (1-self.leak_rate)*x + \
+                                self.leak_rate*self.f(np.dot( self.W, x ) + np.dot(self.Win, np.vstack((self._bias_vec,in_[:,None]))))
 
+        # yes u, yes y
         elif in_ is not None and out_ is not None:
+            if self.Win is None:
+                self.Win = self._generate_Win(in_.shape[0])
+            if self.Wback is None:
+                self.Wback = self._generate_Wback(out_.shape[0])
             if leak_version:
-                self.reservoir_layer = (1-self.leak_rate)*self.reservoir_layer + \
-                                self.f(self.leak_rate*np.dot( self.W, self.reservoir_layer ) + \
-                                    np.dot(self.Win, np.concatenate((bool(self.bias)*[self.bias],in_)).T) + np.dot(self.Wback, out_))
+                return (1-self.leak_rate)*x + \
+                                self.f(self.leak_rate*np.dot( self.W, x ) + \
+                                    np.dot(self.Win, np.vstack((self._bias_vec,in_[:,None]))) + np.dot(self.Wback, out_[:,None]))
             else:
-                self.reservoir_layer = (1-self.leak_rate)*self.reservoir_layer + \
-                                self.leak_rate*self.f(np.dot( self.W, self.reservoir_layer ) + \
-                                    np.dot(self.Win, np.concatenate((bool(self.bias)*[self.bias],in_)).T) + np.dot(self.Wback, out_))
+                return (1-self.leak_rate)*x + \
+                                self.leak_rate*self.f(np.dot( self.W, x ) + \
+                                    np.dot(self.Win, np.vstack((self._bias_vec,in_[:,None]))) + np.dot(self.Wback, out_[:,None]))
+    
+    def _pack_internal_state(self,in_=None,out_=None):
+        # no u, no y
+        if in_ is None and out_ is None:
+            return np.concatenate((self._bias_vec,self.reservoir_layer.ravel()))#.ravel()
+
+        # no u, yes y
+        elif in_ is None and out_ is not None:
+            return np.concatenate((self._bias_vec,out_,self.reservoir_layer.ravel()))#.ravel()
+
+        # yes u, no y
+        elif in_ is not None and out_ is None:
+            return np.concatenate((self._bias_vec,in_,self.reservoir_layer.ravel()))#.ravel()
+
+        # yes u, yes y
+        elif in_ is not None and out_ is not None:
+            return np.concatenate((self._bias_vec,in_,out_,self.reservoir_layer.ravel()))#.ravel()
+    
     def _get_update_rule_id(self,in_=None,out_=None):
         return min(3,(bool(in_ is not None) + 1)*(bool(in_ is not None)+bool(out_ is not None)))
+
+    def _generate_Win(self,inSize):
+        return np.random.rand(self.resSize,self.bias+inSize) - 0.5
+        # Win = np.random.uniform(size=(self.resSize,inSize+bias))<0.5
+        # self.Win = np.where(Win==0, -1, Win)
+    def _generate_Wback(self,outSize):
+        return np.random.uniform(-2,2,size=(self.resSize,outSize))
+
+    def __call__(self, in_):
+        if self._update_rule_id_train is None:
+            self._update_rule_id_train = 2
+        else:
+            assert self._update_rule_id_train==2
+
+        # Assuming it is already updated
+        # self.update_reservoir_layer(in_)
+
+        if len(in_.shape)==1:
+            return np.dot(self.Wout,np.vstack((self._bias_vec,in_[:,None],self.reservoir_layer)))
+        # elif len(in_.shape)==2:
+        #     return np.dot(self.Wout,\
+        #         np.concatenate([np.concatenate((self._bias_vec,in_[:,i],self.reservoir_layer))[:,None] \
+        #             for i in range(len(in_.shape[1]))],axis=1))
+        else:
+            raise Exception("Input has unsupported shape.")
+
+
+class ESNX(EchoStateNetwork):
+    """
+    ESN for multitasking such as when using (mini)batches.
+    """
+    def __init__(self, W: np.ndarray = None, 
+                resSize: int = 450, 
+                xn: list = [0, 4, -4], 
+                pn: list = [0.9875, 0.00625, 0.00625], 
+                random_state: float = None, 
+                null_state_init: bool = True, 
+                custom_initState: np.ndarray = None,
+                batch_size=None,
+                **kwargs):
+
+        super().__init__(W=W, 
+                        resSize=resSize, 
+                        xn=xn, 
+                        pn=pn, 
+                        random_state=random_state, 
+                        null_state_init=null_state_init, 
+                        custom_initState=custom_initState, 
+                        **kwargs)
+        
+        assert batch_size is not None and batch_size>1
+
+        self.layers = np.column_stack(batch_size*[self.reservoir_layer])
