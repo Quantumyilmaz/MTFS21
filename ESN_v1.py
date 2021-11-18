@@ -27,6 +27,20 @@ validation_rule_dict = {
                             {2:"Regular/Generative",3:"Regular/Predictive"}
                         }
 
+def activation_fn_interpreter(f):
+    if isinstance(f,str):
+        if f.lower()=="tanh":
+            return np.tanh
+        elif f.lower()=="sigmoid":
+            return sigmoid
+        elif f.lower()=="relu":
+            return leaky_relu(0)
+        elif f.lower().startswith('leaky'):
+            return leaky_relu(float(f.split('_')[-1]))
+        else:
+            raise Exception("The specified activation function is not a registered one.")
+    else:
+        return f
 
 class EchoStateNetwork:
 
@@ -121,6 +135,7 @@ class EchoStateNetwork:
                 - verbose: Mute all message outputs.
                 - f: User can provide custom activation function of the reservoir. It will be the fixed activation function of the reservoir. It can also be defined in training if not here.
                 - leak_rate: Leak parameter in Leaky Integrator ESN (LiESN).
+                - leak_version: Give 0 for Jaeger's recursion formula, give 1 for recursion formula in ESNRLS paper.
                 - bias: Strength of bias. 0 to disable.
         """
         
@@ -147,11 +162,13 @@ class EchoStateNetwork:
         self.Wout = kwargs.get("Wout",None)
         self.Wback = None
         self.leak_rate = kwargs.get("leak_rate",None)
+        self.leak_version = kwargs.get("leak_version",None)
         self.bias = kwargs.get("bias",None)
         self.states = None
         self.val_states = None
         self._update_rule_id_train = None
-        self.f = kwargs.get("f",None)
+        self._update_rule_id_val = None
+        self.f = activation_fn_interpreter(kwargs.get("f",None))
         self.f_out = None
         self.f_out_inverse = None
         self.output_transformer = None
@@ -187,6 +204,7 @@ class EchoStateNetwork:
                 initTrainLen_ratio: float=None,
                 wobble: bool=False,
                 wobbler: np.ndarray=None,
+                leak_version=0,
                 **kwargs) -> NoneType:
         """
 
@@ -218,6 +236,8 @@ class EchoStateNetwork:
             - wobble: For enabling random noise.
 
             - wobbler: User can provide custom noise. Default is np.random.uniform(-1,1)/10000.
+
+            - leak_version: Set to 0 for Jaeger's recursion formula, set to 1 for recursion formula in ESNRLS paper. Default: 0
 
             - keyword arguments:
 
@@ -260,10 +280,13 @@ class EchoStateNetwork:
                 assert len(u.shape) == 2
                 inSize = u.shape[0]
                 trainLen = u.shape[-1] if trainLen is None else trainLen
-
-                """ Input and Feedback Connections """
+                # Bias
+                if self.bias is None:
+                    self.bias = bias
+                assert isinstance(self.bias,(int,float)), "You did not specify bias strength neither at reservoir initialization nor when calling 'excite' method."
+                # Input Connection
                 if self.Win is None:
-                    self.Win = kwargs.get("Win",np.random.rand(self.resSize,bias+inSize) - 0.5)
+                    self.Win = kwargs.get("Win",np.random.rand(self.resSize,self.bias+inSize) - 0.5)
                     # Win = np.random.uniform(size=(self.resSize,inSize+bias))<0.5
                     # self.Win = np.where(Win==0, -1, Win)
 
@@ -271,9 +294,7 @@ class EchoStateNetwork:
                 assert len(y.shape) == 2
                 outSize = y.shape[0]
                 trainLen = y.shape[-1] if trainLen is None else trainLen
-
-                
-                """ Input and Feedback Connections """
+                # Feedback Connection
                 if self.Wback is None:
                     self.Wback = kwargs.get("Wback",np.random.uniform(-2,2,size=(self.resSize,outSize)))
 
@@ -289,11 +310,14 @@ class EchoStateNetwork:
                 y_ = y + self._wobbler
 
         else:
+            new_val_type = validation_rule_dict[self._update_rule_id_train][update_rule_id]
             if self._update_rule_id_val is None:
                 self._update_rule_id_val = update_rule_id
             else:
-                assert self._update_rule_id_val == update_rule_id
-            self.val_type = validation_rule_dict[self._update_rule_id_train][update_rule_id]
+                warnings.warn(f"You have already performed validation of type {self.val_type} with this reservoir. Now you are switching to validation of type {new_val_type}.")
+                #assert self._update_rule_id_val == update_rule_id
+            
+            self.val_type = new_val_type
 
             if self.val_type == validation_rule_dict[0][0]:
                 warnings.warn(f"You are forecasting in {validation_rule_dict} mode!")
@@ -322,27 +346,16 @@ class EchoStateNetwork:
             self.leak_rate = leak_rate
         assert isinstance(self.leak_rate,(int,float)), "You did not specify leaking rate neither at reservoir initialization nor when calling 'excite' method."
 
+        # Leaking Version
+        if self.leak_version is None:
+            self.leak_version = leak_version
+        assert self.leak_version is not None, "You did not specify leak version neither at reservoir initialization nor when calling 'excite' method."
+        assert [0,1].count(self.leak_version), "Leak version must be either 0 or 1."
+
         # Activation Function
         if self.f is None:
-            if isinstance(f,str):
-                if f.lower()=="tanh":
-                    self.f = np.tanh
-                elif f.lower()=="sigmoid":
-                    self.f = sigmoid
-                elif f.lower()=="relu":
-                    self.f = leaky_relu(0)
-                elif f.lower().startswith('leaky'):
-                    self.f = leaky_relu(float(f.split('_')[-1]))
-                else:
-                    raise Exception("The specified activation function is not a registered one.")
-            else:
-                self.f = f
+            self.f = activation_fn_interpreter(f)
         assert self.f is not None, "You did not specify reservoir activation neither at reservoir initialization nor when calling 'excite' method."
-
-        # Bias
-        if self.bias is None:
-            self.bias = bias
-        assert isinstance(self.bias,(int,float)), "You did not specify bias strength neither at reservoir initialization nor when calling 'excite' method."
 
         # Exciting the reservoir states
 
@@ -351,104 +364,104 @@ class EchoStateNetwork:
         # no u, no y
         if update_rule_id == 0:
             assert isinstance(trainLen,int), f"Training length must be integer.{trainLen} is given."
-            X = np.zeros((bias+self.resSize,trainLen-initLen))
+            X = np.zeros((self.bias+self.resSize,trainLen-initLen))
             if validation_mode:
                 if self._update_rule_id_train == 1:
                     # training was with no u, yes y. now validation with no u, yes y_pred
-                    X = np.zeros((bias+outSize+self.resSize,trainLen-initLen))
+                    X = np.zeros((self.bias+outSize+self.resSize,trainLen-initLen))
                     y_temp = self.output_transformer(self.f_out(np.dot(self.Wout, self.reg_X[:,-1])))
                     for t in range(trainLen):
-                        self.update_reservoir_layer(None,y_temp)
-                        X[:,t] =  np.concatenate((bool(bias)*[bias],y_temp,self.reservoir_layer)).ravel()
+                        self.update_reservoir_layer(None,y_temp,leak_version=leak_version)
+                        X[:,t] =  np.concatenate((bool(self.bias)*[self.bias],y_temp,self.reservoir_layer)).ravel()
                         y_temp = self.output_transformer(self.f_out(np.dot(self.Wout, X[:,t])) + self._wobbler[:,t])
-                    states = X[bias+outSize:,:]
+                    states = X[self.bias+outSize:,:]
 
                 elif self._update_rule_id_train == 2:
                     # training was with yes u, no y. now validation with yes u_pred, no y
                     # This is only useful when input data and output data differ by a phase.
-                    X = np.zeros((bias+inSize+self.resSize,trainLen-initLen))
+                    X = np.zeros((self.bias+inSize+self.resSize,trainLen-initLen))
                     u_temp = self.output_transformer(self.f_out(np.dot(self.Wout, self.reg_X[:,-1])))
                     for t in range(trainLen):
-                        self.update_reservoir_layer(u_temp,None)
-                        X[:,t] = np.concatenate((bool(bias)*[bias],u_temp,self.reservoir_layer)).ravel()
+                        self.update_reservoir_layer(u_temp,None,leak_version=leak_version)
+                        X[:,t] = np.concatenate((bool(self.bias)*[self.bias],u_temp,self.reservoir_layer)).ravel()
                         u_temp = self.output_transformer(self.f_out(np.dot(self.Wout, X[:,t])))
-                    states = X[inSize+bias:,:] 
+                    states = X[inSize+self.bias:,:] 
 
                 else:
                     # training was with no u, no y
                     for t in range(trainLen):
                         self.update_reservoir_layer()
-                        X[:,t] = np.concatenate((bool(bias)*[bias],self.reservoir_layer)).ravel()
-                    states = X[bias:,:]
+                        X[:,t] = np.concatenate((bool(self.bias)*[self.bias],self.reservoir_layer)).ravel()
+                    states = X[self.bias:,:]
             else:
                 for t in range(1,trainLen):
                     self.update_reservoir_layer()
                     if t >= initLen:
-                        X[:,t-initLen] = np.concatenate((bool(bias)*[bias],self.reservoir_layer)).ravel()
-                states = X[bias:,:]
+                        X[:,t-initLen] = np.concatenate((bool(self.bias)*[self.bias],self.reservoir_layer)).ravel()
+                states = X[self.bias:,:]
         # no u, yes y
         elif update_rule_id == 1:
-            X = np.zeros((bias+outSize+self.resSize,trainLen-initLen))
+            X = np.zeros((self.bias+outSize+self.resSize,trainLen-initLen))
             if validation_mode:
                 # no u, yes y
                 y_temp = self._y_train_last
                 for t in range(trainLen):
-                    self.update_reservoir_layer(None,y_temp)
-                    X[:,t-initLen] = np.concatenate((bool(bias)*[bias],y_temp,self.reservoir_layer)).ravel()
+                    self.update_reservoir_layer(None,y_temp,leak_version=leak_version)
+                    X[:,t-initLen] = np.concatenate((bool(self.bias)*[self.bias],y_temp,self.reservoir_layer)).ravel()
                     y_temp = y[:,t]  + self._wobbler[:,t]
             else:
                 for t in range(1,trainLen):
-                    self.update_reservoir_layer(None,y_[:,t-1])
+                    self.update_reservoir_layer(None,y_[:,t-1],leak_version=leak_version)
                     if t >= initLen:
-                        X[:,t-initLen] = np.concatenate((bool(bias)*[bias],y_[:,t-1],self.reservoir_layer)).ravel()
+                        X[:,t-initLen] = np.concatenate((bool(self.bias)*[self.bias],y_[:,t-1],self.reservoir_layer)).ravel()
                 self._outSize = outSize
                 self._y_train_last = y_[:,-1]
-            states = X[outSize+bias:,:]
+            states = X[outSize+self.bias:,:]
         # yes u, no y
         elif update_rule_id == 2:
-            X = np.zeros((bias+inSize+self.resSize,trainLen-initLen))
+            X = np.zeros((self.bias+inSize+self.resSize,trainLen-initLen))
             if validation_mode:
                 if self._update_rule_id_train == 3:
                     # yes u, yes y_pred (generative)
-                    X = np.zeros((bias+inSize+outSize+self.resSize,trainLen-initLen))
+                    X = np.zeros((self.bias+inSize+outSize+self.resSize,trainLen-initLen))
                     y_temp = self.output_transformer(self.f_out(np.dot(self.Wout, self.reg_X[:,-1])))
                     for t in range(trainLen):
-                        self.update_reservoir_layer(u[:,t],y_temp)
-                        X[:,t] = np.concatenate((bool(bias)*[bias],u[:,t],y_temp,self.reservoir_layer)).ravel()
+                        self.update_reservoir_layer(u[:,t],y_temp,leak_version=leak_version)
+                        X[:,t] = np.concatenate((bool(self.bias)*[self.bias],u[:,t],y_temp,self.reservoir_layer)).ravel()
                         y_temp = self.output_transformer(self.f_out(np.dot(self.Wout, X[:,t])) + self._wobbler[:,t])
-                    states = X[bias+inSize+outSize:,:]
+                    states = X[self.bias+inSize+outSize:,:]
                 else:
                     # yes u, no y
                     for t in range(trainLen):
-                        self.update_reservoir_layer(u[:,t])
-                        X[:,t] = np.concatenate((bool(bias)*[bias],u[:,t],self.reservoir_layer)).ravel()
-                    states = X[inSize+bias:,:]
+                        self.update_reservoir_layer(u[:,t],leak_version=leak_version)
+                        X[:,t] = np.concatenate((bool(self.bias)*[self.bias],u[:,t],self.reservoir_layer)).ravel()
+                    states = X[inSize+self.bias:,:]
             else:
                 for t in range(1,trainLen):
-                    self.update_reservoir_layer(u[:,t],None)
+                    self.update_reservoir_layer(u[:,t],None,leak_version=leak_version)
                     if t >= initLen:
-                        X[:,t-initLen] = np.concatenate((bool(bias)*[bias],u[:,t],self.reservoir_layer)).ravel()
+                        X[:,t-initLen] = np.concatenate((bool(self.bias)*[self.bias],u[:,t],self.reservoir_layer)).ravel()
                 self._inSize = inSize
-                states = X[inSize+bias:,:] 
+                states = X[inSize+self.bias:,:] 
         # yes u, yes y
         elif update_rule_id == 3:
             assert u.shape[-1] == y.shape[-1], "Inputs and outputs must have same shape at the last axis (time axis)."
-            X = np.zeros((bias+inSize+outSize+self.resSize,trainLen-initLen))
+            X = np.zeros((self.bias+inSize+outSize+self.resSize,trainLen-initLen))
             if validation_mode:
                 y_temp = self._y_train_last
                 for t in range(trainLen):
-                    self.update_reservoir_layer(u[:,t],y_temp)
-                    X[:,t] = np.concatenate((bool(bias)*[bias],u[:,t],y_temp,self.reservoir_layer)).ravel()
+                    self.update_reservoir_layer(u[:,t],y_temp,leak_version=leak_version)
+                    X[:,t] = np.concatenate((bool(self.bias)*[self.bias],u[:,t],y_temp,self.reservoir_layer)).ravel()
                     y_temp = y[:,t] + self._wobbler[:,t]
             else:
                 for t in range(1,trainLen):
-                    self.update_reservoir_layer(u[:,t],y_[:,t-1])
+                    self.update_reservoir_layer(u[:,t],y_[:,t-1],leak_version=leak_version)
                     if t >= initLen:
-                        X[:,t-initLen] = np.concatenate((bool(bias)*[bias],u[:,t],y_[:,t-1],self.reservoir_layer)).ravel()
+                        X[:,t-initLen] = np.concatenate((bool(self.bias)*[self.bias],u[:,t],y_[:,t-1],self.reservoir_layer)).ravel()
                 self._inSize = inSize
                 self._outSize = outSize
                 self._y_train_last = y_[:,-1]
-            states = X[inSize+outSize+bias:,:]
+            states = X[inSize+outSize+self.bias:,:]
         #?
         else:
             raise NotImplementedError("Could not find a case for this training.")       
@@ -528,13 +541,13 @@ class EchoStateNetwork:
         regr.fit(self.reg_X.T,y_.T)
         self.Wout = regr.coef_
 
-        bias = self.Wout.shape[-1] - self.resSize
-        if self._inSize is not None:
-            bias -= self._inSize
-        if self._outSize is not None:
-            bias -= self._outSize
+        # self.bias = self.Wout.shape[-1] - self.resSize
+        # if self._inSize is not None:
+        #     bias -= self._inSize
+        # if self._outSize is not None:
+        #     bias -= self._outSize
 
-        assert bias == 1 or bias == 0, bias
+        # assert bias == 1 or bias == 0, bias
 
         if error_measure == "mse":
             error = mse(y_,np.dot( self.Wout , self.reg_X))
@@ -599,13 +612,16 @@ class EchoStateNetwork:
         bias = kwargs.get("bias",self.bias)
 
         # Activations
-        f = kwargs.get("f",self.f)
+        f = activation_fn_interpreter(kwargs.get("f",self.f))
 
         self.f_out = f_out
         self.output_transformer = output_transformer
 
         # Leaking Rate
         leak_rate = kwargs.get("leak_rate",self.leak_rate)
+
+        # Leaking Rate
+        leak_version = kwargs.get("leak_version",self.leak_version)
         
         if u is not None:
             assert self._inSize == u.shape[0], "Please give input consistent with training input."
@@ -620,6 +636,9 @@ class EchoStateNetwork:
         if self.leak_rate != leak_rate:
             self.leak_rate = leak_rate
             warnings.warn(f"You have used leaking rate {self.leak_rate} during training but now you are using {leak_rate}.")
+        if self.leak_version != leak_version:
+            self.leak_version = leak_version
+            warnings.warn(f"You have used leak version: {self.leak_version} during training but now you are using leak version: {leak_version}.")
 
         if u is not None:
             valLen = u.shape[-1]
@@ -759,11 +778,12 @@ class EchoStateNetwork:
         self.val_states = None
         self._update_rule_id_train = None
         self._update_rule_id_val = None
-        self.f = kwargs.get("f",self.f)
+        self.f = activation_fn_interpreter(kwargs.get("f",self.f))
         self.f_out = None
         self.f_out_inverse = None
         self.bias = kwargs.get("bias",self.bias)
         self.leak_rate = kwargs.get("leak_rate",self.leak_rate)
+        self.leak_version = kwargs.get("leak_version",self.leak_version)
         self.output_transformer = None
 
         if custom_initState is None:
