@@ -2,7 +2,7 @@
 <html>
 <head><meta charset="utf-8" />
 
-<title>paper_website</title>
+<title>paper_random_init_website</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
@@ -13090,7 +13090,7 @@ div#notebook {
 <script>
 $( document ).ready(function(){
 
-            var cfg = {"base_numbering": 1, "nav_menu": {"height": "212px", "width": "190px"}, "number_sections": true, "sideBar": true, "skip_h1_title": false, "title_cell": "Table of Contents", "title_sidebar": "Contents", "toc_cell": false, "toc_position": {}, "toc_section_display": true, "toc_window_display": false};
+            var cfg = {};
 
             // fire the main function with these parameters
             require(['nbextensions/toc2/toc2'], function (toc2) {
@@ -13105,30 +13105,14 @@ $( document ).ready(function(){
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="Notebook-Overview">Notebook Overview<a class="anchor-link" href="#Notebook-Overview">&#182;</a></h1><p>In this notebook we show the results of the reinforcement learning algorithm described by <a href="https://arxiv.org/abs/2101.07107">Briola et al.</a>:</p>
-<ul>
-<li>The agent is allowed to buy/sell/hold <b>at most one unit</b> of <a href="https://en.wikipedia.org/wiki/Garanti_BBVA">Garanti</a> stock at each time step.</li>
-<li><p>The agent can short or long or do nothing (preserve his current position) at each time step. He can also execute a daily stop-loss, where he checks the current P&amp;L and closes all positions and stops further trading in the case of negative total profit.</p>
-</li>
-<li><p>An environment is a <u>daily</u> Limit Order Book (LOB) environment, containing 5 levels of bid/ask prices/volumes at nanosecond precision.</p>
-</li>
-<li>The states returned by the environment at each time step are the last 10 LOB bars, the agent's current position (<b>neutral, long or short</b>) and the <a href="https://www.investopedia.com/terms/m/marktomarket.asp">mark-to-market-value</a> at the current time step.</li>
-<li><p>Possible actions: 'sell','stay','buy', 'daily stop loss'.</p>
-</li>
-<li><p>The agent is trained using the <a href="https://arxiv.org/abs/1707.06347">Proximal Policy Optimization</a> algorithm.</p>
-</li>
-</ul>
-<p><u>Since the agent can possess only one unit of stock at a time, a 'buy' action while in long position would be equivalent to a 'stay' action, whereas a 'sell' action would close the position. Similarly, a 'sell' action while shorting would be equivalent to a 'stay' action, whereas a 'buy' action would close the position.</u></p>
-<p>A difference in this work compared to the original should be noted, which is that our agent trades on mid-prices. In the more realistic scenario, where the spread is taken into account, the agent is not able to generate profit on the dataset at hand but completes the training with a total reward of zero, i.e. there is no net loss or gain.</p>
-<p>The agent is trained on the first 60% of the year 2017. Data from the rest of the year (40%) is reserved for validation.
-Hyperparameters for training were optimized using <a href="https://optuna.org/">Optuna</a>.</p>
+<h1 id="Notebook-Overview">Notebook Overview<a class="anchor-link" href="#Notebook-Overview">&#182;</a></h1><p>The setting is the same as in the <a href="https://quantumyilmaz.github.io/MTFS21/RL_Examples/RL_paper/FullyTrained/paper_website.html">previous notebook</a> but this time not all the parameters of the network are optimized. Instead, only the output layer is trained.</p>
 
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[1]:</div>
+<div class="prompt input_prompt">In&nbsp;[9]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
@@ -13142,6 +13126,7 @@ Hyperparameters for training were optimized using <a href="https://optuna.org/">
 <span class="kn">from</span> <span class="nn">LOBenv_mid</span> <span class="kn">import</span> <span class="n">LOBEnv</span>
 <span class="kn">import</span> <span class="nn">torch</span>
 <span class="kn">from</span> <span class="nn">torchinfo</span> <span class="kn">import</span> <span class="n">summary</span>
+<span class="kn">from</span> <span class="nn">CustomNetwork_Policy</span> <span class="kn">import</span> <span class="n">CustomActorCriticPolicy</span>
 
 <span class="n">LOB</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_pickle</span><span class="p">(</span><span class="s2">&quot;./pkls/LOB_conti.pkl&quot;</span><span class="p">)</span>
 
@@ -13162,7 +13147,8 @@ Hyperparameters for training were optimized using <a href="https://optuna.org/">
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="Validation">Validation<a class="anchor-link" href="#Validation">&#182;</a></h1><p>Here we let our trained agent trade on the validation days and look at the P&amp;L.</p>
+<h1><font color=#3498DB>Validation</font></h1>
+<p>Here we let our trained agent trade on the validation days and look at the P&amp;L.</p>
 
 </div>
 </div>
@@ -13170,20 +13156,20 @@ Hyperparameters for training were optimized using <a href="https://optuna.org/">
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Model">Model<a class="anchor-link" href="#Model">&#182;</a></h2><p>The model has 2 hidden layers with 64 nodes each, shared by both value and policy networks. Value network's output has length 1. Policy network's output has length 4 for 4 possible actions. These 4 values represent the probability weights passed to a Categorical Distribution.</p>
+<h2 id="Model">Model<a class="anchor-link" href="#Model">&#182;</a></h2><p>The model has 2 hidden layers with 64 nodes each, shared by both value and policy networks. These are initialized following $\mathcal{N}(0,1)$ and stay untrained. Value network's output has length 1. Policy network's output has length 4 for 4 possible actions. These 4 values represent the probability weights passed to a Categorical Distribution. Only the two output layers are trained.</p>
 
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[2]:</div>
+<div class="prompt input_prompt">In&nbsp;[12]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">PPO</span><span class="p">(</span><span class="s2">&quot;MlpPolicy&quot;</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">policy_kwargs</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">net_arch</span><span class="o">=</span><span class="p">[</span><span class="mi">64</span><span class="p">,</span><span class="mi">64</span><span class="p">],</span><span class="n">optimizer_class</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">),</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">n_epochs</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span><span class="n">seed</span><span class="o">=</span><span class="mi">42</span> \
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">PPO</span><span class="p">(</span><span class="n">CustomActorCriticPolicy</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">n_epochs</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span><span class="n">seed</span><span class="o">=</span><span class="mi">42</span> \
        <span class="p">,</span><span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.002</span><span class="p">,</span><span class="n">gamma</span><span class="o">=</span><span class="mf">0.95</span><span class="p">,</span><span class="n">gae_lambda</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span><span class="n">ent_coef</span><span class="o">=</span><span class="mf">0.14</span><span class="p">,</span><span class="n">max_grad_norm</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span><span class="n">vf_coef</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span>\
             <span class="n">n_steps</span><span class="o">=</span><span class="n">env</span><span class="o">.</span><span class="n">LOB_mid_prices</span><span class="o">.</span><span class="n">size</span><span class="p">,</span><span class="n">batch_size</span><span class="o">=</span><span class="n">env</span><span class="o">.</span><span class="n">LOB_mid_prices</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
-<span class="n">model</span><span class="o">.</span><span class="n">policy</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;./model_envs_mid/policy.pth&quot;</span><span class="p">,</span><span class="n">map_location</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s1">&#39;cpu&#39;</span><span class="p">)))</span>
+<span class="n">model</span><span class="o">.</span><span class="n">policy</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;./model_envs_mid_random/policy.pth&quot;</span><span class="p">,</span><span class="n">map_location</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s1">&#39;cpu&#39;</span><span class="p">)))</span>
 <span class="n">model</span><span class="o">.</span><span class="n">policy</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
 
 <span class="n">summary</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">policy</span><span class="p">,</span><span class="n">input_data</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">reset</span><span class="p">()[</span><span class="kc">None</span><span class="p">,:]))</span>
@@ -13199,7 +13185,7 @@ Hyperparameters for training were optimized using <a href="https://optuna.org/">
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[2]:</div>
+    <div class="prompt output_prompt">Out[12]:</div>
 
 
 
@@ -13208,24 +13194,27 @@ Hyperparameters for training were optimized using <a href="https://optuna.org/">
 <pre>==========================================================================================
 Layer (type:depth-idx)                   Output Shape              Param #
 ==========================================================================================
-ActorCriticPolicy                        --                        --
+CustomActorCriticPolicy                  --                        --
 ├─FlattenExtractor: 1-1                  [1, 112]                  --
 │    └─Flatten: 2-1                      [1, 112]                  --
-├─MlpExtractor: 1-2                      [1, 64]                   --
+├─CustomNetwork: 1-2                     [1, 64]                   --
 │    └─Sequential: 2-2                   [1, 64]                   --
-│    │    └─Linear: 3-1                  [1, 64]                   7,232
+│    │    └─Linear: 3-1                  [1, 64]                   (7,168)
 │    │    └─Tanh: 3-2                    [1, 64]                   --
-│    │    └─Linear: 3-3                  [1, 64]                   4,160
+│    │    └─Linear: 3-3                  [1, 64]                   (4,096)
 │    │    └─Tanh: 3-4                    [1, 64]                   --
-│    └─Sequential: 2-3                   [1, 64]                   --
-│    └─Sequential: 2-4                   [1, 64]                   --
+│    └─Sequential: 2-3                   [1, 64]                   (recursive)
+│    │    └─Linear: 3-5                  [1, 64]                   (recursive)
+│    │    └─Tanh: 3-6                    [1, 64]                   --
+│    │    └─Linear: 3-7                  [1, 64]                   (recursive)
+│    │    └─Tanh: 3-8                    [1, 64]                   --
 ├─Linear: 1-3                            [1, 1]                    65
 ├─Linear: 1-4                            [1, 4]                    260
 ==========================================================================================
-Total params: 11,717
-Trainable params: 11,717
-Non-trainable params: 0
-Total mult-adds (M): 0.01
+Total params: 11,589
+Trainable params: 325
+Non-trainable params: 11,264
+Total mult-adds (M): 0.02
 ==========================================================================================
 Input size (MB): 0.00
 Forward/backward pass size (MB): 0.00
@@ -13250,7 +13239,8 @@ Estimated Total Size (MB): 0.05
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="No-Spread">No Spread<a class="anchor-link" href="#No-Spread">&#182;</a></h3>
+<h3 id="No-Spread">No Spread<a class="anchor-link" href="#No-Spread">&#182;</a></h3><p>We see that the random feedforward network has higher gains than the fully trained one.</p>
+
 </div>
 </div>
 </div>
@@ -13274,7 +13264,7 @@ Estimated Total Size (MB): 0.05
         
 <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">act</span><span class="p">,</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;action&quot;</span><span class="p">,</span><span class="s2">&quot;reward&quot;</span><span class="p">,</span><span class="s2">&quot;position&quot;</span><span class="p">],</span> \
                         <span class="n">index</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">MultiIndex</span><span class="o">.</span><span class="n">from_tuples</span><span class="p">((</span><span class="n">i</span><span class="p">,</span><span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">act</span><span class="p">))))</span> \
-                                   <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">act</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">actions</span><span class="o">.</span><span class="n">values</span><span class="p">())])</span><span class="o">.</span><span class="n">to_pickle</span><span class="p">(</span><span class="s2">&quot;./pkls/validation_log_mid.pkl&quot;</span><span class="p">)</span>
+                                   <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">act</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">actions</span><span class="o">.</span><span class="n">values</span><span class="p">())])</span><span class="o">.</span><span class="n">to_pickle</span><span class="p">(</span><span class="s2">&quot;./pkls/validation_log_mid_random.pkl&quot;</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -13284,10 +13274,10 @@ Estimated Total Size (MB): 0.05
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[3]:</div>
+<div class="prompt input_prompt">In&nbsp;[15]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">log</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_pickle</span><span class="p">(</span><span class="s2">&quot;./pkls/validation_log_mid.pkl&quot;</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">log</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_pickle</span><span class="p">(</span><span class="s2">&quot;./pkls/validation_log_mid_random.pkl&quot;</span><span class="p">)</span>
 <span class="n">rewards_mid</span> <span class="o">=</span> <span class="p">{}</span>
 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">trange</span><span class="p">(</span><span class="n">log</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]):</span>
     <span class="n">temp</span><span class="o">=</span><span class="mi">0</span>
@@ -13322,13 +13312,13 @@ Estimated Total Size (MB): 0.05
 
  
  
-<div id="f8992510-4a44-4cbe-af15-031b4e4ce5a9"></div>
+<div id="fcc8530e-1c09-43fd-b7ce-1e520b1f020e"></div>
 <div class="output_subarea output_widget_view ">
 <script type="text/javascript">
-var element = $('#f8992510-4a44-4cbe-af15-031b4e4ce5a9');
+var element = $('#fcc8530e-1c09-43fd-b7ce-1e520b1f020e');
 </script>
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "a9d366f5dcaf452fb01460ec4e1d72cb", "version_major": 2, "version_minor": 0}
+{"model_id": "ee780d4b2cb04bc09f6489d0a2f112e4", "version_major": 2, "version_minor": 0}
 </script>
 </div>
 
@@ -13340,7 +13330,7 @@ var element = $('#f8992510-4a44-4cbe-af15-031b4e4ce5a9');
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>Total Gains: 63.45 TL in 103 days.
+<pre>Total Gains: 95.06 TL in 103 days.
 </pre>
 </div>
 </div>
@@ -13351,20 +13341,20 @@ var element = $('#f8992510-4a44-4cbe-af15-031b4e4ce5a9');
 
 
 <div class="output_subarea output_stream output_stderr output_text">
-<pre>100%|██████████| 1/1 [00:00&lt;00:00, 14.21it/s]
+<pre>100%|██████████| 1/1 [00:00&lt;00:00, 15.12it/s]
 </pre>
 </div>
 </div>
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[3]:</div>
+    <div class="prompt output_prompt">Out[15]:</div>
 
 
 
 
 <div class="output_png output_subarea output_execute_result">
-<img src="paper_website_files/paper_website_8_3.png"
+<img src="paper_random_init_website_files/paper_random_init_website_8_3.png"
 >
 </div>
 
@@ -13377,17 +13367,17 @@ var element = $('#f8992510-4a44-4cbe-af15-031b4e4ce5a9');
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="With-Spread">With Spread<a class="anchor-link" href="#With-Spread">&#182;</a></h3><p>Another model was trained in the realistic scenario with spreads. The P&amp;L can be seen below. We see that it is more difficult for the agent to find profitable trading opportunities and the total number of trades sinks.</p>
+<h3 id="With-Spread">With Spread<a class="anchor-link" href="#With-Spread">&#182;</a></h3><p>Another model was trained in the realistic scenario with spreads. The P&amp;L can be seen below. We see again that it is more difficult for the agent to find profitable trading opportunities and the total number of trades sinks. The random feedforward network trades more often compared to the fully trained network with a similar skewness resulting in a larger total loss.</p>
 
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[4]:</div>
+<div class="prompt input_prompt">In&nbsp;[16]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">log</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_pickle</span><span class="p">(</span><span class="s2">&quot;./pkls/validation_log.pkl&quot;</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">log</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_pickle</span><span class="p">(</span><span class="s2">&quot;./pkls/validation_log_random.pkl&quot;</span><span class="p">)</span>
 <span class="n">rewards</span> <span class="o">=</span> <span class="p">{}</span>
 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">trange</span><span class="p">(</span><span class="n">log</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]):</span>
     <span class="n">temp</span><span class="o">=</span><span class="mi">0</span>
@@ -13422,13 +13412,13 @@ var element = $('#f8992510-4a44-4cbe-af15-031b4e4ce5a9');
 
  
  
-<div id="e2b044e6-4c69-4e32-9a71-49b5e20fa453"></div>
+<div id="76c792b7-5e64-42d8-9de4-9e7d02453ede"></div>
 <div class="output_subarea output_widget_view ">
 <script type="text/javascript">
-var element = $('#e2b044e6-4c69-4e32-9a71-49b5e20fa453');
+var element = $('#76c792b7-5e64-42d8-9de4-9e7d02453ede');
 </script>
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "b98577e08fb448048dc273b626935ee0", "version_major": 2, "version_minor": 0}
+{"model_id": "a97e34567b5c4f4895130db6e570dcbf", "version_major": 2, "version_minor": 0}
 </script>
 </div>
 
@@ -13440,7 +13430,7 @@ var element = $('#e2b044e6-4c69-4e32-9a71-49b5e20fa453');
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>Total Gains: -0.61 TL in 103 days.
+<pre>Total Gains: -20.65 TL in 103 days.
 </pre>
 </div>
 </div>
@@ -13451,20 +13441,20 @@ var element = $('#e2b044e6-4c69-4e32-9a71-49b5e20fa453');
 
 
 <div class="output_subarea output_stream output_stderr output_text">
-<pre>100%|██████████| 1/1 [00:00&lt;00:00, 18.91it/s]
+<pre>100%|██████████| 1/1 [00:00&lt;00:00,  6.53it/s]
 </pre>
 </div>
 </div>
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[4]:</div>
+    <div class="prompt output_prompt">Out[16]:</div>
 
 
 
 
 <div class="output_png output_subarea output_execute_result">
-<img src="paper_website_files/paper_website_10_3.png"
+<img src="paper_random_init_website_files/paper_random_init_website_10_3.png"
 >
 </div>
 

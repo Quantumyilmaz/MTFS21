@@ -2,7 +2,7 @@
 <html>
 <head><meta charset="utf-8" />
 
-<title>paper_website</title>
+<title>paper_data_prep_website</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
@@ -13090,7 +13090,7 @@ div#notebook {
 <script>
 $( document ).ready(function(){
 
-            var cfg = {"base_numbering": 1, "nav_menu": {"height": "212px", "width": "190px"}, "number_sections": true, "sideBar": true, "skip_h1_title": false, "title_cell": "Table of Contents", "title_sidebar": "Contents", "toc_cell": false, "toc_position": {}, "toc_section_display": true, "toc_window_display": false};
+            var cfg = {};
 
             // fire the main function with these parameters
             require(['nbextensions/toc2/toc2'], function (toc2) {
@@ -13105,152 +13105,14 @@ $( document ).ready(function(){
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="Notebook-Overview">Notebook Overview<a class="anchor-link" href="#Notebook-Overview">&#182;</a></h1><p>In this notebook we show the results of the reinforcement learning algorithm described by <a href="https://arxiv.org/abs/2101.07107">Briola et al.</a>:</p>
+<h1 id="Notebook-Overview">Notebook Overview<a class="anchor-link" href="#Notebook-Overview">&#182;</a></h1><p>In this notebook we show the data preparation for the reinforcement learning algorithm described by <a href="https://arxiv.org/abs/2101.07107">Briola et al.</a>:</p>
 <ul>
-<li>The agent is allowed to buy/sell/hold <b>at most one unit</b> of <a href="https://en.wikipedia.org/wiki/Garanti_BBVA">Garanti</a> stock at each time step.</li>
-<li><p>The agent can short or long or do nothing (preserve his current position) at each time step. He can also execute a daily stop-loss, where he checks the current P&amp;L and closes all positions and stops further trading in the case of negative total profit.</p>
+<li><p>Each day's data is divided into 5 subgroups to be scanned for high drawdowns.</p>
 </li>
-<li><p>An environment is a <u>daily</u> Limit Order Book (LOB) environment, containing 5 levels of bid/ask prices/volumes at nanosecond precision.</p>
-</li>
-<li>The states returned by the environment at each time step are the last 10 LOB bars, the agent's current position (<b>neutral, long or short</b>) and the <a href="https://www.investopedia.com/terms/m/marktomarket.asp">mark-to-market-value</a> at the current time step.</li>
-<li><p>Possible actions: 'sell','stay','buy', 'daily stop loss'.</p>
-</li>
-<li><p>The agent is trained using the <a href="https://arxiv.org/abs/1707.06347">Proximal Policy Optimization</a> algorithm.</p>
+<li><p>25 of these subgroups with highest drawdowns are selected to be used in training. This procedure allows us to provide market information with high signal to noise ratio to the agent.</p>
 </li>
 </ul>
-<p><u>Since the agent can possess only one unit of stock at a time, a 'buy' action while in long position would be equivalent to a 'stay' action, whereas a 'sell' action would close the position. Similarly, a 'sell' action while shorting would be equivalent to a 'stay' action, whereas a 'buy' action would close the position.</u></p>
-<p>A difference in this work compared to the original should be noted, which is that our agent trades on mid-prices. In the more realistic scenario, where the spread is taken into account, the agent is not able to generate profit on the dataset at hand but completes the training with a total reward of zero, i.e. there is no net loss or gain.</p>
-<p>The agent is trained on the first 60% of the year 2017. Data from the rest of the year (40%) is reserved for validation.
-Hyperparameters for training were optimized using <a href="https://optuna.org/">Optuna</a>.</p>
 
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[1]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
-<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;./../../&quot;</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">utils.plotter</span> <span class="kn">import</span> <span class="n">plotter</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">stable_baselines3</span> <span class="kn">import</span> <span class="n">PPO</span>
-<span class="kn">from</span> <span class="nn">tqdm.notebook</span> <span class="kn">import</span> <span class="n">tqdm</span><span class="p">,</span><span class="n">trange</span>
-<span class="kn">from</span> <span class="nn">torchinfo</span> <span class="kn">import</span> <span class="n">summary</span>
-<span class="kn">from</span> <span class="nn">LOBenv_mid</span> <span class="kn">import</span> <span class="n">LOBEnv</span>
-<span class="kn">import</span> <span class="nn">torch</span>
-<span class="kn">from</span> <span class="nn">torchinfo</span> <span class="kn">import</span> <span class="n">summary</span>
-
-<span class="n">LOB</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_pickle</span><span class="p">(</span><span class="s2">&quot;./pkls/LOB_conti.pkl&quot;</span><span class="p">)</span>
-
-<span class="n">dates</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">LOB</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">date</span><span class="p">)</span>
-
-<span class="n">validation_dates</span> <span class="o">=</span> <span class="n">dates</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">dates</span><span class="p">)</span><span class="o">//</span><span class="mi">10</span> <span class="o">*</span> <span class="mi">6</span><span class="p">:]</span>
-
-<span class="n">LOB_on_certain_day</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">lob</span><span class="p">,</span><span class="n">date</span><span class="p">:</span> <span class="n">lob</span><span class="p">[</span><span class="n">lob</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">date</span> <span class="o">==</span> <span class="n">date</span><span class="p">]</span>
-
-<span class="n">env</span> <span class="o">=</span> <span class="n">LOBEnv</span><span class="p">(</span><span class="n">LOB_on_certain_day</span><span class="p">(</span><span class="n">LOB</span><span class="p">,</span><span class="n">validation_dates</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span><span class="mi">202</span><span class="p">,</span><span class="n">prices_enabled</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="Validation">Validation<a class="anchor-link" href="#Validation">&#182;</a></h1><p>Here we let our trained agent trade on the validation days and look at the P&amp;L.</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Model">Model<a class="anchor-link" href="#Model">&#182;</a></h2><p>The model has 2 hidden layers with 64 nodes each, shared by both value and policy networks. Value network's output has length 1. Policy network's output has length 4 for 4 possible actions. These 4 values represent the probability weights passed to a Categorical Distribution.</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[2]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">PPO</span><span class="p">(</span><span class="s2">&quot;MlpPolicy&quot;</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">policy_kwargs</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">net_arch</span><span class="o">=</span><span class="p">[</span><span class="mi">64</span><span class="p">,</span><span class="mi">64</span><span class="p">],</span><span class="n">optimizer_class</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">),</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">n_epochs</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span><span class="n">seed</span><span class="o">=</span><span class="mi">42</span> \
-       <span class="p">,</span><span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.002</span><span class="p">,</span><span class="n">gamma</span><span class="o">=</span><span class="mf">0.95</span><span class="p">,</span><span class="n">gae_lambda</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span><span class="n">ent_coef</span><span class="o">=</span><span class="mf">0.14</span><span class="p">,</span><span class="n">max_grad_norm</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span><span class="n">vf_coef</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span>\
-            <span class="n">n_steps</span><span class="o">=</span><span class="n">env</span><span class="o">.</span><span class="n">LOB_mid_prices</span><span class="o">.</span><span class="n">size</span><span class="p">,</span><span class="n">batch_size</span><span class="o">=</span><span class="n">env</span><span class="o">.</span><span class="n">LOB_mid_prices</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
-<span class="n">model</span><span class="o">.</span><span class="n">policy</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;./model_envs_mid/policy.pth&quot;</span><span class="p">,</span><span class="n">map_location</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s1">&#39;cpu&#39;</span><span class="p">)))</span>
-<span class="n">model</span><span class="o">.</span><span class="n">policy</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
-
-<span class="n">summary</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">policy</span><span class="p">,</span><span class="n">input_data</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">reset</span><span class="p">()[</span><span class="kc">None</span><span class="p">,:]))</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt output_prompt">Out[2]:</div>
-
-
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>==========================================================================================
-Layer (type:depth-idx)                   Output Shape              Param #
-==========================================================================================
-ActorCriticPolicy                        --                        --
-├─FlattenExtractor: 1-1                  [1, 112]                  --
-│    └─Flatten: 2-1                      [1, 112]                  --
-├─MlpExtractor: 1-2                      [1, 64]                   --
-│    └─Sequential: 2-2                   [1, 64]                   --
-│    │    └─Linear: 3-1                  [1, 64]                   7,232
-│    │    └─Tanh: 3-2                    [1, 64]                   --
-│    │    └─Linear: 3-3                  [1, 64]                   4,160
-│    │    └─Tanh: 3-4                    [1, 64]                   --
-│    └─Sequential: 2-3                   [1, 64]                   --
-│    └─Sequential: 2-4                   [1, 64]                   --
-├─Linear: 1-3                            [1, 1]                    65
-├─Linear: 1-4                            [1, 4]                    260
-==========================================================================================
-Total params: 11,717
-Trainable params: 11,717
-Non-trainable params: 0
-Total mult-adds (M): 0.01
-==========================================================================================
-Input size (MB): 0.00
-Forward/backward pass size (MB): 0.00
-Params size (MB): 0.05
-Estimated Total Size (MB): 0.05
-==========================================================================================</pre>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Rewards">Rewards<a class="anchor-link" href="#Rewards">&#182;</a></h2>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="No-Spread">No Spread<a class="anchor-link" href="#No-Spread">&#182;</a></h3>
 </div>
 </div>
 </div>
@@ -13259,117 +13121,26 @@ Estimated Total Size (MB): 0.05
 <div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">actions</span> <span class="o">=</span> <span class="p">{}</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
-<span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">val_date</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">validation_dates</span><span class="p">)):</span>
-    <span class="n">env</span> <span class="o">=</span> <span class="n">LOBEnv</span><span class="p">(</span><span class="n">LOB_on_certain_day</span><span class="p">(</span><span class="n">LOB</span><span class="p">,</span><span class="n">val_date</span><span class="p">),</span><span class="mi">202</span><span class="p">,</span><span class="n">prices_enabled</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">done</span><span class="o">=</span><span class="mi">0</span>
-    <span class="n">actions</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="p">[(</span><span class="kc">None</span><span class="p">,</span><span class="kc">None</span><span class="p">,</span><span class="mi">0</span><span class="p">)]</span>
-    <span class="n">obs</span><span class="o">=</span><span class="n">env</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
-    <span class="k">while</span> <span class="ow">not</span> <span class="n">done</span><span class="p">:</span>
-        <span class="n">action</span><span class="p">,</span><span class="n">_</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">obs</span><span class="p">)</span>
-        <span class="n">obs</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">done</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
-        <span class="n">position</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">position</span>
-        <span class="n">actions</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">action</span><span class="p">,</span><span class="n">reward</span><span class="p">,</span><span class="n">position</span><span class="p">))</span>
-        
-<span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">act</span><span class="p">,</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;action&quot;</span><span class="p">,</span><span class="s2">&quot;reward&quot;</span><span class="p">,</span><span class="s2">&quot;position&quot;</span><span class="p">],</span> \
-                        <span class="n">index</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">MultiIndex</span><span class="o">.</span><span class="n">from_tuples</span><span class="p">((</span><span class="n">i</span><span class="p">,</span><span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">act</span><span class="p">))))</span> \
-                                   <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">act</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">actions</span><span class="o">.</span><span class="n">values</span><span class="p">())])</span><span class="o">.</span><span class="n">to_pickle</span><span class="p">(</span><span class="s2">&quot;./pkls/validation_log_mid.pkl&quot;</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">stable_baselines3</span> <span class="kn">import</span> <span class="n">PPO</span>
+<span class="kn">from</span> <span class="nn">tqdm.notebook</span> <span class="kn">import</span> <span class="n">tqdm</span><span class="p">,</span><span class="n">trange</span>
+<span class="kn">from</span> <span class="nn">LOBenv_mid</span> <span class="kn">import</span> <span class="n">LOBEnv</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">from</span> <span class="nn">torchinfo</span> <span class="kn">import</span> <span class="n">summary</span>
+<span class="kn">from</span> <span class="nn">CustomNetwork_Policy</span> <span class="kn">import</span> <span class="n">CustomActorCriticPolicy</span>
+
+<span class="n">LOB</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_pickle</span><span class="p">(</span><span class="s2">&quot;./pkls/LOB_conti.pkl&quot;</span><span class="p">)</span>
+
+<span class="n">dates</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">LOB</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">date</span><span class="p">)</span>
+
+<span class="n">training_dates</span> <span class="o">=</span> <span class="n">dates</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="n">dates</span><span class="p">)</span><span class="o">//</span><span class="mi">10</span> <span class="o">*</span> <span class="mi">6</span><span class="p">]</span>
+
+<span class="n">LOB_on_certain_day</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">lob</span><span class="p">,</span><span class="n">date</span><span class="p">:</span> <span class="n">lob</span><span class="p">[</span><span class="n">lob</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">date</span> <span class="o">==</span> <span class="n">date</span><span class="p">]</span>
 </pre></div>
 
     </div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[3]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">log</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_pickle</span><span class="p">(</span><span class="s2">&quot;./pkls/validation_log_mid.pkl&quot;</span><span class="p">)</span>
-<span class="n">rewards_mid</span> <span class="o">=</span> <span class="p">{}</span>
-<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">trange</span><span class="p">(</span><span class="n">log</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]):</span>
-    <span class="n">temp</span><span class="o">=</span><span class="mi">0</span>
-    <span class="n">rewards_mid</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="p">[]</span>
-    <span class="k">for</span> <span class="n">rew</span><span class="p">,</span><span class="n">pos</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">log</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s2">&quot;reward&quot;</span><span class="p">],</span><span class="n">log</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s2">&quot;position&quot;</span><span class="p">]):</span>
-        <span class="k">if</span> <span class="n">temp</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">pos</span><span class="p">:</span>
-            <span class="n">rewards_mid</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rew</span><span class="p">)</span>
-            <span class="n">temp</span><span class="o">=</span><span class="mi">0</span>
-        <span class="k">elif</span> <span class="ow">not</span> <span class="n">temp</span> <span class="ow">and</span> <span class="n">pos</span><span class="p">:</span>
-            <span class="n">temp</span><span class="o">=</span><span class="mi">1</span>
-<span class="n">rewards_daily_mid</span> <span class="o">=</span> <span class="p">[</span><span class="o">*</span><span class="nb">map</span><span class="p">(</span><span class="nb">sum</span><span class="p">,</span><span class="n">rewards_mid</span><span class="o">.</span><span class="n">values</span><span class="p">())]</span>
-<span class="n">total_reward_mid</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">rewards_daily_mid</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total Gains: </span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">total_reward_mid</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2"> TL in </span><span class="si">{</span><span class="n">validation_dates</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2"> days.&quot;</span><span class="p">)</span>
-<span class="n">plotter</span><span class="p">([[[</span><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="o">*</span><span class="n">rewards_mid</span><span class="o">.</span><span class="n">values</span><span class="p">()]),</span><span class="s2">&quot;rice&quot;</span><span class="p">],[</span><span class="s2">&quot;P&amp;L&quot;</span><span class="p">,</span><span class="nb">dict</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">)],[</span><span class="s2">&quot;Turkish Lira (TL)&quot;</span><span class="p">],[</span><span class="s2">&quot;#Trades&quot;</span><span class="p">]]],[</span><span class="s2">&quot;hist&quot;</span><span class="p">,</span><span class="s2">&quot;set_title&quot;</span><span class="p">,</span><span class="s2">&quot;set_xlabel&quot;</span><span class="p">,</span><span class="s2">&quot;set_ylabel&quot;</span><span class="p">],</span><span class="n">ncols</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-
-
-
- 
- 
-<div id="f8992510-4a44-4cbe-af15-031b4e4ce5a9"></div>
-<div class="output_subarea output_widget_view ">
-<script type="text/javascript">
-var element = $('#f8992510-4a44-4cbe-af15-031b4e4ce5a9');
-</script>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "a9d366f5dcaf452fb01460ec4e1d72cb", "version_major": 2, "version_minor": 0}
-</script>
-</div>
-
-</div>
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>Total Gains: 63.45 TL in 103 days.
-</pre>
-</div>
-</div>
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stderr output_text">
-<pre>100%|██████████| 1/1 [00:00&lt;00:00, 14.21it/s]
-</pre>
-</div>
-</div>
-
-<div class="output_area">
-
-    <div class="prompt output_prompt">Out[3]:</div>
-
-
-
-
-<div class="output_png output_subarea output_execute_result">
-<img src="paper_website_files/paper_website_8_3.png"
->
-</div>
-
-</div>
-
 </div>
 </div>
 
@@ -13377,31 +13148,63 @@ var element = $('#f8992510-4a44-4cbe-af15-031b4e4ce5a9');
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="With-Spread">With Spread<a class="anchor-link" href="#With-Spread">&#182;</a></h3><p>Another model was trained in the realistic scenario with spreads. The P&amp;L can be seen below. We see that it is more difficult for the agent to find profitable trading opportunities and the total number of trades sinks.</p>
+<h1 id="Get-maximum-drawdown-events">Get maximum drawdown events<a class="anchor-link" href="#Get-maximum-drawdown-events">&#182;</a></h1><ul>
+<li>Split each day's LOB entries into 5 sub-LOBs.</li>
+<li>Calculate drawdowns for each sub-LOB using, drawdown := $\frac{1 - \min_{t} mid(t)}{\max_{t} mid(t)}$</li>
+</ul>
 
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[4]:</div>
+<div class="prompt input_prompt">In&nbsp;[259]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">log</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_pickle</span><span class="p">(</span><span class="s2">&quot;./pkls/validation_log.pkl&quot;</span><span class="p">)</span>
-<span class="n">rewards</span> <span class="o">=</span> <span class="p">{}</span>
-<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">trange</span><span class="p">(</span><span class="n">log</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]):</span>
-    <span class="n">temp</span><span class="o">=</span><span class="mi">0</span>
-    <span class="n">rewards</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="p">[]</span>
-    <span class="k">for</span> <span class="n">rew</span><span class="p">,</span><span class="n">pos</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">log</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s2">&quot;reward&quot;</span><span class="p">],</span><span class="n">log</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s2">&quot;position&quot;</span><span class="p">]):</span>
-        <span class="k">if</span> <span class="n">temp</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">pos</span><span class="p">:</span>
-            <span class="n">rewards</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rew</span><span class="p">)</span>
-            <span class="n">temp</span><span class="o">=</span><span class="mi">0</span>
-        <span class="k">elif</span> <span class="ow">not</span> <span class="n">temp</span> <span class="ow">and</span> <span class="n">pos</span><span class="p">:</span>
-            <span class="n">temp</span><span class="o">=</span><span class="mi">1</span>
-<span class="n">rewards_daily</span> <span class="o">=</span> <span class="p">[</span><span class="o">*</span><span class="nb">map</span><span class="p">(</span><span class="nb">sum</span><span class="p">,</span><span class="n">rewards</span><span class="o">.</span><span class="n">values</span><span class="p">())]</span>
-<span class="n">total_reward</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">rewards_daily</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total Gains: </span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">total_reward</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2"> TL in </span><span class="si">{</span><span class="n">validation_dates</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2"> days.&quot;</span><span class="p">)</span>
-<span class="n">plotter</span><span class="p">([[[</span><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="o">*</span><span class="n">rewards</span><span class="o">.</span><span class="n">values</span><span class="p">()]),</span><span class="s2">&quot;fd&quot;</span><span class="p">],[</span><span class="s2">&quot;P&amp;L&quot;</span><span class="p">,</span><span class="nb">dict</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">)],[</span><span class="s2">&quot;Turkish Lira (TL)&quot;</span><span class="p">],[</span><span class="s2">&quot;#Trades&quot;</span><span class="p">]]],[</span><span class="s2">&quot;hist&quot;</span><span class="p">,</span><span class="s2">&quot;set_title&quot;</span><span class="p">,</span><span class="s2">&quot;set_xlabel&quot;</span><span class="p">,</span><span class="s2">&quot;set_ylabel&quot;</span><span class="p">],</span><span class="n">ncols</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">drawdowns</span> <span class="o">=</span> <span class="p">{</span><span class="n">date</span><span class="p">:[]</span> <span class="k">for</span> <span class="n">date</span> <span class="ow">in</span> <span class="n">dates</span><span class="p">}</span>
+
+<span class="k">for</span> <span class="n">date</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">dates</span><span class="p">):</span>
+    <span class="n">LOB_date</span> <span class="o">=</span> <span class="n">LOB</span><span class="p">[</span><span class="n">LOB</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">date</span><span class="o">==</span><span class="n">date</span><span class="p">]</span>
+    <span class="n">sample_length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">LOB_date</span><span class="p">)</span><span class="o">//</span><span class="mi">5</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
+        <span class="n">LOB_sample</span> <span class="o">=</span> <span class="n">LOB_date</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="n">sample_length</span><span class="p">:(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">sample_length</span><span class="p">]</span>
+        <span class="n">mids</span><span class="o">=</span> <span class="p">(</span><span class="n">LOB_sample</span><span class="p">[</span><span class="s2">&quot;ask1&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">LOB_sample</span><span class="p">[</span><span class="s2">&quot;bid1&quot;</span><span class="p">])</span><span class="o">/</span><span class="mi">2</span>
+        <span class="n">drawdown</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="nb">min</span><span class="p">(</span><span class="n">mids</span><span class="p">)</span><span class="o">/</span><span class="nb">max</span><span class="p">(</span><span class="n">mids</span><span class="p">)</span>
+        <span class="n">drawdowns</span><span class="p">[</span><span class="n">date</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">drawdown</span><span class="p">)</span>
+        
+<span class="n">drawdowns_train</span> <span class="o">=</span> <span class="n">drawdowns</span><span class="p">[</span><span class="n">training_dates</span><span class="p">]</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Select-LOB-samples-with-highest-absolute-mid-price-differences">Select LOB samples with highest absolute mid-price differences<a class="anchor-link" href="#Select-LOB-samples-with-highest-absolute-mid-price-differences">&#182;</a></h2><ul>
+<li>We split the annual LOB 3:2 (train,val)</li>
+<li>From the training set, we select 25 samples (each with sizes 1/5 of the corresponding day's entry length) with highest drawdowns.</li>
+</ul>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[8]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">drawdowns_max_of_each_date_indices_train</span> <span class="o">=</span> <span class="n">drawdowns_train</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">==</span><span class="nb">max</span><span class="p">(</span><span class="n">x</span><span class="p">))[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">drawdowns_max_of_each_date_train</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">drawdowns_train</span><span class="o">.</span><span class="n">index</span><span class="p">,</span><span class="n">data</span><span class="o">=</span><span class="p">[</span><span class="n">k</span><span class="p">[</span><span class="n">drawdowns_max_of_each_date_indices_train</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">k</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">drawdowns_train</span><span class="p">)])</span>
+
+<span class="n">drawdowns_max_25_train</span> <span class="o">=</span> <span class="n">drawdowns_max_of_each_date_indices_train</span><span class="p">[</span><span class="n">drawdowns_max_of_each_date_train</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">index</span><span class="p">][:</span><span class="mi">25</span><span class="p">]</span>
+<span class="n">LOB_samples_25_train</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">date</span><span class="p">,</span><span class="n">i</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">drawdowns_max_25_train</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span><span class="n">total</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">drawdowns_max_25_train</span><span class="p">)):</span>
+    <span class="n">LOB_date</span> <span class="o">=</span> <span class="n">LOB</span><span class="p">[</span><span class="n">LOB</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">date</span><span class="o">==</span><span class="n">date</span><span class="p">]</span>
+    <span class="n">sample_length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">LOB_date</span><span class="p">)</span><span class="o">//</span><span class="mi">5</span>
+    <span class="n">LOB_samples_25_train</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">LOB_date</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="n">sample_length</span><span class="p">:(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">sample_length</span><span class="p">])</span>
 </pre></div>
 
     </div>
@@ -13422,50 +13225,14 @@ var element = $('#f8992510-4a44-4cbe-af15-031b4e4ce5a9');
 
  
  
-<div id="e2b044e6-4c69-4e32-9a71-49b5e20fa453"></div>
+<div id="ffe2519a-e0d9-428a-a1a3-6f7d1cdc54c3"></div>
 <div class="output_subarea output_widget_view ">
 <script type="text/javascript">
-var element = $('#e2b044e6-4c69-4e32-9a71-49b5e20fa453');
+var element = $('#ffe2519a-e0d9-428a-a1a3-6f7d1cdc54c3');
 </script>
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "b98577e08fb448048dc273b626935ee0", "version_major": 2, "version_minor": 0}
+{"model_id": "4079d67325ea42aeb23ec0af4f6eb268", "version_major": 2, "version_minor": 0}
 </script>
-</div>
-
-</div>
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>Total Gains: -0.61 TL in 103 days.
-</pre>
-</div>
-</div>
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stderr output_text">
-<pre>100%|██████████| 1/1 [00:00&lt;00:00, 18.91it/s]
-</pre>
-</div>
-</div>
-
-<div class="output_area">
-
-    <div class="prompt output_prompt">Out[4]:</div>
-
-
-
-
-<div class="output_png output_subarea output_execute_result">
-<img src="paper_website_files/paper_website_10_3.png"
->
 </div>
 
 </div>
