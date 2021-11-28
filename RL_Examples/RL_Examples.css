@@ -1,0 +1,220 @@
+
+body {
+  font-family: optima,"Optima","Lato", sans-serif;
+  background-image: url('../gp/bg/MT_bg.jpg');
+  margin: 0;
+}
+
+.n{
+  font-family: optima,"Optima","Lato", sans-serif;
+}
+/* pre {
+  font-family: optima,"Lato", sans-serif;;
+  font-size: 14px;
+} */
+
+
+    
+.mytopnav {
+  z-index: 3;
+  overflow: hidden;
+  position: static;
+  width: 80%;
+  height: auto;
+  margin-left: 20.1%;
+  top:0px;
+  left:0px;
+  background-color: #333;
+  background: -webkit-gradient(linear, left bottom, right bottom, color-stop(0%,#262626), color-stop(50%,#262626dd), color-stop(80%,#262626b8),color-stop(95%,#262626), color-stop(98%,#262626),color-stop(100%,#262626d6));
+}
+
+.mytopnav .icon {
+  display: none;
+}
+
+
+.mytopnav a {
+  float: left;
+  text-align: center;
+  padding: 1% 3%;
+  text-decoration: none;
+  font-size: 17px;
+  color: rgb(240, 255, 255);
+}
+
+.mytopnav a.new {
+  float: right;
+  color: #c9b3fa;
+  text-align: center;
+  padding: 1% 3%;
+  text-decoration: none;
+  font-size: 17px;
+  text-shadow:0px 0px 2px #ffffff ;
+  font-style: italic;
+}
+  
+
+
+  .mytopnav a.new:hover {
+    background-color: #ff87ab;
+    background: -webkit-gradient(linear, left bottom, left top, color-stop(0%,#824557), color-stop(1%,#914d61), color-stop(100%,#ffa4c0));
+    color: black;
+    font-style: normal;
+  }
+
+  .mytopnav a.new.active {
+    background-color: #ff87ab;
+    background: -webkit-gradient(linear, left bottom, left top, color-stop(0%,#824557), color-stop(1%,#914d61), color-stop(100%,#ffa4c0));
+    color: black;
+    font-style: normal;
+  }
+
+
+
+
+
+
+  body {
+    font-family: optima,"Lato", sans-serif;
+    background-image: url('../gp/bg/MT_bg.jpg');
+  }
+  
+
+  
+  /* Fixed mysidenav, full height */
+  .mysidenav {
+    float: right;
+    border-left: 0.2vw solid rgba(7, 0, 196, 0.346);
+    border-image: 
+      linear-gradient(
+        to bottom, 
+        #262626, 
+        rgb(247, 247, 247)
+      ) 1 100%;
+    height: auto;
+    width: 10%;
+    position:inherit;
+    /* z-index: 2; */
+    margin-left: 89.65%;
+    left: 0;
+    background-color: rgba(0,0,255,0.3);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#487480), color-stop(50%,#487480d5), color-stop(80%,#448395b9), color-stop(100%,#448395ba));
+    overflow: visible;
+    border: none;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    padding-top: 0%;
+    background: -webkit-repeating-radial-gradient();
+    display: none;
+    box-shadow: 0 2px 10px #333;
+    }
+    
+  /* Style the mysidenav links and the mydropdown button */
+  .mysidenav a, .mydropdown-btn {
+    padding: 10% 0px 10% 0px;
+    text-decoration: none;
+    font-size: auto;
+    color: #c2fffb;
+    color:rgb(249, 230, 208);
+    display: block;
+    border: none;
+    background:none;
+    width: 100%;
+    text-align: center;
+    /* margin-top: 20%; */
+    cursor: pointer;
+    outline: none;
+    font-weight: 200;
+    text-transform: uppercase;
+    letter-spacing: 0.5em;
+    left: 0;
+    top: 0;
+    bottom: 0;
+  }
+  
+  .mysidenav a.home {
+    padding-bottom: 30%;
+    font-size:large;
+  }
+  
+  
+  
+  /* On mouse-over */
+  .mysidenav a:hover, .mydropdown-btn:hover {
+    color: rgba(139, 0, 0, 0.819);
+  }
+  
+  /* mydropdown container (hidden by default). Optional: add a lighter background color and some left padding to change the design of the mydropdown content */
+  .mydropdown-container {
+    display: none;
+    background-color: #262626;
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#262626), color-stop(50%,#262626dd), color-stop(80%,#262626b8), color-stop(100%,#26262693));
+  }
+  
+  .mydropdown-container a{
+    color: rgb(198, 198, 198);
+  }
+  
+  .mydropdown-container a:hover{
+    color: rgb(255, 255, 255);
+  }
+  
+    
+  /* Add an active class to the active mydropdown button */
+  .active {
+    background-color: green;
+    background: -webkit-gradient(linear, left bottom, left top, color-stop(0%,#0f2b18), color-stop(1%,#1f543e), color-stop(100%,#448b41));
+    color: white;
+  }
+  
+  /* Optional: Style the caret down icon */
+  .fa-caret-down {
+    float: right;
+    padding-right: 8px;
+  }
+  
+  
+  .ml12 {
+    z-index: 1;
+    font-weight: 200;
+    font-size: 1.8em;
+    text-transform: uppercase;
+    letter-spacing: 0.5em;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    margin-top: 0px;
+  }
+  
+  .ml12 .letter {
+    display: inline-block;
+    line-height: 1em;
+  }
+  
+  /* Some media queries for responsiveness 
+  dont forget to change max height also in javascript*/
+  @media screen and (max-height: 800px){
+  
+    .mysidenav a , .mydropdown-btn{
+      font-size: 30%;
+      font-weight:700;
+    }
+    .mysidenav a.home {
+      padding-bottom: 30%;
+      font-size:60%;
+      font-weight:600;
+    }
+    .ml12 {
+        font-size: 0.9em;
+        letter-spacing: 0.1em;
+        font-weight: 700;
+      }
+
+    .mytopnav a.new,.mytopnav a{
+        font-size: 50%;
+      }
+    .mysidenav{
+      width: 9.5%;
+      margin-left: 88.8%;
+    }
+  }
