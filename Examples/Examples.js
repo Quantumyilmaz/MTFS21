@@ -73,6 +73,11 @@ document.write(`
       <a href="https://quantumyilmaz.github.io/MTFS21/Examples/SimpleESN/large/SimpleESN_large.html">Mackey-Glass Equations</a>
       <a href="https://quantumyilmaz.github.io/MTFS21/Examples/RC_SP/LOB/RC_SP_LOB.html">Mid-price Forecasting</a>
     </div>
+  <button class="mydropdown-btn">Reinforcement Learning Examples<i class="fa fa-caret-down"></i></button>
+    <div class="mydropdown-container">
+      <a href="">Cartpole(ESN)</a>
+      <a href="https://quantumyilmaz.github.io/MTFS21/RL_Examples/RL_paper/FullyTrained/paper_website.html">Mid-price Trading</a>
+    </div>
   <a href="https://quantumyilmaz.github.io/MTFS21/#Links" id ="Links">Links</a>
   <a href="https://quantumyilmaz.github.io/MTFS21/#Log" id ="Log">Log</a>
 </div>
