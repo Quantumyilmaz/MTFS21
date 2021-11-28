@@ -12,51 +12,37 @@ document.write(`
 
 `);
 
-if (page==="SimpleESN_large.html"){
-
-document.write(`
-
-  <a class="active" href="SimpleESN_large.html">Larger Dataset</a>
-  <a href="../small/SimpleESN_small.html">Smaller Dataset</a>
-`);
-
-}else if (page==="SimpleESN_small.html"){
-
-    document.write(`
-    <a href="../large/SimpleESN_large.html">Larger Dataset</a>
-    <a class="active" href="SimpleESN_small.html">Smaller Dataset</a>
-    `);
-}else if (page==="RC_SP_LOB.html"){
+if (page==="paper_website.html"){
 
   document.write(`
-  <a class="active" href="RC_SP_LOB.html">LOB</a>
-  <a href="../LIQ/RC_SP_LIQ.html">LIQ</a>
-  <a href="../LOB+LIQ/RC_SP_LOB+LIQ.html">LOB+LIQ</a>
-  <a href="../summary/RC_SP_summary.html">Summary</a>
+  <a class="active" href="paper_website.html">Fully Trained FNN</a>
+  <a href="../PartiallyTrained/paper_random_init_website.html">Partially Trained FNN </a>
+  <a href="../ESNRLS-Q/paper_reservoir_website.html">ESNRLS-Q</a>
+  <a href="../data_prep/paper_data_prep_website.html">Data Preparation</a>
   `);
-}else if (page==="RC_SP_LIQ.html"){
+}else if (page==="paper_random_init_website.html"){
 
   document.write(`
-  <a href="../LOB/RC_SP_LOB.html">LOB</a>
-  <a class="active" href="RC_SP_LIQ.html">LIQ</a>
-  <a href="../LOB+LIQ/RC_SP_LOB+LIQ.html">LOB+LIQ</a>
-  <a href="../summary/RC_SP_summary.html">Summary</a>
+  <a href="../FullyTrained/paper_website.html">Fully Trained FNN</a>
+  <a class="active" href="paper_random_init_website.html">Partially Trained FNN </a>
+  <a href="../ESNRLS-Q/paper_reservoir_website.html">ESNRLS-Q</a>
+  <a href="../data_prep/paper_data_prep_website.html">Data Preparation</a>
   `);
-}else if (page==="RC_SP_LOB+LIQ.html"){
+}else if (page==="paper_reservoir_website.html"){
 
   document.write(`
-  <a href="../LOB/RC_SP_LOB.html">LOB</a>
-  <a href="../LIQ/RC_SP_LIQ.html">LIQ</a>
-  <a class="active" href="RC_SP_LOB+LIQ.html">LOB+LIQ</a>
-  <a href="../summary/RC_SP_summary.html">Summary</a>
+  <a href="../FullyTrained/paper_website.html">Fully Trained FNN</a>
+  <a href="../PartiallyTrained/paper_random_init_website.html">Partially Trained FNN </a>
+  <a class="active" href="paper_reservoir_website.html">ESNRLS-Q</a>
+  <a href="../data_prep/paper_data_prep_website.html">Data Preparation</a>
   `);
-}else if (page==="RC_SP_summary.html"){
+}else if (page==="paper_data_prep_website.html"){
 
   document.write(`
-  <a href="../LOB/RC_SP_LOB.html">LOB</a>
-  <a href="../LIQ/RC_SP_LIQ.html">LIQ</a>
-  <a href="../LOB+LIQ/RC_SP_LOB+LIQ.html">LOB+LIQ</a>
-  <a class="active" href="RC_SP_summary.html">Summary</a>
+  <a href="../FullyTrained/paper_website.html">Fully Trained FNN</a>
+  <a href="../PartiallyTrained/paper_random_init_website.html">Partially Trained FNN </a>
+  <a href="../ESNRLS-Q/paper_reservoir_website.html">ESNRLS-Q</a>
+  <a class="active" href="paper_data_prep_website.html">Data Preparation</a>
   `);
 }
 
