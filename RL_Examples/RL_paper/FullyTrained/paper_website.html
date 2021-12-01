@@ -13051,8 +13051,7 @@ div#notebook {
 </style>
 
 <!-- Custom stylesheet, it must be in the same directory as the html file -->
-<link rel="stylesheet" href="../../RL_Examples.css">
-<script src="../../RL_Examples.js"></script>
+<link rel="stylesheet" href="custom.css">
 
 <!-- Loading mathjax macro -->
 <!-- Load mathjax -->
@@ -13144,7 +13143,8 @@ Hyperparameters for training were optimized using <a href="https://optuna.org/">
 <span class="kn">import</span> <span class="nn">torch</span>
 <span class="kn">from</span> <span class="nn">torchinfo</span> <span class="kn">import</span> <span class="n">summary</span>
 
-<span class="n">model_dir</span> <span class="o">=</span> <span class="s2">&quot;../models/model_envs_mid/29_11_21/&quot;</span>
+<span class="c1"># model_dir = &quot;../models/model_envs_mid/29_11_21/&quot;</span>
+<span class="n">model_dir</span> <span class="o">=</span> <span class="s2">&quot;../models/model_envs_mid/01_12_21/&quot;</span>
 
 <span class="n">LOB</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_pickle</span><span class="p">(</span><span class="s2">&quot;../pkls/LOB_conti.pkl&quot;</span><span class="p">)</span>
 
@@ -13160,6 +13160,7 @@ Hyperparameters for training were optimized using <a href="https://optuna.org/">
     </div>
 </div>
 </div>
+
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
@@ -13249,16 +13250,9 @@ Estimated Total Size (MB): 0.05
 </div>
 </div>
 </div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="No-Spread">No Spread<a class="anchor-link" href="#No-Spread">&#182;</a></h3>
-</div>
-</div>
-</div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[9]:</div>
+<div class="prompt input_prompt">In&nbsp;[3]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># actions = {}</span>
@@ -13283,39 +13277,10 @@ Estimated Total Size (MB): 0.05
 </div>
 </div>
 
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-
-
-
- 
- 
-<div id="6090a7ef-3c49-4da0-abd5-067313b85ffd"></div>
-<div class="output_subarea output_widget_view ">
-<script type="text/javascript">
-var element = $('#6090a7ef-3c49-4da0-abd5-067313b85ffd');
-</script>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "13b0f863fe2c4cd0835a7273d133cd52", "version_major": 2, "version_minor": 0}
-</script>
-</div>
-
-</div>
-
-</div>
-</div>
-
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[3]:</div>
+<div class="prompt input_prompt">In&nbsp;[4]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">log</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_pickle</span><span class="p">(</span><span class="n">model_dir</span><span class="o">+</span><span class="s2">&quot;validation_log_mid.pkl&quot;</span><span class="p">)</span>
@@ -13367,13 +13332,13 @@ var element = $('#6090a7ef-3c49-4da0-abd5-067313b85ffd');
 
  
  
-<div id="d6f414a0-5115-44a8-b561-373161a56a14"></div>
+<div id="8232c3b2-614e-401e-b257-115ddbf15bbb"></div>
 <div class="output_subarea output_widget_view ">
 <script type="text/javascript">
-var element = $('#d6f414a0-5115-44a8-b561-373161a56a14');
+var element = $('#8232c3b2-614e-401e-b257-115ddbf15bbb');
 </script>
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "73e4e8d505504c99bbcf49ad24c81775", "version_major": 2, "version_minor": 0}
+{"model_id": "ed13176bd35a470788699e352ca4daa4", "version_major": 2, "version_minor": 0}
 </script>
 </div>
 
@@ -13385,7 +13350,7 @@ var element = $('#d6f414a0-5115-44a8-b561-373161a56a14');
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>Total Gains: 63.64 TL in 103 days.
+<pre>Total Gains: 54.52 TL in 103 days.
 </pre>
 </div>
 </div>
@@ -13396,7 +13361,7 @@ var element = $('#d6f414a0-5115-44a8-b561-373161a56a14');
 
 
 <div class="output_subarea output_stream output_stderr output_text">
-<pre>100%|██████████| 1/1 [00:00&lt;00:00,  6.45it/s]
+<pre>100%|██████████| 1/1 [00:00&lt;00:00,  7.17it/s]
 </pre>
 </div>
 </div>
@@ -13409,107 +13374,7 @@ var element = $('#d6f414a0-5115-44a8-b561-373161a56a14');
 
 
 <div class="output_png output_subarea ">
-<img src="paper_website_files/paper_website_9_3.png"
->
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="With-Spread">With Spread<a class="anchor-link" href="#With-Spread">&#182;</a></h3><p>Another model was trained in the realistic scenario with spreads. The P&amp;L can be seen below. We see that it is more difficult for the agent to find profitable trading opportunities and the total number of trades sinks.</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">log</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_pickle</span><span class="p">(</span><span class="s2">&quot;../pkls/validation_log.pkl&quot;</span><span class="p">)</span>
-<span class="n">rewards</span> <span class="o">=</span> <span class="p">{}</span>
-<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">trange</span><span class="p">(</span><span class="n">log</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]):</span>
-    <span class="n">temp</span><span class="o">=</span><span class="mi">0</span>
-    <span class="n">rewards</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="p">[]</span>
-    <span class="k">for</span> <span class="n">rew</span><span class="p">,</span><span class="n">pos</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">log</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s2">&quot;reward&quot;</span><span class="p">],</span><span class="n">log</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s2">&quot;position&quot;</span><span class="p">]):</span>
-        <span class="k">if</span> <span class="n">temp</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">pos</span><span class="p">:</span>
-            <span class="n">rewards</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rew</span><span class="p">)</span>
-            <span class="n">temp</span><span class="o">=</span><span class="mi">0</span>
-        <span class="k">elif</span> <span class="ow">not</span> <span class="n">temp</span> <span class="ow">and</span> <span class="n">pos</span><span class="p">:</span>
-            <span class="n">temp</span><span class="o">=</span><span class="mi">1</span>
-<span class="n">rewards_daily</span> <span class="o">=</span> <span class="p">[</span><span class="o">*</span><span class="nb">map</span><span class="p">(</span><span class="nb">sum</span><span class="p">,</span><span class="n">rewards</span><span class="o">.</span><span class="n">values</span><span class="p">())]</span>
-<span class="n">total_reward</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">rewards_daily</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total Gains: </span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">total_reward</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2"> TL in </span><span class="si">{</span><span class="n">validation_dates</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2"> days.&quot;</span><span class="p">)</span>
-<span class="n">plotter</span><span class="p">([[[</span><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="o">*</span><span class="n">rewards</span><span class="o">.</span><span class="n">values</span><span class="p">()]),</span><span class="s2">&quot;fd&quot;</span><span class="p">],[</span><span class="s2">&quot;P&amp;L&quot;</span><span class="p">,</span><span class="nb">dict</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">)],[</span><span class="s2">&quot;Turkish Lira (TL)&quot;</span><span class="p">],[</span><span class="s2">&quot;#Trades&quot;</span><span class="p">]]],[</span><span class="s2">&quot;hist&quot;</span><span class="p">,</span><span class="s2">&quot;set_title&quot;</span><span class="p">,</span><span class="s2">&quot;set_xlabel&quot;</span><span class="p">,</span><span class="s2">&quot;set_ylabel&quot;</span><span class="p">],</span><span class="n">ncols</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span><span class="n">show</span><span class="o">=</span><span class="mi">1</span><span class="p">);</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-
-
-
- 
- 
-<div id="11624fe1-3ae0-415d-9562-1f61baa7b62e"></div>
-<div class="output_subarea output_widget_view ">
-<script type="text/javascript">
-var element = $('#11624fe1-3ae0-415d-9562-1f61baa7b62e');
-</script>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "80f1440e998f419bbf66a2f670b902ba", "version_major": 2, "version_minor": 0}
-</script>
-</div>
-
-</div>
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>Total Gains: -0.61 TL in 103 days.
-</pre>
-</div>
-</div>
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stderr output_text">
-<pre>100%|██████████| 1/1 [00:00&lt;00:00, 14.05it/s]
-</pre>
-</div>
-</div>
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-
-
-<div class="output_png output_subarea ">
-<img src="paper_website_files/paper_website_11_3.png"
+<img src="paper_website_files/paper_website_7_3.png"
 >
 </div>
 
@@ -13535,35 +13400,19 @@ var element = $('#11624fe1-3ae0-415d-9562-1f61baa7b62e');
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">log</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">model_dir</span><span class="o">+</span><span class="s2">&quot;progress.csv&quot;</span><span class="p">)</span>
 
-<span class="n">total_no_of_iters</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">log</span><span class="p">[</span><span class="s2">&quot;rewards&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
-<span class="n">son_satirlar</span> <span class="o">=</span> <span class="p">[</span><span class="n">log</span><span class="p">[</span><span class="n">log</span><span class="p">[</span><span class="s2">&quot;rewards&quot;</span><span class="p">]</span><span class="o">==</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">total_no_of_iters</span><span class="o">+</span><span class="mi">1</span><span class="p">))]</span>
-<span class="n">ilk_satirlar</span> <span class="o">=</span> <span class="p">([</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="o">*</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span><span class="n">x</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">son_satirlar</span><span class="p">)])[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-
 <span class="k">def</span> <span class="nf">parser</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
-    <span class="n">temp</span><span class="o">=</span><span class="n">string</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
-    <span class="n">temp_list</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">rew</span> <span class="ow">in</span> <span class="n">temp</span><span class="p">:</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">temp_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">rew</span><span class="p">))</span>
-        <span class="k">except</span><span class="p">:</span>
+    <span class="n">temp</span><span class="o">=</span><span class="s1">&#39;&#39;</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">k</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">[</span><span class="s1">&#39;[&#39;</span><span class="p">,</span><span class="s1">&#39;]&#39;</span><span class="p">,</span><span class="s1">&#39; &#39;</span><span class="p">]</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">k</span><span class="p">):</span>
             <span class="k">pass</span>
-    <span class="k">return</span> <span class="n">temp_list</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">temp</span><span class="o">+=</span><span class="n">string</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">temp</span><span class="p">)</span>
 
-<span class="n">rewards_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">25</span><span class="p">),</span><span class="n">index</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="n">total_no_of_iters</span><span class="p">))</span>
-<span class="k">for</span> <span class="n">i</span><span class="p">,(</span><span class="n">ilk</span><span class="p">,</span><span class="n">son</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">ilk_satirlar</span><span class="p">,</span><span class="n">son_satirlar</span><span class="p">)):</span>
-    <span class="n">temp</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="c1"># ilk satir</span>
-    <span class="n">temp</span><span class="o">+=</span><span class="n">parser</span><span class="p">(</span><span class="n">log</span><span class="p">[</span><span class="s2">&quot;rewards&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">ilk</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;[&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
 
-    <span class="c1"># aradakiler</span>
-    <span class="n">temp</span><span class="o">+=</span><span class="n">log</span><span class="p">[</span><span class="s2">&quot;time/fps&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">ilk</span><span class="o">+</span><span class="mi">1</span><span class="p">:</span><span class="n">son</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+<span class="n">rewards_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">log</span><span class="p">[</span><span class="s2">&quot;rewards&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">25</span><span class="p">),</span><span class="n">columns</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">25</span><span class="p">),</span><span class="n">index</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">250</span><span class="p">))</span>
 
-    <span class="c1"># son satir</span>
-    <span class="n">temp</span><span class="o">+=</span><span class="n">parser</span><span class="p">(</span><span class="n">log</span><span class="p">[</span><span class="s2">&quot;time/fps&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">son</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;]&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
-    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">temp</span><span class="p">)</span><span class="o">==</span><span class="mi">25</span>
-    <span class="n">rewards_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="n">temp</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Training duration: </span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">log</span><span class="p">[</span><span class="s1">&#39;time/total_timesteps&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="mi">3600</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2"> Hours&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Training duration: </span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="mi">10127</span><span class="o">/</span><span class="mi">3600</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2"> Hours&quot;</span><span class="p">)</span>
 
 <span class="n">plotter</span><span class="p">([</span>
         <span class="p">[[</span><span class="n">rewards_df</span><span class="p">,</span><span class="nb">dict</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span><span class="n">markersize</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;Env </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">25</span><span class="o">+</span><span class="mi">1</span><span class="p">)])],[</span><span class="s2">&quot;Sample Rewards&quot;</span><span class="p">,</span><span class="nb">dict</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">)],[</span><span class="s2">&quot;#Episode&quot;</span><span class="p">],[</span><span class="s2">&quot;Rewards&quot;</span><span class="p">],[</span><span class="nb">dict</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;lower center&quot;</span><span class="p">,</span><span class="n">ncol</span><span class="o">=</span><span class="mi">5</span><span class="p">)]]</span>
@@ -13590,7 +13439,7 @@ var element = $('#11624fe1-3ae0-415d-9562-1f61baa7b62e');
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>Training duration: 8.28 Hours
+<pre>Training duration: 2.81 Hours
 </pre>
 </div>
 </div>
@@ -13601,7 +13450,7 @@ var element = $('#11624fe1-3ae0-415d-9562-1f61baa7b62e');
 
 
 <div class="output_subarea output_stream output_stderr output_text">
-<pre>100%|██████████| 1/1 [00:00&lt;00:00, 34.27it/s]
+<pre>100%|██████████| 1/1 [00:00&lt;00:00, 36.76it/s]
 </pre>
 </div>
 </div>
@@ -13614,7 +13463,7 @@ var element = $('#11624fe1-3ae0-415d-9562-1f61baa7b62e');
 
 
 <div class="output_png output_subarea ">
-<img src="paper_website_files/paper_website_13_2.png"
+<img src="paper_website_files/paper_website_9_2.png"
 >
 </div>
 
@@ -13626,7 +13475,7 @@ var element = $('#11624fe1-3ae0-415d-9562-1f61baa7b62e');
 
 
 <div class="output_subarea output_stream output_stderr output_text">
-<pre>100%|██████████| 25/25 [00:00&lt;00:00, 48.73it/s]
+<pre>100%|██████████| 25/25 [00:00&lt;00:00, 104.62it/s]
 </pre>
 </div>
 </div>
@@ -13639,7 +13488,7 @@ var element = $('#11624fe1-3ae0-415d-9562-1f61baa7b62e');
 
 
 <div class="output_png output_subarea ">
-<img src="paper_website_files/paper_website_13_4.png"
+<img src="paper_website_files/paper_website_9_4.png"
 >
 </div>
 
