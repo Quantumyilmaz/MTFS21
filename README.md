@@ -1,6 +1,6 @@
 # MTFS21
 
-## Machine Learning Algorithms for High Frequency Trading: In the case of Big Data
+## Machine Learning Algorithms for High Frequency Trading
 
 The Literature Summary (WIP) can be found in the overleaf folder: overleaf/MTFS21.pdf
 
