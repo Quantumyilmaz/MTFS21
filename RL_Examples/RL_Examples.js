@@ -28,9 +28,16 @@ document.write(`
 
 `);
 
-Object.entries(links).forEach(
-  ([key, value]) => document.write(topnavFiller(key,value))
-);
+temp = links.values()
+for(i=0;i<links.length;i++){
+  if (page === temp[i].split("/").pop()){
+    Object.entries(links).forEach(
+      ([key, value]) => document.write(topnavFiller(key,value))
+    );
+  break;
+  }
+}
+  
 
 // bu garanti
 function topnavFiller(key, value) {
