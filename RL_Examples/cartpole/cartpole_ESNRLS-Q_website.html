@@ -7,7 +7,30 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
 
+<script>
+(function() {
+  function addWidgetsRenderer() {
+    var mimeElement = document.querySelector('script[type="application/vnd.jupyter.widget-view+json"]');
+    var scriptElement = document.createElement('script');
+    var widgetRendererSrc = 'https://unpkg.com/@jupyter-widgets/html-manager@*/dist/embed-amd.js';
+    var widgetState;
 
+    // Fallback for older version:
+    try {
+      widgetState = mimeElement && JSON.parse(mimeElement.innerHTML);
+
+      if (widgetState && (widgetState.version_major < 2 || !widgetState.version_major)) {
+        widgetRendererSrc = 'https://unpkg.com/jupyter-js-widgets@*/dist/embed.js';
+      }
+    } catch(e) {}
+
+    scriptElement.src = widgetRendererSrc;
+    document.body.appendChild(scriptElement);
+  }
+
+  document.addEventListener('DOMContentLoaded', addWidgetsRenderer);
+}());
+</script>
 
 <style type="text/css">
     /*!
@@ -13051,8 +13074,7 @@ div#notebook {
 </style>
 
 <!-- Custom stylesheet, it must be in the same directory as the html file -->
-<link rel="stylesheet" href="../RL_Examples.css">
-<script src="../RL_Examples.js"></script>
+<link rel="stylesheet" href="custom.css">
 
 <!-- Loading mathjax macro -->
 <!-- Load mathjax -->
@@ -13151,7 +13173,7 @@ P_{t} &amp;=  \frac{1}{\lambda}(P_{t-1} - \bf{g_t}\bf{v}_t^T) \\
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[1]:</div>
+<div class="prompt input_prompt">In&nbsp;[11]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span><span class="nn">os</span>
@@ -13162,13 +13184,19 @@ P_{t} &amp;=  \frac{1}{\lambda}(P_{t-1} - \bf{g_t}\bf{v}_t^T) \\
 <span class="kn">import</span> <span class="nn">torch</span>
 <span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">clear_output</span>
 <span class="kn">from</span> <span class="nn">tqdm.notebook</span> <span class="kn">import</span> <span class="n">tqdm</span><span class="p">,</span><span class="n">trange</span>
-<span class="kn">from</span> <span class="nn">torchinfo</span> <span class="kn">import</span> <span class="n">summary</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;./../../../&quot;</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span><span class="p">,</span> <span class="n">deque</span>
 <span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">count</span>
 <span class="kn">import</span> <span class="nn">random</span><span class="o">,</span><span class="nn">math</span>
-<span class="kn">from</span> <span class="nn">utils.ESN</span> <span class="kn">import</span> <span class="n">at_least_2d</span>
 <span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+
+<span class="k">def</span> <span class="nf">at_least_2d</span><span class="p">(</span><span class="n">arr</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">arr</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span><span class="o">==</span><span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">arr</span><span class="p">[:,</span><span class="kc">None</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">arr</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span><span class="o">==</span><span class="mi">2</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">arr</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Unsupported array shape.&quot;</span><span class="p">)</span>
 
 <span class="n">env</span> <span class="o">=</span> <span class="n">gym</span><span class="o">.</span><span class="n">make</span><span class="p">(</span><span class="s2">&quot;CartPole-v0&quot;</span><span class="p">)</span>
 <span class="n">n_actions</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">action_space</span><span class="o">.</span><span class="n">n</span>
@@ -13194,7 +13222,7 @@ P_{t} &amp;=  \frac{1}{\lambda}(P_{t-1} - \bf{g_t}\bf{v}_t^T) \\
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[2]:</div>
+<div class="prompt input_prompt">In&nbsp;[12]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">BATCH_SIZE</span> <span class="o">=</span> <span class="mi">64</span>
@@ -13206,7 +13234,9 @@ P_{t} &amp;=  \frac{1}{\lambda}(P_{t-1} - \bf{g_t}\bf{v}_t^T) \\
 <span class="n">TARGET_UPDATE</span> <span class="o">=</span> <span class="mi">1</span>
 <span class="n">resSize</span> <span class="o">=</span> <span class="mi">256</span>
 <span class="n">bias</span><span class="o">=</span><span class="mi">1</span>
-<span class="n">T</span><span class="o">=</span><span class="mi">5</span>
+<span class="n">T_transient</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="n">T_opt</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="n">T</span> <span class="o">=</span> <span class="n">T_transient</span><span class="o">+</span><span class="n">T_opt</span>
 <span class="n">forgetting_factor</span> <span class="o">=</span> <span class="mf">0.99999</span>
 <span class="n">kappa</span> <span class="o">=</span> <span class="mf">1e-5</span>
 <span class="n">max_episodes</span><span class="o">=</span><span class="mi">100</span>
@@ -13229,7 +13259,7 @@ P_{t} &amp;=  \frac{1}{\lambda}(P_{t-1} - \bf{g_t}\bf{v}_t^T) \\
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[3]:</div>
+<div class="prompt input_prompt">In&nbsp;[13]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">Transition</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;Transition&#39;</span><span class="p">,</span>
@@ -13280,7 +13310,7 @@ P_{t} &amp;=  \frac{1}{\lambda}(P_{t-1} - \bf{g_t}\bf{v}_t^T) \\
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[4]:</div>
+<div class="prompt input_prompt">In&nbsp;[14]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">optimize_model</span><span class="p">():</span>
@@ -13308,21 +13338,23 @@ P_{t} &amp;=  \frac{1}{\lambda}(P_{t-1} - \bf{g_t}\bf{v}_t^T) \\
         <span class="n">next_state_batch</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">s</span> <span class="k">if</span> <span class="n">s</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">env</span><span class="o">.</span><span class="n">observation_space</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">batch</span><span class="o">.</span><span class="n">next_state</span><span class="p">])</span><span class="o">.</span><span class="n">T</span>
         
         <span class="n">done_batch</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">batch</span><span class="o">.</span><span class="n">done</span><span class="p">)</span>
-
+        
         <span class="n">policy_train_res_layer</span> <span class="o">=</span> <span class="n">update_f</span><span class="p">(</span><span class="n">policy_train_res_layer</span><span class="p">,</span><span class="n">state_batch</span><span class="p">)</span>
-        <span class="n">U</span> <span class="o">=</span> <span class="n">get_U</span><span class="p">(</span><span class="n">policy_train_res_layer</span><span class="p">,</span><span class="n">state_batch</span><span class="p">)</span>
-        <span class="n">state_action_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">policy_train_Wout</span><span class="p">,</span><span class="n">U</span><span class="p">)</span>
-        <span class="n">u</span> <span class="o">+=</span> <span class="n">U</span>
-
         <span class="n">target_train_res_layer</span> <span class="o">=</span> <span class="n">update_f</span><span class="p">(</span><span class="n">target_train_res_layer</span><span class="p">,</span><span class="n">next_state_batch</span><span class="p">)</span>
-        <span class="n">next_state_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">target_train_Wout</span><span class="p">,</span><span class="n">get_U</span><span class="p">(</span><span class="n">target_train_res_layer</span><span class="p">,</span><span class="n">next_state_batch</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="n">T_transient</span><span class="p">:</span>
+            <span class="n">U</span> <span class="o">=</span> <span class="n">get_U</span><span class="p">(</span><span class="n">policy_train_res_layer</span><span class="p">,</span><span class="n">state_batch</span><span class="p">)</span>
+            <span class="n">state_action_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">policy_train_Wout</span><span class="p">,</span><span class="n">U</span><span class="p">)</span>
+            <span class="n">u</span> <span class="o">+=</span> <span class="n">U</span>
 
-        <span class="n">next_state_values</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">done_batch</span><span class="p">)</span><span class="o">*</span><span class="n">next_state_values</span>
-        
-        <span class="c1"># Compute the expected Q values</span>
-        <span class="n">expected_state_action_values</span> <span class="o">=</span> <span class="p">(</span><span class="n">next_state_values</span> <span class="o">*</span> <span class="n">GAMMA</span><span class="p">)</span> <span class="o">+</span> <span class="n">reward_batch</span>
-        
-        <span class="n">q_diff</span> <span class="o">+=</span> <span class="n">expected_state_action_values</span> <span class="o">-</span> <span class="n">state_action_values</span>
+            <span class="c1">#target_train_res_layer = update_f(target_train_res_layer,next_state_batch)</span>
+            <span class="n">next_state_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">target_train_Wout</span><span class="p">,</span><span class="n">get_U</span><span class="p">(</span><span class="n">target_train_res_layer</span><span class="p">,</span><span class="n">next_state_batch</span><span class="p">))</span>
+
+            <span class="n">next_state_values</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">done_batch</span><span class="p">)</span><span class="o">*</span><span class="n">next_state_values</span>
+
+            <span class="c1"># Compute the expected Q values</span>
+            <span class="n">expected_state_action_values</span> <span class="o">=</span> <span class="p">(</span><span class="n">next_state_values</span> <span class="o">*</span> <span class="n">GAMMA</span><span class="p">)</span> <span class="o">+</span> <span class="n">reward_batch</span>
+
+            <span class="n">q_diff</span> <span class="o">+=</span> <span class="n">expected_state_action_values</span> <span class="o">-</span> <span class="n">state_action_values</span>
 
     <span class="c1">### UPDATE SECTION ###</span>
     <span class="c1">#Necessary for updates</span>
@@ -13355,7 +13387,7 @@ P_{t} &amp;=  \frac{1}{\lambda}(P_{t-1} - \bf{g_t}\bf{v}_t^T) \\
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[5]:</div>
+<div class="prompt input_prompt">In&nbsp;[15]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">Wout_0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">n_actions</span><span class="p">,</span><span class="n">env</span><span class="o">.</span><span class="n">observation_space</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="n">resSize</span><span class="o">+</span><span class="n">bias</span><span class="p">)</span>
@@ -13479,13 +13511,13 @@ P_{t} &amp;=  \frac{1}{\lambda}(P_{t-1} - \bf{g_t}\bf{v}_t^T) \\
 
  
  
-<div id="9cf1e6df-af09-4395-b4cc-4887710ea5e5"></div>
+<div id="dfecc01c-8ca4-4ffc-8ad7-593a8ccbff52"></div>
 <div class="output_subarea output_widget_view ">
 <script type="text/javascript">
-var element = $('#9cf1e6df-af09-4395-b4cc-4887710ea5e5');
+var element = $('#dfecc01c-8ca4-4ffc-8ad7-593a8ccbff52');
 </script>
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "0b47d8abb188482c8fb417403f9f28af", "version_major": 2, "version_minor": 0}
+{"model_id": "4da240262fd54ca58efea1e03530d5f0", "version_major": 2, "version_minor": 0}
 </script>
 </div>
 
@@ -13523,21 +13555,14 @@ var element = $('#9cf1e6df-af09-4395-b4cc-4887710ea5e5');
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="Validation">Validation<a class="anchor-link" href="#Validation">&#182;</a></h1>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>We let the agent play the game 100 times and collect the results.</p>
+<h1 id="Validation">Validation<a class="anchor-link" href="#Validation">&#182;</a></h1><p>We let the agent play the game 100 times and collect the results.</p>
 
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[12]:</div>
+<div class="prompt input_prompt">In&nbsp;[19]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">ep_lengths</span> <span class="o">=</span> <span class="p">[]</span>
@@ -13568,13 +13593,13 @@ var element = $('#9cf1e6df-af09-4395-b4cc-4887710ea5e5');
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[12]:</div>
+    <div class="prompt output_prompt">Out[19]:</div>
 
 
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>184.56</pre>
+<pre>194.13</pre>
 </div>
 
 </div>
@@ -13586,14 +13611,14 @@ var element = $('#9cf1e6df-af09-4395-b4cc-4887710ea5e5');
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>The average episode length is ~185. More than 70% of the time, the agent is able to complete the game succesfully.</p>
+<p>The average episode length is ~194. More than 80% of the time, the agent is able to complete the game succesfully.</p>
 
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[13]:</div>
+<div class="prompt input_prompt">In&nbsp;[20]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">ep_lengths</span><span class="p">,</span><span class="n">align</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">)</span>
@@ -13616,7 +13641,7 @@ var element = $('#9cf1e6df-af09-4395-b4cc-4887710ea5e5');
 
 
 <div class="output_png output_subarea ">
-<img src="cartpole_ESNRLS-Q_website_files/cartpole_ESNRLS-Q_website_14_0.png"
+<img src="cartpole_ESNRLS-Q_website_files/cartpole_ESNRLS-Q_website_13_0.png"
 >
 </div>
 
@@ -13631,6 +13656,10 @@ var element = $('#9cf1e6df-af09-4395-b4cc-4887710ea5e5');
 </body>
 
  
+
+<script type="application/vnd.jupyter.widget-state+json">
+{"02c5183df0034a1296a7089d852481c3": {"model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "model_name": "HTMLModel", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "HTMLModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "HTMLView", "description": "", "description_tooltip": null, "layout": "IPY_MODEL_e10d30c5759d4f54b6f39afcd5ca8627", "placeholder": "\u200b", "style": "IPY_MODEL_73e71ae2e1294ad2ba799010d182a79f", "value": "100%"}}, "175672147ea44718aff757b3decb86f4": {"model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "model_name": "ProgressStyleModel", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "ProgressStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "StyleView", "bar_color": null, "description_width": ""}}, "21163bc9cf9c4e30b46ced9bbb4e3d21": {"model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "model_name": "FloatProgressModel", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "FloatProgressModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "ProgressView", "bar_style": "", "description": "", "description_tooltip": null, "layout": "IPY_MODEL_fc0ae9d8055a417a8a79d4fc4c027fbd", "max": 100, "min": 0, "orientation": "horizontal", "style": "IPY_MODEL_175672147ea44718aff757b3decb86f4", "value": 100}}, "3807de8bb11942a4a821ae74ed1d050a": {"model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "model_name": "DescriptionStyleModel", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "DescriptionStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "StyleView", "description_width": ""}}, "4da240262fd54ca58efea1e03530d5f0": {"model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "model_name": "HBoxModel", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "HBoxModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "HBoxView", "box_style": "", "children": ["IPY_MODEL_02c5183df0034a1296a7089d852481c3", "IPY_MODEL_21163bc9cf9c4e30b46ced9bbb4e3d21", "IPY_MODEL_b1b63a81a543479cbc447c06a84e6db8"], "layout": "IPY_MODEL_b3d5d8e75a9e48f9ab5e8a7939d60f71"}}, "73e71ae2e1294ad2ba799010d182a79f": {"model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "model_name": "DescriptionStyleModel", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "DescriptionStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "StyleView", "description_width": ""}}, "915db79220ca4f5e9154fb7c5357d13f": {"model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "model_name": "LayoutModel", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "b1b63a81a543479cbc447c06a84e6db8": {"model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "model_name": "HTMLModel", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "HTMLModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "HTMLView", "description": "", "description_tooltip": null, "layout": "IPY_MODEL_915db79220ca4f5e9154fb7c5357d13f", "placeholder": "\u200b", "style": "IPY_MODEL_3807de8bb11942a4a821ae74ed1d050a", "value": " 100/100 [28:41&lt;00:00, 20.25s/it]"}}, "b3d5d8e75a9e48f9ab5e8a7939d60f71": {"model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "model_name": "LayoutModel", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "e10d30c5759d4f54b6f39afcd5ca8627": {"model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "model_name": "LayoutModel", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "fc0ae9d8055a417a8a79d4fc4c027fbd": {"model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "model_name": "LayoutModel", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}}
+</script>
 
 
 </html>
