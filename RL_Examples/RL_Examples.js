@@ -27,7 +27,6 @@ document.write(`
 
 
 temp = Object.values(links)
-
 for(i=0;i<temp.length;i++){
   if (page === temp[i].split("/").pop()){
     Object.entries(links).forEach(
