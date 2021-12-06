@@ -3,7 +3,6 @@ var path = window.location.pathname;
 var page = path.split("/").pop();
 
 // var deneme = document.getElementsByClassName("deneme")[0];
-// deneme.innerHTML = path.split("/");
 
 var links  = 
 {
@@ -21,15 +20,15 @@ var spread_links  =
 
 
 document.write(`
-
 <div class="mytopnav" id="myTopnav">
 <a class="new" title="Menu">&#9776;</a>
-
-
 `);
 
-temp = Object.values(links);
-for(i=0;i<links.length;i++){
+
+
+temp = Object.values(links)
+
+for(i=0;i<temp.length;i++){
   if (page === temp[i].split("/").pop()){
     Object.entries(links).forEach(
       ([key, value]) => document.write(topnavFiller(key,value))
