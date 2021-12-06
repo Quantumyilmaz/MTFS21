@@ -197,12 +197,12 @@ body {
   @media screen and (max-height: 800px){
   
     .mysidenav a , .mydropdown-btn{
-      font-size: 30%;
-      font-weight:700;
+      font-size: 20%;
+      font-weight:600;
     }
     .mysidenav a.home {
-      padding-bottom: 30%;
-      font-size:60%;
+      padding-bottom: 10%;
+      font-size:30%;
       font-weight:600;
     }
     .ml12 {
@@ -212,7 +212,7 @@ body {
       }
 
     .mytopnav a.new,.mytopnav a{
-        font-size: 50%;
+        font-size: 25%;
       }
     .mysidenav{
       width: 9.5%;
