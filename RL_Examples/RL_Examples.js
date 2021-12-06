@@ -2,6 +2,23 @@
 var path = window.location.pathname;
 var page = path.split("/").pop();
 
+// var deneme = document.getElementsByClassName("deneme")[0];
+// deneme.innerHTML = path.split("/");
+
+var links  = 
+{
+"Fully Trained FNN": "../FullyTrained/paper_website.html",
+"Partially Trained FNN": "../PartiallyTrained/paper_random_init_website.html", 
+"ESNRLS-Q": "../ESNRLS-Q/paper_reservoir_website.html",
+"Data Preparation": "../data_prep/paper_data_prep_website.html"};
+
+var spread_links  = 
+{"Fully Trained FNN": "", 
+"Partially Trained FNN": "", 
+"ESNRLS-Q": "",
+"Data Preparation": ""};
+
+
 
 document.write(`
 
@@ -9,42 +26,65 @@ document.write(`
 <a class="new" title="Menu">&#9776;</a>
 
 
-
 `);
 
-if (page==="paper_website.html"){
+Object.entries(links).forEach(
+  ([key, value]) => document.write(topnavFiller(key,value))
+);
 
-  document.write(`
-  <a class="active" href="paper_website.html">Fully Trained FNN</a>
-  <a href="../PartiallyTrained/paper_random_init_website.html">Partially Trained FNN </a>
-  <a href="../ESNRLS-Q/paper_reservoir_website.html">ESNRLS-Q</a>
-  <a href="../data_prep/paper_data_prep_website.html">Data Preparation</a>
-  `);
-}else if (page==="paper_random_init_website.html"){
-
-  document.write(`
-  <a href="../FullyTrained/paper_website.html">Fully Trained FNN</a>
-  <a class="active" href="paper_random_init_website.html">Partially Trained FNN </a>
-  <a href="../ESNRLS-Q/paper_reservoir_website.html">ESNRLS-Q</a>
-  <a href="../data_prep/paper_data_prep_website.html">Data Preparation</a>
-  `);
-}else if (page==="paper_reservoir_website.html"){
-
-  document.write(`
-  <a href="../FullyTrained/paper_website.html">Fully Trained FNN</a>
-  <a href="../PartiallyTrained/paper_random_init_website.html">Partially Trained FNN </a>
-  <a class="active" href="paper_reservoir_website.html">ESNRLS-Q</a>
-  <a href="../data_prep/paper_data_prep_website.html">Data Preparation</a>
-  `);
-}else if (page==="paper_data_prep_website.html"){
-
-  document.write(`
-  <a href="../FullyTrained/paper_website.html">Fully Trained FNN</a>
-  <a href="../PartiallyTrained/paper_random_init_website.html">Partially Trained FNN </a>
-  <a href="../ESNRLS-Q/paper_reservoir_website.html">ESNRLS-Q</a>
-  <a class="active" href="paper_data_prep_website.html">Data Preparation</a>
-  `);
+// bu garanti
+function topnavFiller(key, value) {
+  var temp_str = ``
+  temp_str += `<a `
+  if (page===value.split("/").pop()){
+    temp_str += `class="active" `;
+  };
+  temp_str += `href=${value}>${key}</a>`;
+  return temp_str
 }
+
+
+// denemek icin
+// var temp_str = `<div class="dropdown">`;
+// temp_str += `<button class="dropbtn">Dropdown</button>`;
+// temp_str += `<div class="dropdown-content">`;
+// temp_str += `<a href="#">Link 1</a>`;
+// temp_str += `</div>`;
+// temp_str += `</div>`;
+
+// denemek icin
+// document.write(`
+// <div class="dropdown">
+//     <button class="dropbtn">Dropdown 
+//       <i class="fa fa-caret-down"></i>
+//     </button>
+//     <div class="dropdown-content">
+//       <a href="#">Link 1</a>
+//       <a href="#">Link 2</a>
+//       <a href="#">Link 3</a>
+//     </div>
+//   </div> 
+// `);
+
+// function topnavFiller(key, value) {
+//   var temp_str = `<div class="dropdown">`
+//   if (page===value.split("/").pop()){
+//     temp_str += `<button class="dropbtn active">${key}</button>`;
+//   } else {
+//     temp_str += `<button class="dropbtn">${key}</button>`;
+//   };
+//   temp_str += `<div class="dropdown-content">`;
+//   temp_str += `<a href=${value}>Mid</a>`;
+//   temp_str += `<a href=${spread_links[key]}>Spread</a>`;
+//   temp_str += `</div>`;
+//   temp_str += `</div>`;
+//   return temp_str
+// }
+
+// function visitPage(){
+//   window.location=path;
+// }
+
 
 document.write(`
 </div>
@@ -69,6 +109,7 @@ document.write(`
 </div>
 
 `);
+
 
 window.mobileCheck = function() {
     let check = false;
@@ -109,6 +150,5 @@ menu_button.addEventListener("click", function() {
 }
 }
 );
-
 
 
