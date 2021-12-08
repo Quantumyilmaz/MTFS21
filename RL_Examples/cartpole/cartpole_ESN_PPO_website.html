@@ -13114,7 +13114,7 @@ $( document ).ready(function(){
 <li><p>Additional features to make the reservoir training possible, most important of these being the serial updates to reservoir for each minibatch.</p>
 <ul>
 <li><p>For each observation in the minibatch we have a reservoir layer. Each layer is updated taking the previously updated reservoir layer and passing it to <a href="https://quantumyilmaz.github.io/MTFS21/Examples/RC_SP/summary/RC_SP_summary.html">one of the update rules</a>.</p>
-<p>$x^k_t = (1-\alpha)x^{k-1}_t + f(W_{in}\cdot u + W \cdot x^{k-1}_t)$, where $0\leq k \leq$ minibatch size, $0\leq t \leq$ number of minibatches in the batch pool and $x_0^0$ is randomly generated.</p>
+<p>$x^k_t = (1-\alpha)x^{k-1}_t + f(W_{in}\cdot u^{k-1}_t + W \cdot x^{k-1}_t)$, where $1\leq k \leq$ minibatch size, $1\leq t \leq $ number of minibatches in the batch pool. $u^k_t$ is the $k^{th}$ observation in the $t^{th}$ minibatch and $x_0^1$ is randomly generated. $x^1_t$ are updated according to $x^1_t = (1-\alpha)x^1_{t-1} + f(W_{in}\cdot u^1_t + W \cdot x^1_{t-1})$.</p>
 </li>
 </ul>
 </li>
@@ -13400,7 +13400,7 @@ $( document ).ready(function(){
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="Train">Train<a class="anchor-link" href="#Train">&#182;</a></h1><p>We have two networks, one for the value function and one for the policy function. Each has consists of a batch normalization layer, an Echo State Network, $\tanh$ activation, linear layer, again a $\tanh$ activation and a last linear readout layer.</p>
+<h2 id="Training">Training<a class="anchor-link" href="#Training">&#182;</a></h2><p>We have two networks, one for the value function and one for the policy function. Each has consists of a batch normalization layer, an Echo State Network, $\tanh$ activation, linear layer, again a $\tanh$ activation and a last linear readout layer.</p>
 
 </div>
 </div>
@@ -14155,6 +14155,13 @@ Traning duration:: 191.98677396774292 seconds
 </div>
 
 </div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Validation">Validation<a class="anchor-link" href="#Validation">&#182;</a></h2>
+</div>
+</div>
+</div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">In&nbsp;[6]:</div>
@@ -14246,7 +14253,7 @@ Traning duration:: 191.98677396774292 seconds
 
 
 <div class="output_png output_subarea ">
-<img src="cartpole_ESN_PPO_website_files/cartpole_ESN_PPO_website_12_0.png"
+<img src="cartpole_ESN_PPO_website_files/cartpole_ESN_PPO_website_13_0.png"
 >
 </div>
 
@@ -14295,6 +14302,13 @@ Traning duration:: 191.98677396774292 seconds
 </div>
 </div>
 
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Training">Training<a class="anchor-link" href="#Training">&#182;</a></h2>
+</div>
+</div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
@@ -15015,7 +15029,7 @@ Traning duration:: 49.84621286392212 seconds
 
 
 <div class="output_png output_subarea ">
-<img src="cartpole_ESN_PPO_website_files/cartpole_ESN_PPO_website_16_0.png"
+<img src="cartpole_ESN_PPO_website_files/cartpole_ESN_PPO_website_18_0.png"
 >
 </div>
 
@@ -15024,6 +15038,13 @@ Traning duration:: 49.84621286392212 seconds
 </div>
 </div>
 
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Validation">Validation<a class="anchor-link" href="#Validation">&#182;</a></h2>
+</div>
+</div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
@@ -15106,7 +15127,7 @@ Traning duration:: 49.84621286392212 seconds
 
 
 <div class="output_png output_subarea ">
-<img src="cartpole_ESN_PPO_website_files/cartpole_ESN_PPO_website_18_0.png"
+<img src="cartpole_ESN_PPO_website_files/cartpole_ESN_PPO_website_21_0.png"
 >
 </div>
 
