@@ -17,6 +17,11 @@ var spread_links  =
 "ESNRLS-Q": "",
 "Data Preparation": ""};
 
+var cartpole_links  = 
+{
+"ESNRLS-Q": "./cartpole_ESNRLS-Q_website.html",
+"ESN-PPO": "./cartpole_ESN_PPO_website.html"};
+
 
 
 document.write(`
@@ -30,6 +35,16 @@ temp = Object.values(links)
 for(i=0;i<temp.length;i++){
   if (page === temp[i].split("/").pop()){
     Object.entries(links).forEach(
+      ([key, value]) => document.write(topnavFiller(key,value))
+    );
+  break;
+  }
+}
+
+temp_cartpole_links = Object.values(cartpole_links)
+for(i=0;i<temp_cartpole_links.length;i++){
+  if (page === temp_cartpole_links[i].split("/").pop()){
+    Object.entries(cartpole_links).forEach(
       ([key, value]) => document.write(topnavFiller(key,value))
     );
   break;
