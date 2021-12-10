@@ -13184,8 +13184,6 @@ $( document ).ready(function(){
 
 <span class="n">LOG_PATH</span> <span class="o">=</span> <span class="s2">&quot;./logs/reservoir_&quot;</span> <span class="o">+</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2">_%m_%Y&quot;</span><span class="p">)</span>
 <span class="n">logger</span> <span class="o">=</span> <span class="n">configure</span><span class="p">(</span><span class="n">LOG_PATH</span><span class="p">)</span>
-<span class="n">env</span> <span class="o">=</span> <span class="n">gym</span><span class="o">.</span><span class="n">make</span><span class="p">(</span><span class="s2">&quot;CartPole-v0&quot;</span><span class="p">)</span>
-<span class="n">env</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
 <span class="n">torch</span><span class="o">.</span><span class="n">manual_seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
 <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
 </pre></div>
@@ -13204,7 +13202,7 @@ $( document ).ready(function(){
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>Logging to ./logs/reservoir_08_12_2021
+<pre>Logging to ./logs/reservoir_10_12_2021
 </pre>
 </div>
 </div>
@@ -13225,7 +13223,7 @@ $( document ).ready(function(){
 <div class="prompt input_prompt">In&nbsp;[3]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">resSize</span><span class="o">=</span><span class="mi">256</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">resSize</span><span class="o">=</span><span class="mi">280</span>
 <span class="n">leak_rate</span> <span class="o">=</span> <span class="mi">1</span>
 <span class="n">leak_version</span> <span class="o">=</span> <span class="mi">0</span>
 <span class="n">batch_size</span> <span class="o">=</span> <span class="mi">64</span>
@@ -13258,11 +13256,10 @@ $( document ).ready(function(){
         <span class="nb">super</span><span class="p">(</span><span class="n">CustomESNN</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span><span class="n">in_size</span><span class="o">=</span><span class="n">in_size</span><span class="p">,</span><span class="n">out_size</span><span class="o">=</span><span class="n">out_size</span><span class="p">,</span><span class="n">bias</span><span class="o">=</span><span class="n">bias</span><span class="p">,</span><span class="n">W</span><span class="o">=</span><span class="n">W</span><span class="p">,</span><span class="n">resSize</span><span class="o">=</span><span class="n">resSize</span><span class="p">,</span><span class="n">xn</span><span class="o">=</span><span class="n">xn</span><span class="p">,</span><span class="n">pn</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span><span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span><span class="n">null_state_init</span><span class="o">=</span><span class="n">null_state_init</span><span class="p">,</span><span class="n">custom_initState</span><span class="o">=</span><span class="n">custom_initState</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">x</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">reservoir_layer</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">==</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_layer_mode</span> <span class="o">==</span> <span class="s1">&#39;batch&#39;</span><span class="p">:</span>
             <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
-<span class="c1">#                 self.update_reservoir_layer(x.T)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">update_reservoir_layers_serially</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-            <span class="n">x</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__call__</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">T</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">update_reservoir_layers_serially</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__call__</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">x</span>
@@ -13270,7 +13267,7 @@ $( document ).ready(function(){
     <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">x</span><span class="p">):</span>
         <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">update_reservoir_layer</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
-        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__call__</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">T</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__call__</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
 
 <span class="k">class</span> <span class="nc">CustomReservoirNetwork</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
 
@@ -13295,7 +13292,7 @@ $( document ).ready(function(){
         <span class="bp">self</span><span class="o">.</span><span class="n">res1</span> <span class="o">=</span> <span class="n">CustomESNN</span><span class="p">(</span><span class="n">bias</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span>
                         <span class="n">in_size</span><span class="o">=</span><span class="n">feature_dim</span><span class="p">,</span><span class="n">out_size</span><span class="o">=</span><span class="n">last_layer_dim_pi</span><span class="p">,</span><span class="n">resSize</span><span class="o">=</span><span class="n">resSize</span><span class="p">,</span>
                                     <span class="n">f</span><span class="o">=</span><span class="s1">&#39;tanh&#39;</span><span class="p">,</span><span class="n">leak_rate</span><span class="o">=</span><span class="n">leak_rate</span><span class="p">,</span><span class="n">leak_version</span><span class="o">=</span><span class="n">leak_version</span>
-                                           <span class="p">,</span><span class="n">custom_initState</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">resSize</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span><span class="o">-</span><span class="mf">0.5</span>
+<span class="c1">#                                            ,custom_initState=np.random.rand(resSize,1)-0.5</span>
                                                <span class="p">,</span><span class="n">W</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">resSize</span><span class="p">,</span><span class="n">resSize</span><span class="p">)</span><span class="o">-</span><span class="mf">0.5</span>
                                                 <span class="p">,</span><span class="n">random_state</span><span class="o">=</span><span class="mi">42</span>
                               <span class="p">)</span>
@@ -13309,7 +13306,7 @@ $( document ).ready(function(){
         <span class="bp">self</span><span class="o">.</span><span class="n">res2</span> <span class="o">=</span> <span class="n">CustomESNN</span><span class="p">(</span><span class="n">bias</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span>
                         <span class="n">in_size</span><span class="o">=</span><span class="n">feature_dim</span><span class="p">,</span><span class="n">out_size</span><span class="o">=</span><span class="n">last_layer_dim_pi</span><span class="p">,</span><span class="n">resSize</span><span class="o">=</span><span class="n">resSize</span><span class="p">,</span>
                                     <span class="n">f</span><span class="o">=</span><span class="s1">&#39;tanh&#39;</span><span class="p">,</span><span class="n">leak_rate</span><span class="o">=</span><span class="n">leak_rate</span><span class="p">,</span><span class="n">leak_version</span><span class="o">=</span><span class="n">leak_version</span>
-                                           <span class="p">,</span><span class="n">custom_initState</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">resSize</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span><span class="o">-</span><span class="mf">0.5</span>
+<span class="c1">#                                            ,custom_initState=np.random.rand(resSize,1)-0.5</span>
                                                <span class="p">,</span><span class="n">W</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">resSize</span><span class="p">,</span><span class="n">resSize</span><span class="p">)</span><span class="o">-</span><span class="mf">0.5</span>
                                                 <span class="p">,</span><span class="n">random_state</span><span class="o">=</span><span class="mi">42</span>
                               <span class="p">)</span>
@@ -13375,7 +13372,7 @@ $( document ).ready(function(){
     <span class="k">def</span> <span class="nf">_build_mlp_extractor</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mlp_extractor</span> <span class="o">=</span> <span class="n">CustomReservoirNetwork</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">features_dim</span><span class="p">,</span><span class="n">resSize</span><span class="p">,</span><span class="n">batch_size</span><span class="p">)</span>
     
-    <span class="k">def</span> <span class="nf">reset_reservoirs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">reset_reservoirs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">dones</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
             <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mlp_extractor</span><span class="o">.</span><span class="n">reservoirs</span><span class="p">:</span>
                 <span class="n">res</span><span class="o">.</span><span class="n">reset_reservoir_layer</span><span class="p">()</span>
@@ -13389,7 +13386,6 @@ $( document ).ready(function(){
         <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
             <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mlp_extractor</span><span class="o">.</span><span class="n">reservoirs</span><span class="p">:</span>
                 <span class="n">res</span><span class="o">.</span><span class="n">_expand_reservoir_layer</span><span class="p">()</span>
-            
 </pre></div>
 
     </div>
@@ -13413,8 +13409,9 @@ $( document ).ready(function(){
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Parallel environments</span>
 <span class="c1"># env = make_vec_env(&quot;CartPole-v0&quot;, n_envs=1)</span>
 <span class="n">env</span> <span class="o">=</span> <span class="n">gym</span><span class="o">.</span><span class="n">make</span><span class="p">(</span><span class="s2">&quot;CartPole-v0&quot;</span><span class="p">)</span>
+<span class="n">env</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
 
-<span class="n">model</span> <span class="o">=</span> <span class="n">CustomPPO</span><span class="p">(</span><span class="n">CustomActorCriticReservoirPolicy</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">PPO_batch_size</span><span class="p">)</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">CustomPPO</span><span class="p">(</span><span class="n">CustomActorCriticReservoirPolicy</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">PPO_batch_size</span><span class="p">)</span>
 <span class="n">model</span><span class="o">.</span><span class="n">set_logger</span><span class="p">(</span><span class="n">logger</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">summary</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">policy</span><span class="p">,</span><span class="n">input_data</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">PPO_batch_size</span><span class="p">,</span><span class="n">env</span><span class="o">.</span><span class="n">observation_space</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])))</span>
 </pre></div>
@@ -13433,12 +13430,15 @@ $( document ).ready(function(){
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>Reservoir generated. Spectral Radius: 4.757210647597017
+<pre>Using cpu device
+Wrapping the env with a `Monitor` wrapper
+Wrapping the env in a DummyVecEnv.
+Reservoir generated. Spectral Radius: 5.070153616107132
 Scaling matrix to have spectral radius 0.9...
-Done: 0.9000000000000002
-Reservoir generated. Spectral Radius: 4.757210647597017
+Done: 0.9000000000000004
+Reservoir generated. Spectral Radius: 5.070153616107132
 Scaling matrix to have spectral radius 0.9...
-Done: 0.9000000000000002
+Done: 0.9000000000000004
 Win (input weights) generated.
 Win (input weights) generated.
 ==========================================================================================
@@ -13453,7 +13453,7 @@ CustomActorCriticReservoirPolicy         --                        --
 │    └─Sequential: 2                     --                        --
 │    │    └─BatchNorm1d: 3-1             [64, 4]                   (recursive)
 │    └─CustomESNN: 2                     --                        --
-│    │    └─Linear: 3-2                  [64, 32]                  8,352
+│    │    └─Linear: 3-2                  [64, 32]                  9,120
 │    └─Sequential: 2                     --                        --
 │    │    └─Tanh: 3-3                    [64, 32]                  --
 │    └─Linear: 2-4                       [64, 32]                  1,056
@@ -13465,7 +13465,7 @@ CustomActorCriticReservoirPolicy         --                        --
 │    └─Sequential: 2                     --                        --
 │    │    └─BatchNorm1d: 3-6             [64, 4]                   (recursive)
 │    └─CustomESNN: 2                     --                        --
-│    │    └─Linear: 3-7                  [64, 32]                  8,352
+│    │    └─Linear: 3-7                  [64, 32]                  9,120
 │    └─Sequential: 2                     --                        --
 │    │    └─Tanh: 3-8                    [64, 32]                  --
 │    └─Linear: 2-7                       [64, 32]                  1,056
@@ -13475,10 +13475,10 @@ CustomActorCriticReservoirPolicy         --                        --
 ├─Linear: 1-3                            [64, 1]                   33
 ├─Linear: 1-4                            [64, 2]                   66
 ==========================================================================================
-Total params: 18,931
-Trainable params: 18,931
+Total params: 20,467
+Trainable params: 20,467
 Non-trainable params: 0
-Total mult-adds (M): 2.42
+Total mult-adds (M): 2.61
 ==========================================================================================
 Input size (MB): 0.00
 Forward/backward pass size (MB): 0.07
@@ -13499,7 +13499,7 @@ Estimated Total Size (MB): 0.15
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">with</span> <span class="n">timer</span><span class="p">(</span><span class="s1">&#39;Traning duration:&#39;</span><span class="p">):</span>
-    <span class="n">model</span><span class="o">.</span><span class="n">learn</span><span class="p">(</span><span class="n">total_timesteps</span><span class="o">=</span><span class="mi">60000</span><span class="p">)</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">learn</span><span class="p">(</span><span class="n">total_timesteps</span><span class="o">=</span><span class="mi">40000</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -13512,8 +13512,8 @@ Estimated Total Size (MB): 0.15
 <div class="prompt input_prompt">In&nbsp;[7]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">log</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;./logs/reservoir_08_12_2021/progress.csv&#39;</span><span class="p">)</span>
-<span class="n">log</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;train/n_updates&#39;</span><span class="p">)[</span><span class="s1">&#39;rollout/ep_rew_mean&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">log_res</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;./logs/reservoir_10_12_2021/progress.csv&#39;</span><span class="p">)</span>
+<span class="n">log_res</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;train/n_updates&#39;</span><span class="p">)[</span><span class="s1">&#39;rollout/ep_rew_mean&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Convergence Graph&#39;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
@@ -13553,7 +13553,7 @@ Estimated Total Size (MB): 0.15
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[14]:</div>
+<div class="prompt input_prompt">In&nbsp;[8]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">ep_lengths</span> <span class="o">=</span> <span class="p">[]</span>
@@ -13587,14 +13587,14 @@ Estimated Total Size (MB): 0.15
 
 
 <div class="output_subarea output_stream output_stderr output_text">
-<pre>100%|██████████| 100/100 [00:13&lt;00:00,  7.46it/s]
+<pre>100%|██████████| 100/100 [00:12&lt;00:00,  7.74it/s]
 </pre>
 </div>
 </div>
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[14]:</div>
+    <div class="prompt output_prompt">Out[8]:</div>
 
 
 
@@ -13619,7 +13619,7 @@ Estimated Total Size (MB): 0.15
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[15]:</div>
+<div class="prompt input_prompt">In&nbsp;[9]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">ep_lengths</span><span class="p">)</span>
@@ -13655,14 +13655,14 @@ Estimated Total Size (MB): 0.15
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="Feedforward-Network">Feedforward Network<a class="anchor-link" href="#Feedforward-Network">&#182;</a></h1><p>We also compare our results with the feedforward case, where we give the network double the amount of parameters than the reservoir case.</p>
+<h1 id="Feedforward-Network">Feedforward Network<a class="anchor-link" href="#Feedforward-Network">&#182;</a></h1><p>We also compare our results with the feedforward case, where we give the network almost double the amount of parameters than the reservoir case.</p>
 
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[16]:</div>
+<div class="prompt input_prompt">In&nbsp;[10]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">LOG_PATH</span> <span class="o">=</span> <span class="s2">&quot;./logs/feedforward_&quot;</span> <span class="o">+</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2">_%m_%Y&quot;</span><span class="p">)</span>
@@ -13683,7 +13683,7 @@ Estimated Total Size (MB): 0.15
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>Logging to ./logs/feedforward_08_12_2021
+<pre>Logging to ./logs/feedforward_10_12_2021
 </pre>
 </div>
 </div>
@@ -13701,7 +13701,7 @@ Estimated Total Size (MB): 0.15
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[18]:</div>
+<div class="prompt input_prompt">In&nbsp;[11]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Parallel environments</span>
@@ -13772,7 +13772,7 @@ Estimated Total Size (MB): 0.40
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">with</span> <span class="n">timer</span><span class="p">(</span><span class="s1">&#39;Traning duration:&#39;</span><span class="p">):</span>
-    <span class="n">model</span><span class="o">.</span><span class="n">learn</span><span class="p">(</span><span class="n">total_timesteps</span><span class="o">=</span><span class="mi">60000</span><span class="p">)</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">learn</span><span class="p">(</span><span class="n">total_timesteps</span><span class="o">=</span><span class="mi">40000</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -13782,12 +13782,14 @@ Estimated Total Size (MB): 0.40
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[20]:</div>
+<div class="prompt input_prompt">In&nbsp;[13]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">log</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;./logs/feedforward_08_12_2021/progress.csv&#39;</span><span class="p">)</span>
-<span class="n">log</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;train/n_updates&#39;</span><span class="p">)[</span><span class="s1">&#39;rollout/ep_rew_mean&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">log_res</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;train/n_updates&#39;</span><span class="p">)[</span><span class="s1">&#39;rollout/ep_rew_mean&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;reservoir&#39;</span><span class="p">)</span>
+<span class="n">log_ff</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;./logs/feedforward_10_12_2021/progress.csv&#39;</span><span class="p">)</span>
+<span class="n">log_ff</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;train/n_updates&#39;</span><span class="p">)[</span><span class="s1">&#39;rollout/ep_rew_mean&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;feedforward&#39;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Convergence Graph&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 
@@ -13826,7 +13828,7 @@ Estimated Total Size (MB): 0.40
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[21]:</div>
+<div class="prompt input_prompt">In&nbsp;[14]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">ep_lengths</span> <span class="o">=</span> <span class="p">[]</span>
@@ -13858,20 +13860,20 @@ Estimated Total Size (MB): 0.40
 
 
 <div class="output_subarea output_stream output_stderr output_text">
-<pre>100%|██████████| 100/100 [00:07&lt;00:00, 14.13it/s]
+<pre>100%|██████████| 100/100 [00:07&lt;00:00, 13.98it/s]
 </pre>
 </div>
 </div>
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[21]:</div>
+    <div class="prompt output_prompt">Out[14]:</div>
 
 
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>191.63</pre>
+<pre>200.0</pre>
 </div>
 
 </div>
@@ -13882,7 +13884,7 @@ Estimated Total Size (MB): 0.40
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[22]:</div>
+<div class="prompt input_prompt">In&nbsp;[15]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">ep_lengths</span><span class="p">)</span>
