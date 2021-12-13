@@ -8,6 +8,7 @@ var links  =
 {
 "Fully Trained FNN": "../FullyTrained/paper_website.html",
 "Partially Trained FNN": "../PartiallyTrained/paper_random_init_website.html", 
+"ESN-PPO": "../ESN-PPO/paper_reservoir_website_PPO.html",
 "ESNRLS-Q": "../ESNRLS-Q/paper_reservoir_website.html",
 "Data Preparation": "../data_prep/paper_data_prep_website.html"};
 
