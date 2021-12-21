@@ -13160,7 +13160,7 @@ $( document ).ready(function(){
 <span class="kn">import</span> <span class="nn">torch</span>
 <span class="kn">from</span> <span class="nn">torchinfo</span> <span class="kn">import</span> <span class="n">summary</span>
 <span class="kn">from</span> <span class="nn">utils.df_handler</span> <span class="kn">import</span> <span class="n">force_zehnerpot</span>
-<span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">display</span><span class="p">,</span> <span class="n">Markdown</span>
+<span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">display</span><span class="p">,</span><span class="n">HTML</span>
 <span class="kn">import</span> <span class="nn">pickle</span>
 
 <span class="n">model_dir_1</span> <span class="o">=</span> <span class="s2">&quot;./01_12_21/&quot;</span>
@@ -13234,7 +13234,7 @@ $( document ).ready(function(){
 <span class="k">for</span> <span class="n">line1</span><span class="p">,</span><span class="n">line2</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">lines1</span><span class="p">,</span><span class="n">lines2</span><span class="p">):</span>
     <span class="n">models_summary</span><span class="o">+=</span> <span class="n">line1</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">line_length</span><span class="p">)</span> <span class="o">+</span> <span class="n">line2</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">line_length</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
 
-<span class="n">display</span><span class="p">(</span><span class="n">Markdown</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;&lt;pre&gt;</span><span class="si">{</span><span class="n">models_summary</span><span class="si">}</span><span class="s1">&lt;/pre&gt;&#39;</span><span class="p">))</span>
+<span class="n">display</span><span class="p">(</span><span class="n">HTML</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;&lt;pre&gt;</span><span class="si">{</span><span class="n">models_summary</span><span class="si">}</span><span class="s1">&lt;/pre&gt;&#39;</span><span class="p">))</span>
 </pre></div>
 
     </div>
@@ -13251,31 +13251,39 @@ $( document ).ready(function(){
 
 
 
-<div class="output_markdown rendered_html output_subarea ">
-<h1><pre>                                         Model 1                                                                                   Model 2                                          </h1>
-<h1 id="Layer-(type:depth-idx)-------------------Output-Shape--------------Param-#----------------Layer-(type:depth-idx)-------------------Output-Shape--------------Param-#----------------">Layer (type:depth-idx)                   Output Shape              Param #                Layer (type:depth-idx)                   Output Shape              Param #                <a class="anchor-link" href="#Layer-(type:depth-idx)-------------------Output-Shape--------------Param-#----------------Layer-(type:depth-idx)-------------------Output-Shape--------------Param-#----------------">&#182;</a></h1><p>CustomActorCriticPolicy                  --                        --                     CustomActorCriticPolicy                  --                        --<br>
-├─FlattenExtractor: 1-1                  [1, 112]                  --                     ├─FlattenExtractor: 1-1                  [1, 112]                  --<br>
-│    └─Flatten: 2-1                      [1, 112]                  --                     │    └─Flatten: 2-1                      [1, 112]                  --<br>
-├─CustomNetwork: 1-2                     [1, 64]                   --                     ├─CustomNetwork: 1-2                     [1, 64]                   --<br>
-│    └─Sequential: 2-2                   [1, 64]                   --                     │    └─Sequential: 2-2                   [1, 64]                   --<br>
-│    │    └─Linear: 3-1                  [1, 64]                   (7,168)                │    │    └─Linear: 3-1                  [1, 1000]                 (112,000)<br>
-│    │    └─Tanh: 3-2                    [1, 64]                   --                     │    │    └─Tanh: 3-2                    [1, 1000]                 --<br>
-│    │    └─Linear: 3-3                  [1, 64]                   (4,096)                │    │    └─Linear: 3-3                  [1, 64]                   64,000<br>
-│    │    └─Tanh: 3-4                    [1, 64]                   --                     │    │    └─Tanh: 3-4                    [1, 64]                   --<br>
-│    └─Sequential: 2-3                   [1, 64]                   (recursive)            │    └─Sequential: 2-3                   [1, 64]                   --<br>
-│    │    └─Linear: 3-5                  [1, 64]                   (recursive)            │    │    └─Linear: 3-5                  [1, 1000]                 (112,000)<br>
-│    │    └─Tanh: 3-6                    [1, 64]                   --                     │    │    └─Tanh: 3-6                    [1, 1000]                 --<br>
-│    │    └─Linear: 3-7                  [1, 64]                   (recursive)            │    │    └─Linear: 3-7                  [1, 64]                   64,000<br>
-│    │    └─Tanh: 3-8                    [1, 64]                   --                     │    │    └─Tanh: 3-8                    [1, 64]                   --<br>
-├─Linear: 1-3                            [1, 1]                    65                     ├─Linear: 1-3                            [1, 1]                    65</p>
-<h1 id="&#9500;&#9472;Linear:-1-4----------------------------[1,-4]--------------------260--------------------&#9500;&#9472;Linear:-1-4----------------------------[1,-4]--------------------260--------------------">&#9500;&#9472;Linear: 1-4                            [1, 4]                    260                    &#9500;&#9472;Linear: 1-4                            [1, 4]                    260                    <a class="anchor-link" href="#&#9500;&#9472;Linear:-1-4----------------------------[1,-4]--------------------260--------------------&#9500;&#9472;Linear:-1-4----------------------------[1,-4]--------------------260--------------------">&#182;</a></h1><p>Total params: 11,589                                                                      Total params: 352,325<br>
-Trainable params: 325                                                                     Trainable params: 128,325<br>
-Non-trainable params: 11,264                                                              Non-trainable params: 224,000</p>
-<h1 id="Total-mult-adds-(M):-0.02-----------------------------------------------------------------Total-mult-adds-(M):-0.35-----------------------------------------------------------------">Total mult-adds (M): 0.02                                                                 Total mult-adds (M): 0.35                                                                 <a class="anchor-link" href="#Total-mult-adds-(M):-0.02-----------------------------------------------------------------Total-mult-adds-(M):-0.35-----------------------------------------------------------------">&#182;</a></h1><p>Input size (MB): 0.00                                                                     Input size (MB): 0.00<br>
-Forward/backward pass size (MB): 0.00                                                     Forward/backward pass size (MB): 0.02<br>
-Params size (MB): 0.05                                                                    Params size (MB): 1.41</p>
-<h1 id="Estimated-Total-Size-(MB):-0.05-----------------------------------------------------------Estimated-Total-Size-(MB):-1.43-----------------------------------------------------------">Estimated Total Size (MB): 0.05                                                           Estimated Total Size (MB): 1.43                                                           <a class="anchor-link" href="#Estimated-Total-Size-(MB):-0.05-----------------------------------------------------------Estimated-Total-Size-(MB):-1.43-----------------------------------------------------------">&#182;</a></h1><p>&lt;/pre&gt;</p>
-
+<div class="output_html rendered_html output_subarea ">
+<pre>                                         Model 1                                                                                   Model 2                                          
+====================================================================================================================================================================================
+Layer (type:depth-idx)                   Output Shape              Param #                Layer (type:depth-idx)                   Output Shape              Param #                
+====================================================================================================================================================================================
+CustomActorCriticPolicy                  --                        --                     CustomActorCriticPolicy                  --                        --                     
+├─FlattenExtractor: 1-1                  [1, 112]                  --                     ├─FlattenExtractor: 1-1                  [1, 112]                  --                     
+│    └─Flatten: 2-1                      [1, 112]                  --                     │    └─Flatten: 2-1                      [1, 112]                  --                     
+├─CustomNetwork: 1-2                     [1, 64]                   --                     ├─CustomNetwork: 1-2                     [1, 64]                   --                     
+│    └─Sequential: 2-2                   [1, 64]                   --                     │    └─Sequential: 2-2                   [1, 64]                   --                     
+│    │    └─Linear: 3-1                  [1, 64]                   (7,168)                │    │    └─Linear: 3-1                  [1, 1000]                 (112,000)              
+│    │    └─Tanh: 3-2                    [1, 64]                   --                     │    │    └─Tanh: 3-2                    [1, 1000]                 --                     
+│    │    └─Linear: 3-3                  [1, 64]                   (4,096)                │    │    └─Linear: 3-3                  [1, 64]                   64,000                 
+│    │    └─Tanh: 3-4                    [1, 64]                   --                     │    │    └─Tanh: 3-4                    [1, 64]                   --                     
+│    └─Sequential: 2-3                   [1, 64]                   (recursive)            │    └─Sequential: 2-3                   [1, 64]                   --                     
+│    │    └─Linear: 3-5                  [1, 64]                   (recursive)            │    │    └─Linear: 3-5                  [1, 1000]                 (112,000)              
+│    │    └─Tanh: 3-6                    [1, 64]                   --                     │    │    └─Tanh: 3-6                    [1, 1000]                 --                     
+│    │    └─Linear: 3-7                  [1, 64]                   (recursive)            │    │    └─Linear: 3-7                  [1, 64]                   64,000                 
+│    │    └─Tanh: 3-8                    [1, 64]                   --                     │    │    └─Tanh: 3-8                    [1, 64]                   --                     
+├─Linear: 1-3                            [1, 1]                    65                     ├─Linear: 1-3                            [1, 1]                    65                     
+├─Linear: 1-4                            [1, 4]                    260                    ├─Linear: 1-4                            [1, 4]                    260                    
+====================================================================================================================================================================================
+Total params: 11,589                                                                      Total params: 352,325                                                                     
+Trainable params: 325                                                                     Trainable params: 128,325                                                                 
+Non-trainable params: 11,264                                                              Non-trainable params: 224,000                                                             
+Total mult-adds (M): 0.02                                                                 Total mult-adds (M): 0.35                                                                 
+====================================================================================================================================================================================
+Input size (MB): 0.00                                                                     Input size (MB): 0.00                                                                     
+Forward/backward pass size (MB): 0.00                                                     Forward/backward pass size (MB): 0.02                                                     
+Params size (MB): 0.05                                                                    Params size (MB): 1.41                                                                    
+Estimated Total Size (MB): 0.05                                                           Estimated Total Size (MB): 1.43                                                           
+====================================================================================================================================================================================
+</pre>
 </div>
 
 </div>
@@ -13354,7 +13362,7 @@ Total Gains: 160.28 TL in 103 days (Model 2).
 
 
 <div class="output_subarea output_stream output_stderr output_text">
-<pre>100%|██████████| 1/1 [00:00&lt;00:00,  3.60it/s]
+<pre>100%|██████████| 1/1 [00:00&lt;00:00,  3.74it/s]
 </pre>
 </div>
 </div>
@@ -13388,7 +13396,7 @@ Total Gains: 160.28 TL in 103 days (Model 2).
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[8]:</div>
+<div class="prompt input_prompt">In&nbsp;[5]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">rewards_df_1</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">model_dir_1</span><span class="o">+</span><span class="s1">&#39;rewards_df.csv&#39;</span><span class="p">,</span><span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="p">;</span> <span class="n">rewards_df_2</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">model_dir_2</span><span class="o">+</span><span class="s1">&#39;rewards_df.csv&#39;</span><span class="p">,</span><span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
@@ -13471,7 +13479,7 @@ Training duration: 3.66 Hours, Model taken from iteration no. 248, Total iterati
 
 
 <div class="output_subarea output_stream output_stderr output_text">
-<pre>100%|██████████| 1/1 [00:00&lt;00:00, 14.47it/s]
+<pre>100%|██████████| 1/1 [00:00&lt;00:00, 16.65it/s]
 </pre>
 </div>
 </div>
@@ -13496,7 +13504,7 @@ Training duration: 3.66 Hours, Model taken from iteration no. 248, Total iterati
 
 
 <div class="output_subarea output_stream output_stderr output_text">
-<pre>100%|██████████| 1/1 [00:00&lt;00:00, 24.42it/s]
+<pre>100%|██████████| 1/1 [00:00&lt;00:00, 15.39it/s]
 </pre>
 </div>
 </div>
@@ -13521,7 +13529,7 @@ Training duration: 3.66 Hours, Model taken from iteration no. 248, Total iterati
 
 
 <div class="output_subarea output_stream output_stderr output_text">
-<pre>100%|██████████| 25/25 [00:00&lt;00:00, 32.05it/s]
+<pre>100%|██████████| 25/25 [00:00&lt;00:00, 42.06it/s]
 </pre>
 </div>
 </div>
