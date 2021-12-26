@@ -13110,9 +13110,9 @@ $( document ).ready(function(){
 <li>The agent is allowed to buy/sell/hold <b>at most one unit</b> of <a href="https://en.wikipedia.org/wiki/Garanti_BBVA">Garanti</a> stock at each time step.</li>
 <li><p>The agent can short or long or do nothing (preserve his current position) at each time step. He can also execute a daily stop-loss, where he checks the current P&amp;L and closes all positions and stops further trading in the case of negative total profit.</p>
 </li>
-<li><p>An environment is a <u>daily</u> Limit Order Book (LOB) environment, containing 5 levels of bid/ask prices/volumes at nanosecond precision.</p>
+<li><p>An environment is a <u>daily</u> Limit Order Book (LOB) environment, containing 5 levels of bid/ask prices/volumes at millisecond precision.</p>
 </li>
-<li>The states returned by the environment at each time step are the last 10 LOB bars, the agent's current position (<b>neutral, long or short</b>) and the <a href="https://www.investopedia.com/terms/m/marktomarket.asp">mark-to-market-value</a> at the current time step.</li>
+<li>The states returned by the environment at each time step are the last 10 LOB bars (1 for Echo State Network), the agent's current position (<b>neutral, long or short</b>) and the <a href="https://www.investopedia.com/terms/m/marktomarket.asp">mark-to-market-value</a> at the current time step.</li>
 <li><p>Possible actions: 'sell','stay','buy', 'daily stop loss'.</p>
 </li>
 <li><p>The agent is trained using the <a href="https://arxiv.org/abs/1707.06347">Proximal Policy Optimization (PPO)</a> algorithm.</p>
