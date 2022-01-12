@@ -13104,7 +13104,7 @@ $( document ).ready(function(){
 
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[1]:</div>
+<div class="prompt input_prompt">In&nbsp;[5]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">HTML</span>
@@ -13122,7 +13122,7 @@ $( document ).ready(function(){
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[1]:</div>
+    <div class="prompt output_prompt">Out[5]:</div>
 
 
 
@@ -13138,7 +13138,7 @@ $( document ).ready(function(){
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[2]:</div>
+<div class="prompt input_prompt">In&nbsp;[6]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
@@ -13189,7 +13189,7 @@ $( document ).ready(function(){
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[3]:</div>
+<div class="prompt input_prompt">In&nbsp;[7]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">models</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;26_12_2021_01_01_38&#39;</span><span class="p">,</span><span class="s1">&#39;27_12_2021_05_36_40&#39;</span><span class="p">,</span><span class="s1">&#39;26_12_2021_01_13_20&#39;</span><span class="p">]</span> <span class="c1"># FFNN, PFNN , ESN</span>
@@ -13208,7 +13208,7 @@ $( document ).ready(function(){
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[4]:</div>
+<div class="prompt input_prompt">In&nbsp;[8]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">position_starts_ends</span> <span class="o">=</span> <span class="p">[]</span> <span class="p">;</span> <span class="n">position_lengths</span> <span class="o">=</span> <span class="p">[]</span> <span class="p">;</span> <span class="n">position_types</span> <span class="o">=</span> <span class="p">[]</span> <span class="p">;</span> <span class="n">position_rewards</span> <span class="o">=</span> <span class="p">[]</span>
@@ -13245,7 +13245,7 @@ $( document ).ready(function(){
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[5]:</div>
+<div class="prompt input_prompt">In&nbsp;[9]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">colors</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;cornflowerblue&#39;</span><span class="p">,</span><span class="s1">&#39;darkorange&#39;</span><span class="p">,</span><span class="s1">&#39;seagreen&#39;</span><span class="p">]</span> <span class="c1">#FFNN,PFNN,ESN</span>
@@ -13298,7 +13298,7 @@ $( document ).ready(function(){
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[6]:</div>
+<div class="prompt input_prompt">In&nbsp;[10]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">time_statistics</span><span class="p">(</span><span class="n">strats</span><span class="p">,</span><span class="n">bin_algo</span> <span class="o">=</span> <span class="s1">&#39;fd&#39;</span><span class="p">):</span>
@@ -13442,7 +13442,7 @@ $( document ).ready(function(){
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[7]:</div>
+<div class="prompt input_prompt">In&nbsp;[11]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># colors2 = [&#39;royalblue&#39;,&#39;darkgoldenrod&#39;,&#39;darkgreen&#39;] #FFNN,PFNN,ESN</span>
@@ -13534,9 +13534,48 @@ $( document ).ready(function(){
 </div>
 
 </div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Notebook-Overview">Notebook Overview<a class="anchor-link" href="#Notebook-Overview">&#182;</a></h1><p>In this notebook we investigate the models in terms of their return distributions and trade frequencies to understand the differences in their strategies.
+Below we have plots showing:</p>
+<p><ul></p>
+<p><li><u>Return Profiles with Corresponding Intensities</u></li>
+    <p style="margin-left:2%; margin-right:2%;">
+    The main histogram shows the return distributions of the models. Returns which are rare are not included. We see that the returns range from -0.01 and 0.01 with increments of 0.005. This is due to the fact that the minimum tick movement is 0.01 TL in our Limit Order Book (LOB) and that we are trading on mid-prices. Although Echo State Network (ESN) has the highest number of trades, most of them are break-evens yielding zero returns. Note that this characteristic is shared by every model. The model with the highest total return is Partially Trained Feedforward Network (PFNN), followed up by ESN.
+    </p>
+    <p style="margin-left:2%; margin-right:2%;">
+    Below the main histogram, we have the frequency distributions of each return bin seperated by the type of trade, i.e. Long (on the left side) and Short (on the right side).
+    One common phenomenon displayed by each model is that both higher losses and profits are achieved with lower frequency activity and the break-evens are mostly high frequency events.
+    </p>
+    <p style="margin-left:2%; margin-right:2%;">
+    Fully Trained Feedfoorward Network (FFNN) and PFNN have similar frequency profiles with lower frequency short positions compared to longs, whereas ESN has lower frequency long positions compared to shorts.
+    </p></p>
+<p><li><u>P&L Schema</u></li>
+    <p style="margin-left:2%; margin-right:2%;">
+    The bar graph shows a strong inclination towards short positions by ESN, whereas the feedforward models have a balanced long to short ratio. The pie charts, which exclude the break-evens, show that most of these short positions by ESN have a higher loss to profit ratio than its long positions do, yielding a lower net profit by shorts than longs. Although not as sharp as ESN, the increased tendency to short than long is shared by other models too. Yet, feedforward models achieve higher returns with shorts than longs as opposed to ESN.
+    </p>&lt;/div&gt;</p>
+<p><li><u>Frequency Profile</u></li>
+    <p style="margin-left:2%; margin-right:2%;">
+    Histograms in the center belong to four categories. First quadrant has shorts with profits, second quadrant longs with profits, third quadrant longs with losses, fourth quadrant shorts with losses. 
+    The two dimensional histograms at the right top corner show the frequencies of returns with their intensity, again divided into four categories.
+    Additionally the frequency profile taking all the trades into account is shown by the (dark magenta) histogram at the left.
+    </p>
+    <p style="margin-left:2%; margin-right:2%;">
+    We see that ESN both benefits and suffers from its salient high frequency short position strategy relatively more than the other models. Due to these, it is the highest frequency agent.
+    Note that 50% of ESN's losses from shorts are trades with duration 1 (tick time), where this is 18 and 13 for FFNN and PFNN, respectively. Looking at all trades of ESN, again 50% of them are trades closed in 1 tick time.
+    Similar to ESN, PFNN also has a high frequency profile, yet its strategy is more balanced between longs and shorts and does not have the high frequency shorting feature of ESN, resulting in a relatively lower frequency trading strategy compared to ESN's. Note that PFNN's long positions have higher frequency than ESN's.
+    </p>
+    <p style="margin-left:2%; margin-right:2%;">
+    The two dimensional histograms show that both profits and losses happen mostly at the high frequency range since it is where most trades happen but we see an increase at the lower frequencies of the long positons with profits of 0.01 TL for each model.
+    </p></p>
+
+</div>
+</div>
+</div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[8]:</div>
+<div class="prompt input_prompt">In&nbsp;[13]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">fig2</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;./fig2&#39;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span><span class="n">bbox_inches</span><span class="o">=</span><span class="s1">&#39;tight&#39;</span><span class="p">)</span> <span class="p">;</span> <span class="n">fig1</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;./fig1&#39;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span><span class="n">bbox_inches</span><span class="o">=</span><span class="s1">&#39;tight&#39;</span><span class="p">)</span>
@@ -13555,13 +13594,13 @@ $( document ).ready(function(){
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[8]:</div>
+    <div class="prompt output_prompt">Out[13]:</div>
 
 
 
 
 <div class="output_png output_subarea output_execute_result">
-<img src="compare_strategies_files/compare_strategies_7_0.png"
+<img src="compare_strategies_files/compare_strategies_8_0.png"
 >
 </div>
 
@@ -13595,7 +13634,7 @@ $( document ).ready(function(){
 
 
 <div class="output_png output_subarea output_execute_result">
-<img src="compare_strategies_files/compare_strategies_8_0.png"
+<img src="compare_strategies_files/compare_strategies_9_0.png"
 >
 </div>
 

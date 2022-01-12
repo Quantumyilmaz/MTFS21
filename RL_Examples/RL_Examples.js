@@ -11,7 +11,7 @@ var links  =
 "ESN-PPO": "../ESN-PPO/paper_reservoir_website_PPO.html",
 "ESNRLS-Q": "../ESNRLS-Q/paper_reservoir_website.html",
 "Data Preparation": "../data_prep/paper_data_prep_website.html",
-"Analysis(WIP)": "../compare_strategies/compare_strategies.html"
+"Analysis": "../compare_strategies/compare_strategies.html"
 };
 
 // var spread_links  = 
