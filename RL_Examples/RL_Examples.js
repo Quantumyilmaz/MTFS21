@@ -10,13 +10,15 @@ var links  =
 "Partially Trained FNN": "../PartiallyTrained/paper_random_init_website.html", 
 "ESN-PPO": "../ESN-PPO/paper_reservoir_website_PPO.html",
 "ESNRLS-Q": "../ESNRLS-Q/paper_reservoir_website.html",
-"Data Preparation": "../data_prep/paper_data_prep_website.html"};
+"Data Preparation": "../data_prep/paper_data_prep_website.html",
+"Analysis(WIP)": "../compare_strategies/compare_strategies.html"
+};
 
-var spread_links  = 
-{"Fully Trained FNN": "", 
-"Partially Trained FNN": "", 
-"ESNRLS-Q": "",
-"Data Preparation": ""};
+// var spread_links  = 
+// {"Fully Trained FNN": "", 
+// "Partially Trained FNN": "", 
+// "ESNRLS-Q": "",
+// "Data Preparation": ""};
 
 var cartpole_links  = 
 {
