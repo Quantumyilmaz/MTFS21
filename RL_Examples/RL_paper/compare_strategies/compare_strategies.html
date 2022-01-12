@@ -13542,19 +13542,19 @@ Below we have plots showing:</p>
 <p><ul></p>
 <p><li><u>Return Profiles with Corresponding Intensities</u></li>
     <p style="margin-left:2%; margin-right:2%;">
-    The main histogram shows the return distributions of the models. Returns which are rare are not included. We see that the returns range from -0.01 and 0.01 with increments of 0.005. This is due to the fact that the minimum tick movement is 0.01 TL in our Limit Order Book (LOB) and that we are trading on mid-prices. Although Echo State Network (ESN) has the highest number of trades, most of them are break-evens yielding zero returns. Note that this characteristic is shared by every model. The model with the highest total return is Partially Trained Feedforward Network (PFNN), followed up by ESN.
+    The main histogram shows the return distributions of the models. Returns which are rare are not included. We see that the returns range from -0.01 to 0.01 with increments of 0.005. This is due to the fact that the minimum tick movement is 0.01 TL in our Limit Order Book (LOB) and that we are trading on mid-prices. Although Echo State Network (ESN) has the highest number of trades by a considerable margin, most of them are break-evens yielding zero returns. Note that this characteristic is shared by every model. The model with the highest total return is Partially Trained Feedforward Network (PFNN), followed up by ESN.
     </p>
     <p style="margin-left:2%; margin-right:2%;">
     Below the main histogram, we have the frequency distributions of each return bin seperated by the type of trade, i.e. Long (on the left side) and Short (on the right side).
     One common phenomenon displayed by each model is that both higher losses and profits are achieved with lower frequency activity and the break-evens are mostly high frequency events.
     </p>
     <p style="margin-left:2%; margin-right:2%;">
-    Fully Trained Feedfoorward Network (FFNN) and PFNN have similar frequency profiles with lower frequency short positions compared to longs, whereas ESN has lower frequency long positions compared to shorts.
+    Fully Trained Feedforward Network (FFNN) and PFNN have similar frequency profile shapes with lower frequency short positions compared to longs, whereas ESN has lower frequency long positions compared to shorts.
     </p></p>
 <p><li><u>P&L Schema</u></li>
     <p style="margin-left:2%; margin-right:2%;">
-    The bar graph shows a strong inclination towards short positions by ESN, whereas the feedforward models have a balanced long to short ratio. The pie charts, which exclude the break-evens, show that most of these short positions by ESN have a higher loss to profit ratio than its long positions do, yielding a lower net profit by shorts than longs. Although not as sharp as ESN, the increased tendency to short than long is shared by other models too. Yet, feedforward models achieve higher returns with shorts than longs as opposed to ESN.
-    </p>&lt;/div&gt;</p>
+    The bar graph shows a strong inclination towards short positions by ESN, whereas the feedforward models have a relatively balanced long to short ratio. The pie charts, which exclude the break-evens, show that most of these short positions by ESN have a higher loss to profit ratio than its long positions do, yielding a lower net profit from shorts than longs. Although not as sharp as ESN, the increased tendency to short than long is shared by other models too. Yet, feedforward models achieve higher returns with shorts than longs as opposed to ESN.
+    </p></p>
 <p><li><u>Frequency Profile</u></li>
     <p style="margin-left:2%; margin-right:2%;">
     Histograms in the center belong to four categories. First quadrant has shorts with profits, second quadrant longs with profits, third quadrant longs with losses, fourth quadrant shorts with losses. 
@@ -13564,10 +13564,10 @@ Below we have plots showing:</p>
     <p style="margin-left:2%; margin-right:2%;">
     We see that ESN both benefits and suffers from its salient high frequency short position strategy relatively more than the other models. Due to these, it is the highest frequency agent.
     Note that 50% of ESN's losses from shorts are trades with duration 1 (tick time), where this is 18 and 13 for FFNN and PFNN, respectively. Looking at all trades of ESN, again 50% of them are trades closed in 1 tick time.
-    Similar to ESN, PFNN also has a high frequency profile, yet its strategy is more balanced between longs and shorts and does not have the high frequency shorting feature of ESN, resulting in a relatively lower frequency trading strategy compared to ESN's. Note that PFNN's long positions have higher frequency than ESN's.
+    Similar to ESN, PFNN also has a high frequency profile, yet its strategy is more balanced between longs and shorts and does not have the high frequency shorting feature of ESN, resulting in a lower frequency trading strategy compared to ESN's. Note that PFNN's long positions have higher frequency than ESN's.
     </p>
     <p style="margin-left:2%; margin-right:2%;">
-    The two dimensional histograms show that both profits and losses happen mostly at the high frequency range since it is where most trades happen but we see an increase at the lower frequencies of the long positons with profits of 0.01 TL for each model.
+    The two dimensional histograms show that both profits and losses happen mostly at the high frequency range since it is where most trades happen but we see an increase at the lower frequencies of the long positons with profits 0.01 TL for each model.
     </p></p>
 
 </div>
