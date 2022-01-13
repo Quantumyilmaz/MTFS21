@@ -13105,14 +13105,15 @@ $( document ).ready(function(){
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="Notebook-Overview">Notebook Overview<a class="anchor-link" href="#Notebook-Overview">&#182;</a></h1><p>The setting is the same as in the <a href="https://quantumyilmaz.github.io/MTFS21/RL_Examples/RL_paper/FullyTrained/paper_website.html">previous notebook</a> but this time not all the parameters of the network are optimized. Instead, it is partially trained.</p>
+<h1 id="Notebook-Overview">Notebook Overview<a class="anchor-link" href="#Notebook-Overview">&#182;</a></h1><p>The setting is the same as in the <a href="https://quantumyilmaz.github.io/MTFS21/RL_Examples/RL_paper/FullyTrained/paper_website.html">previous notebook</a> but this time not all the parameters of the network are optimized. Instead, only the output layer is trained. We use a customized version of the stable_baseline3's PPO implementation.
+ <!-- described [here](). --></p>
 
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[1]:</div>
+<div class="prompt input_prompt">In&nbsp;[7]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">HTML</span>
@@ -13130,7 +13131,7 @@ $( document ).ready(function(){
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[1]:</div>
+    <div class="prompt output_prompt">Out[7]:</div>
 
 
 
@@ -13146,29 +13147,37 @@ $( document ).ready(function(){
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[2]:</div>
+<div class="prompt input_prompt">In&nbsp;[9]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span><span class="nn">os</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;./../../&quot;</span><span class="p">)</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;./../../../&quot;</span><span class="p">)</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;./../../../../&quot;</span><span class="p">)</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;HOME&#39;</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;/#myprojects/&#39;</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">Plotter.plotter</span> <span class="kn">import</span> <span class="n">plotter</span>
+<span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span><span class="nn">os</span><span class="o">,</span><span class="nn">importlib</span><span class="o">,</span><span class="nn">pickle</span><span class="o">,</span><span class="nn">fileinput</span>
+<span class="kn">from</span> <span class="nn">zipfile</span> <span class="kn">import</span> <span class="n">ZipFile</span>
+<span class="kn">from</span> <span class="nn">utils.plotter</span> <span class="kn">import</span> <span class="n">plotter</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">stable_baselines3</span> <span class="kn">import</span> <span class="n">PPO</span>
+<span class="kn">from</span> <span class="nn">CustomStableBaselines</span> <span class="kn">import</span> <span class="n">CustomPPO</span>
+<span class="kn">from</span> <span class="nn">tqdm.notebook</span> <span class="kn">import</span> <span class="n">trange</span><span class="p">,</span><span class="n">tqdm</span>
+<span class="kn">from</span> <span class="nn">LOBenv_mid</span> <span class="kn">import</span> <span class="n">LOBEnv_mid</span>
 <span class="kn">import</span> <span class="nn">torch</span>
-<span class="kn">from</span> <span class="nn">torchinfo</span> <span class="kn">import</span> <span class="n">summary</span>
 <span class="kn">from</span> <span class="nn">utils.df_handler</span> <span class="kn">import</span> <span class="n">force_zehnerpot</span>
-<span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">display</span><span class="p">,</span><span class="n">HTML</span>
-<span class="kn">import</span> <span class="nn">pickle</span>
+<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
 
-<span class="n">model_dir_1</span> <span class="o">=</span> <span class="s2">&quot;./01_12_21/&quot;</span>
-<span class="n">model_dir_2</span> <span class="o">=</span> <span class="s2">&quot;./24_12_2021_06_05_02/&quot;</span>
+<span class="c1"># SELECT MODEL TO VALIDATE ######</span>
+<span class="n">MODEL_TO_VALIDATE</span> <span class="o">=</span> <span class="s1">&#39;PFNN&#39;</span> <span class="c1"># FFNN or PFNN or ESN</span>
+<span class="n">model_dir1_name</span> <span class="o">=</span> <span class="s2">&quot;01_12_21&quot;</span> <span class="c1"># model directory name = datetime of training start</span>
+<span class="n">model_dir2_name</span> <span class="o">=</span> <span class="s2">&quot;27_12_2021_05_36_40&quot;</span> <span class="c1"># model directory name = datetime of training start</span>
+<span class="c1">#################################</span>
 
-<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">model_dir_1</span><span class="p">)</span>
-<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">model_dir_2</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">model</span> <span class="kn">import</span> <span class="n">CustomActorCriticPolicy</span>
+<span class="n">rel_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">MODEL_TO_VALIDATE</span><span class="si">}</span><span class="s1">_mid.&#39;</span> <span class="o">+</span> <span class="n">model_dir_name</span>
+<span class="n">model_dirs</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;../../</span><span class="si">{</span><span class="n">MODEL_TO_VALIDATE</span><span class="si">}</span><span class="s2">_mid/&quot;</span> <span class="o">+</span> <span class="n">model_dir_name</span> <span class="o">+</span> <span class="s1">&#39;/&#39;</span> <span class="k">for</span> <span class="n">model_dir_name</span> <span class="ow">in</span> <span class="p">[</span><span class="n">model_dir1_name</span><span class="p">,</span><span class="n">model_dir2_name</span><span class="p">]]</span>
+<span class="n">model_zip</span> <span class="o">=</span> <span class="n">model_dir</span> <span class="o">+</span> <span class="n">model_dir_name</span> <span class="o">+</span> <span class="s1">&#39;.zip&#39;</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">model_dir</span><span class="p">)</span>
 
 <span class="n">LOB</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_pickle</span><span class="p">(</span><span class="s2">&quot;../../pkls/LOB_conti.pkl&quot;</span><span class="p">)</span>
 
@@ -13177,6 +13186,15 @@ $( document ).ready(function(){
 <span class="n">validation_dates</span> <span class="o">=</span> <span class="n">dates</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">dates</span><span class="p">)</span><span class="o">//</span><span class="mi">10</span> <span class="o">*</span> <span class="mi">6</span><span class="p">:]</span>
 
 <span class="n">LOB_on_certain_day</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">lob</span><span class="p">,</span><span class="n">date</span><span class="p">:</span> <span class="n">lob</span><span class="p">[</span><span class="n">lob</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">date</span> <span class="o">==</span> <span class="n">date</span><span class="p">]</span>
+
+<span class="c1"># for model_dir in model_dirs:</span>
+<span class="c1">#     with open(model_dir+&#39;train_config.txt&#39;, &#39;r&#39;) as f:</span>
+<span class="c1">#         s = f.read()</span>
+<span class="c1">#         train_config = eval(&#39;{&#39;+s[s.find(&quot;{&quot;)+1:s.find(&quot;}&quot;)]+&#39;}&#39; )</span>
+<span class="c1">#         print(&#39;Training Configurations:\n&#39;)</span>
+<span class="c1">#         for key, value in train_config.items():</span>
+<span class="c1">#             print(key, &#39; : &#39;, value)</span>
+            
 </pre></div>
 
     </div>
@@ -13219,12 +13237,12 @@ $( document ).ready(function(){
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[3]:</div>
+<div class="prompt input_prompt">In&nbsp;[10]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">model_dir_1</span><span class="o">+</span><span class="s1">&#39;/model_summary.txt&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">model_dirs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="s1">&#39;/model_summary.txt&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
     <span class="n">lines1</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
-<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">model_dir_2</span><span class="o">+</span><span class="s1">&#39;/model_summary.txt&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">model_dirs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="s1">&#39;/model_summary.txt&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
     <span class="n">lines2</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
     
 <span class="n">models_summary</span><span class="o">=</span><span class="s1">&#39;&#39;</span>
@@ -13257,31 +13275,31 @@ $( document ).ready(function(){
 Layer (type:depth-idx)                   Output Shape              Param #                Layer (type:depth-idx)                   Output Shape              Param #                
 ====================================================================================================================================================================================
 CustomActorCriticPolicy                  --                        --                     CustomActorCriticPolicy                  --                        --                     
-├─FlattenExtractor: 1-1                  [1, 112]                  --                     ├─FlattenExtractor: 1-1                  [1, 112]                  --                     
-│    └─Flatten: 2-1                      [1, 112]                  --                     │    └─Flatten: 2-1                      [1, 112]                  --                     
-├─CustomNetwork: 1-2                     [1, 64]                   --                     ├─CustomNetwork: 1-2                     [1, 64]                   --                     
-│    └─Sequential: 2-2                   [1, 64]                   --                     │    └─Sequential: 2-2                   [1, 64]                   --                     
-│    │    └─Linear: 3-1                  [1, 64]                   (7,168)                │    │    └─Linear: 3-1                  [1, 1000]                 (112,000)              
-│    │    └─Tanh: 3-2                    [1, 64]                   --                     │    │    └─Tanh: 3-2                    [1, 1000]                 --                     
-│    │    └─Linear: 3-3                  [1, 64]                   (4,096)                │    │    └─Linear: 3-3                  [1, 64]                   64,000                 
-│    │    └─Tanh: 3-4                    [1, 64]                   --                     │    │    └─Tanh: 3-4                    [1, 64]                   --                     
-│    └─Sequential: 2-3                   [1, 64]                   (recursive)            │    └─Sequential: 2-3                   [1, 64]                   --                     
-│    │    └─Linear: 3-5                  [1, 64]                   (recursive)            │    │    └─Linear: 3-5                  [1, 1000]                 (112,000)              
-│    │    └─Tanh: 3-6                    [1, 64]                   --                     │    │    └─Tanh: 3-6                    [1, 1000]                 --                     
-│    │    └─Linear: 3-7                  [1, 64]                   (recursive)            │    │    └─Linear: 3-7                  [1, 64]                   64,000                 
-│    │    └─Tanh: 3-8                    [1, 64]                   --                     │    │    └─Tanh: 3-8                    [1, 64]                   --                     
-├─Linear: 1-3                            [1, 1]                    65                     ├─Linear: 1-3                            [1, 1]                    65                     
-├─Linear: 1-4                            [1, 4]                    260                    ├─Linear: 1-4                            [1, 4]                    260                    
+├─FlattenExtractor: 1-1                  [1, 112]                  --                     ├─FlattenExtractor: 1-1                  [25, 112]                 --                     
+│    └─Flatten: 2-1                      [1, 112]                  --                     │    └─Flatten: 2-1                      [25, 112]                 --                     
+├─CustomNetwork: 1-2                     [1, 64]                   --                     ├─CustomNetwork: 1-2                     [25, 64]                  --                     
+│    └─Sequential: 2-2                   [1, 64]                   --                     │    └─Sequential: 2-2                   [25, 64]                  --                     
+│    │    └─Linear: 3-1                  [1, 64]                   (7,168)                │    │    └─Linear: 3-1                  [25, 1000]                (112,000)              
+│    │    └─Tanh: 3-2                    [1, 64]                   --                     │    │    └─Tanh: 3-2                    [25, 1000]                --                     
+│    │    └─Linear: 3-3                  [1, 64]                   (4,096)                │    │    └─Linear: 3-3                  [25, 64]                  64,000                 
+│    │    └─Tanh: 3-4                    [1, 64]                   --                     │    │    └─Tanh: 3-4                    [25, 64]                  --                     
+│    └─Sequential: 2-3                   [1, 64]                   (recursive)            │    └─Sequential: 2-3                   [25, 64]                  --                     
+│    │    └─Linear: 3-5                  [1, 64]                   (recursive)            │    │    └─Linear: 3-5                  [25, 1000]                (112,000)              
+│    │    └─Tanh: 3-6                    [1, 64]                   --                     │    │    └─Tanh: 3-6                    [25, 1000]                --                     
+│    │    └─Linear: 3-7                  [1, 64]                   (recursive)            │    │    └─Linear: 3-7                  [25, 64]                  64,000                 
+│    │    └─Tanh: 3-8                    [1, 64]                   --                     │    │    └─Tanh: 3-8                    [25, 64]                  --                     
+├─Linear: 1-3                            [1, 1]                    65                     ├─Linear: 1-3                            [25, 1]                   65                     
+├─Linear: 1-4                            [1, 4]                    260                    ├─Linear: 1-4                            [25, 4]                   260                    
 ====================================================================================================================================================================================
 Total params: 11,589                                                                      Total params: 352,325                                                                     
 Trainable params: 325                                                                     Trainable params: 128,325                                                                 
 Non-trainable params: 11,264                                                              Non-trainable params: 224,000                                                             
-Total mult-adds (M): 0.02                                                                 Total mult-adds (M): 0.35                                                                 
+Total mult-adds (M): 0.02                                                                 Total mult-adds (M): 8.81                                                                 
 ====================================================================================================================================================================================
-Input size (MB): 0.00                                                                     Input size (MB): 0.00                                                                     
-Forward/backward pass size (MB): 0.00                                                     Forward/backward pass size (MB): 0.02                                                     
+Input size (MB): 0.00                                                                     Input size (MB): 0.02                                                                     
+Forward/backward pass size (MB): 0.00                                                     Forward/backward pass size (MB): 0.43                                                     
 Params size (MB): 0.05                                                                    Params size (MB): 1.41                                                                    
-Estimated Total Size (MB): 0.05                                                           Estimated Total Size (MB): 1.43                                                           
+Estimated Total Size (MB): 0.05                                                           Estimated Total Size (MB): 1.86                                                           
 ====================================================================================================================================================================================
 </pre>
 </div>
@@ -13303,12 +13321,40 @@ We also see that increasing the size of the non-trainable hidden layer is benefi
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[4]:</div>
+<div class="prompt input_prompt">In&nbsp;[12]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">model_dir_1</span><span class="o">+</span><span class="s2">&quot;rewards_mid.pkl&quot;</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># actions = {}</span>
+
+<span class="c1"># for i,val_date in tqdm(enumerate(list(validation_dates)), total=validation_dates.size):</span>
+<span class="c1">#     env = LOBEnv_mid(LOB_on_certain_day(LOB,val_date),202,prices_enabled=True)</span>
+<span class="c1">#     done=0</span>
+<span class="c1">#     actions[i]=[(None,None,0)]</span>
+<span class="c1">#     obs=env.reset()</span>
+<span class="c1">#     while not done:</span>
+<span class="c1">#         action,_ = model.predict(obs)</span>
+<span class="c1">#         obs, reward, done, info = env.step(action)</span>
+<span class="c1">#         position = env.position</span>
+<span class="c1">#         actions[i].append((action,reward,position))</span>
+        
+<span class="c1"># pd.concat([pd.DataFrame(act,columns=[&quot;action&quot;,&quot;reward&quot;,&quot;position&quot;], \</span>
+<span class="c1">#                         index=pd.MultiIndex.from_tuples((i,k) for k in range(len(act)))) \</span>
+<span class="c1">#                                    for i,act in enumerate(actions.values())]).to_pickle(model_dir+&quot;validation_log_mid_random.pkl&quot;)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[13]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">model_dirs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="s2">&quot;rewards_mid.pkl&quot;</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
     <span class="n">rewards_mid_1</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
-<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">model_dir_2</span><span class="o">+</span><span class="s2">&quot;rewards_mid.pkl&quot;</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">model_dirs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="s2">&quot;rewards_mid.pkl&quot;</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
     <span class="n">rewards_mid_2</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
 
 <span class="n">rewards_daily_mid_1</span> <span class="o">=</span> <span class="p">[</span><span class="o">*</span><span class="nb">map</span><span class="p">(</span><span class="nb">sum</span><span class="p">,</span><span class="n">rewards_mid_1</span><span class="o">.</span><span class="n">values</span><span class="p">())]</span> <span class="p">;</span> <span class="n">rewards_daily_mid_2</span> <span class="o">=</span> <span class="p">[</span><span class="o">*</span><span class="nb">map</span><span class="p">(</span><span class="nb">sum</span><span class="p">,</span><span class="n">rewards_mid_2</span><span class="o">.</span><span class="n">values</span><span class="p">())]</span>
@@ -13351,7 +13397,7 @@ We also see that increasing the size of the non-trainable hidden layer is benefi
 
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>Total Gains: 111.7 TL in 103 days (Model 1).
-Total Gains: 164.63 TL in 103 days (Model 2).
+Total Gains: 262.23 TL in 103 days (Model 2).
 </pre>
 </div>
 </div>
@@ -13362,7 +13408,7 @@ Total Gains: 164.63 TL in 103 days (Model 2).
 
 
 <div class="output_subarea output_stream output_stderr output_text">
-<pre>100%|██████████| 1/1 [00:00&lt;00:00,  4.45it/s]
+<pre>100%|██████████| 1/1 [00:00&lt;00:00,  3.34it/s]
 </pre>
 </div>
 </div>
@@ -13375,7 +13421,7 @@ Total Gains: 164.63 TL in 103 days (Model 2).
 
 
 <div class="output_png output_subarea ">
-<img src="paper_random_init_website_files/paper_random_init_website_7_2.png"
+<img src="paper_random_init_website_files/paper_random_init_website_8_2.png"
 >
 </div>
 
@@ -13396,10 +13442,11 @@ Total Gains: 164.63 TL in 103 days (Model 2).
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[5]:</div>
+<div class="prompt input_prompt">In&nbsp;[14]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">rewards_df_1</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">model_dir_1</span><span class="o">+</span><span class="s1">&#39;rewards_df.csv&#39;</span><span class="p">,</span><span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="p">;</span> <span class="n">rewards_df_2</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">model_dir_2</span><span class="o">+</span><span class="s1">&#39;rewards_df.csv&#39;</span><span class="p">,</span><span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">model_dir_1</span> <span class="o">=</span> <span class="n">model_dirs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">;</span> <span class="n">model_dir_2</span> <span class="o">=</span> <span class="n">model_dirs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">rewards_df_1</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">model_dir_1</span><span class="o">+</span><span class="s1">&#39;rewards_df.csv&#39;</span><span class="p">,</span><span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="p">;</span> <span class="n">rewards_df_2</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">model_dir_2</span><span class="o">+</span><span class="s1">&#39;rewards_df.csv&#39;</span><span class="p">,</span><span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
 <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">model_dir_1</span><span class="o">+</span><span class="s1">&#39;log.txt&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
     <span class="n">lines</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
@@ -13468,7 +13515,7 @@ Total Gains: 164.63 TL in 103 days (Model 2).
 
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>Training duration: 2.66 Hours, Model taken from iteration no. 250, Total iterations: 250 (Model 1).
-Training duration: 1.29 Hours, Model taken from iteration no. 233, Total iterations: 250 (Model 2).
+Training duration: 1.18 Hours, Model taken from iteration no. 237, Total iterations: 250 (Model 2).
 </pre>
 </div>
 </div>
@@ -13479,7 +13526,7 @@ Training duration: 1.29 Hours, Model taken from iteration no. 233, Total iterati
 
 
 <div class="output_subarea output_stream output_stderr output_text">
-<pre>100%|██████████| 1/1 [00:00&lt;00:00, 18.58it/s]
+<pre>100%|██████████| 1/1 [00:00&lt;00:00, 21.13it/s]
 </pre>
 </div>
 </div>
@@ -13492,7 +13539,7 @@ Training duration: 1.29 Hours, Model taken from iteration no. 233, Total iterati
 
 
 <div class="output_png output_subarea ">
-<img src="paper_random_init_website_files/paper_random_init_website_9_2.png"
+<img src="paper_random_init_website_files/paper_random_init_website_10_2.png"
 >
 </div>
 
@@ -13504,7 +13551,7 @@ Training duration: 1.29 Hours, Model taken from iteration no. 233, Total iterati
 
 
 <div class="output_subarea output_stream output_stderr output_text">
-<pre>100%|██████████| 1/1 [00:00&lt;00:00, 23.36it/s]
+<pre>100%|██████████| 1/1 [00:00&lt;00:00, 23.26it/s]
 </pre>
 </div>
 </div>
@@ -13517,7 +13564,7 @@ Training duration: 1.29 Hours, Model taken from iteration no. 233, Total iterati
 
 
 <div class="output_png output_subarea ">
-<img src="paper_random_init_website_files/paper_random_init_website_9_4.png"
+<img src="paper_random_init_website_files/paper_random_init_website_10_4.png"
 >
 </div>
 
@@ -13529,7 +13576,7 @@ Training duration: 1.29 Hours, Model taken from iteration no. 233, Total iterati
 
 
 <div class="output_subarea output_stream output_stderr output_text">
-<pre>100%|██████████| 25/25 [00:00&lt;00:00, 54.49it/s]
+<pre>100%|██████████| 25/25 [00:00&lt;00:00, 41.42it/s]
 </pre>
 </div>
 </div>
@@ -13542,7 +13589,7 @@ Training duration: 1.29 Hours, Model taken from iteration no. 233, Total iterati
 
 
 <div class="output_png output_subarea ">
-<img src="paper_random_init_website_files/paper_random_init_website_9_6.png"
+<img src="paper_random_init_website_files/paper_random_init_website_10_6.png"
 >
 </div>
 

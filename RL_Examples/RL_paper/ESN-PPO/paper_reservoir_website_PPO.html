@@ -13105,7 +13105,7 @@ $( document ).ready(function(){
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="Notebook-Overview">Notebook Overview<a class="anchor-link" href="#Notebook-Overview">&#182;</a></h1><p>The environment is the same as in the <a href="https://quantumyilmaz.github.io/MTFS21/RL_Examples/RL_paper/FullyTrained/paper_website.html">previous notebook</a> but this time Echo State Networks with PPO are used instead of a feedforward network with PPO. The details on the implementation of ESNs to PPO can be found <a href=https://quantumyilmaz.github.io/MTFS21/RL_Examples/cartpole/cartpole_ESN_PPO_website.html>here.</a></p>
+<h1 id="Notebook-Overview">Notebook Overview<a class="anchor-link" href="#Notebook-Overview">&#182;</a></h1><p>The environment is the same as in the <a href="https://quantumyilmaz.github.io/MTFS21/RL_Examples/RL_paper/FullyTrained/paper_website.html">previous notebook</a> but this time an Echo State Network with PPO is used instead of a feedforward network with PPO.</p>
 
 </div>
 </div>
@@ -13146,25 +13146,35 @@ $( document ).ready(function(){
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[2]:</div>
+<div class="prompt input_prompt">In&nbsp;[4]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span><span class="nn">os</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;./../../&quot;</span><span class="p">)</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;./../../../&quot;</span><span class="p">)</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;./../../../../&quot;</span><span class="p">)</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;HOME&#39;</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;/#myprojects/&#39;</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">Plotter.plotter</span> <span class="kn">import</span> <span class="n">plotter</span>
+<span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span><span class="nn">os</span><span class="o">,</span><span class="nn">importlib</span><span class="o">,</span><span class="nn">pickle</span><span class="o">,</span><span class="nn">fileinput</span>
+<span class="kn">from</span> <span class="nn">zipfile</span> <span class="kn">import</span> <span class="n">ZipFile</span>
+<span class="kn">from</span> <span class="nn">utils.plotter</span> <span class="kn">import</span> <span class="n">plotter</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">stable_baselines3</span> <span class="kn">import</span> <span class="n">PPO</span>
+<span class="kn">from</span> <span class="nn">CustomStableBaselines</span> <span class="kn">import</span> <span class="n">CustomPPO</span>
+<span class="kn">from</span> <span class="nn">tqdm.notebook</span> <span class="kn">import</span> <span class="n">trange</span><span class="p">,</span><span class="n">tqdm</span>
+<span class="kn">from</span> <span class="nn">LOBenv_mid</span> <span class="kn">import</span> <span class="n">LOBEnv_mid</span>
 <span class="kn">import</span> <span class="nn">torch</span>
-<span class="kn">from</span> <span class="nn">torchinfo</span> <span class="kn">import</span> <span class="n">summary</span>
 <span class="kn">from</span> <span class="nn">utils.df_handler</span> <span class="kn">import</span> <span class="n">force_zehnerpot</span>
-<span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">display</span><span class="p">,</span> <span class="n">HTML</span>
-<span class="kn">import</span> <span class="nn">pickle</span>
+<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
 
-<span class="n">model_dir</span> <span class="o">=</span> <span class="s2">&quot;./18_12_2021_21_28_06/&quot;</span>
+<span class="c1"># SELECT MODEL TO VALIDATE ######</span>
+<span class="n">MODEL_TO_VALIDATE</span> <span class="o">=</span> <span class="s1">&#39;ESN&#39;</span> <span class="c1"># FFNN or PFNN or ESN</span>
+<span class="n">model_dir_name</span> <span class="o">=</span> <span class="s2">&quot;12_01_2022_19_25_29&quot;</span> <span class="c1"># model directory name = datetime of training start</span>
+<span class="c1">#################################</span>
 
+<span class="n">rel_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">MODEL_TO_VALIDATE</span><span class="si">}</span><span class="s1">_mid.&#39;</span> <span class="o">+</span> <span class="n">model_dir_name</span>
+<span class="n">model_dir</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;../../</span><span class="si">{</span><span class="n">MODEL_TO_VALIDATE</span><span class="si">}</span><span class="s2">_mid/&quot;</span> <span class="o">+</span> <span class="n">model_dir_name</span> <span class="o">+</span> <span class="s1">&#39;/&#39;</span>
+<span class="n">model_zip</span> <span class="o">=</span> <span class="n">model_dir</span> <span class="o">+</span> <span class="n">model_dir_name</span> <span class="o">+</span> <span class="s1">&#39;.zip&#39;</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">model_dir</span><span class="p">)</span>
 
 <span class="n">LOB</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_pickle</span><span class="p">(</span><span class="s2">&quot;../../pkls/LOB_conti.pkl&quot;</span><span class="p">)</span>
@@ -13174,9 +13184,50 @@ $( document ).ready(function(){
 <span class="n">validation_dates</span> <span class="o">=</span> <span class="n">dates</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">dates</span><span class="p">)</span><span class="o">//</span><span class="mi">10</span> <span class="o">*</span> <span class="mi">6</span><span class="p">:]</span>
 
 <span class="n">LOB_on_certain_day</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">lob</span><span class="p">,</span><span class="n">date</span><span class="p">:</span> <span class="n">lob</span><span class="p">[</span><span class="n">lob</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">date</span> <span class="o">==</span> <span class="n">date</span><span class="p">]</span>
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">model_dir</span><span class="o">+</span><span class="s1">&#39;train_config.txt&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="n">train_config</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="s1">&#39;{&#39;</span><span class="o">+</span><span class="n">s</span><span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;{&quot;</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">:</span><span class="n">s</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;}&quot;</span><span class="p">)]</span><span class="o">+</span><span class="s1">&#39;}&#39;</span> <span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Training Configurations:</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">train_config</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="s1">&#39; : &#39;</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        
 </pre></div>
 
     </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Training Configurations:
+
+TRAIN_MODEL  :  ESN
+WINDOW_SIZE  :  1
+SCENARIO  :  202
+PRICES_ENABLED  :  True
+SPREAD  :  0
+DATA_TYPE  :  LOB
+VECTORIZE_MODE  :  subproc
+BATCH_SIZE  :  4000
+N_STEPS  :  4000
+TOTAL_TIMESTEPS_PER_ENV  :  800000
+EVALUATE_MODEL  :  True
+SAVE_RESERVOIRS  :  False
+ENABLE_EARLY_STOP  :  False
+EARLY_STOP_THRESHOLD  :  50
+</pre>
+</div>
+</div>
+
 </div>
 </div>
 
@@ -13204,18 +13255,40 @@ $( document ).ready(function(){
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[3]:</div>
+<div class="prompt input_prompt">In&nbsp;[5]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">model_dir</span><span class="o">+</span><span class="s1">&#39;/model_summary.txt&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-    <span class="n">lines</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
-    
-<span class="n">models_summary</span><span class="o">=</span><span class="s1">&#39;&#39;</span>
-<span class="n">line_length</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
-<span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
-    <span class="n">models_summary</span><span class="o">+=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">line_length</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">env</span> <span class="o">=</span> <span class="n">LOBEnv_mid</span><span class="p">(</span><span class="n">LOB_on_certain_day</span><span class="p">(</span><span class="n">LOB</span><span class="p">,</span><span class="n">validation_dates</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span><span class="n">train_config</span><span class="p">[</span><span class="s1">&#39;SCENARIO&#39;</span><span class="p">],</span>
+                    <span class="n">prices_enabled</span><span class="o">=</span><span class="n">train_config</span><span class="p">[</span><span class="s1">&#39;PRICES_ENABLED&#39;</span><span class="p">],</span><span class="n">window_size</span><span class="o">=</span><span class="n">train_config</span><span class="p">[</span><span class="s1">&#39;WINDOW_SIZE&#39;</span><span class="p">])</span>
 
-<span class="n">display</span><span class="p">(</span><span class="n">HTML</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;&lt;pre&gt;</span><span class="si">{</span><span class="n">models_summary</span><span class="si">}</span><span class="s1">&lt;/pre&gt;&#39;</span><span class="p">))</span>
+<span class="k">if</span> <span class="n">MODEL_TO_VALIDATE</span> <span class="o">==</span> <span class="s1">&#39;FFNN&#39;</span><span class="p">:</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">PPO</span><span class="p">(</span><span class="s1">&#39;MlpPolicy&#39;</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">policy_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;net_arch&#39;</span><span class="p">:</span><span class="n">train_config</span><span class="p">[</span><span class="s1">&#39;NET_ARCH&#39;</span><span class="p">]},</span><span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
+<span class="k">elif</span> <span class="n">MODEL_TO_VALIDATE</span> <span class="o">==</span> <span class="s1">&#39;PFNN&#39;</span><span class="p">:</span>
+    <span class="n">CustomActorCriticPolicy</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="n">rel_path</span><span class="o">+</span><span class="s1">&#39;.model&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">CustomActorCriticPolicy</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">PPO</span><span class="p">(</span><span class="n">CustomActorCriticPolicy</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
+<span class="k">elif</span> <span class="n">MODEL_TO_VALIDATE</span> <span class="o">==</span> <span class="s1">&#39;ESN&#39;</span><span class="p">:</span>
+    <span class="k">with</span> <span class="n">fileinput</span><span class="o">.</span><span class="n">FileInput</span><span class="p">(</span><span class="n">model_dir</span><span class="o">+</span><span class="s1">&#39;model.py&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">backup</span><span class="o">=</span><span class="s1">&#39;.bak&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">file</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;n_envs = 25&#39;</span><span class="p">,</span> <span class="s1">&#39;n_envs = 1&#39;</span><span class="p">),</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+    <span class="n">CustomActorCriticReservoirPolicy</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="n">rel_path</span><span class="o">+</span><span class="s1">&#39;.model&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">CustomActorCriticReservoirPolicy</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">CustomPPO</span><span class="p">(</span><span class="n">CustomActorCriticReservoirPolicy</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Unrecognized model name.&#39;</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="n">ZipFile</span><span class="p">(</span><span class="n">model_zip</span><span class="p">)</span> <span class="k">as</span> <span class="n">myzip</span><span class="p">:</span>
+    <span class="k">with</span> <span class="n">myzip</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s1">&#39;policy.pth&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">myfile</span><span class="p">:</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">policy</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">myfile</span><span class="p">,</span><span class="n">map_location</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s1">&#39;cpu&#39;</span><span class="p">)))</span>
+
+<span class="k">if</span> <span class="n">MODEL_TO_VALIDATE</span> <span class="o">==</span> <span class="s1">&#39;ESN&#39;</span><span class="p">:</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">policy</span><span class="o">.</span><span class="n">collapse_reservoirs</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">policy</span><span class="o">.</span><span class="n">mlp_extractor</span><span class="o">.</span><span class="n">reservoirs</span><span class="p">:</span>
+        <span class="n">res</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+
+<span class="n">model</span><span class="o">.</span><span class="n">policy</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">model_dir</span><span class="o">+</span><span class="s1">&#39;/model_summary.txt&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">model_summary</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">model_summary</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -13231,49 +13304,85 @@ $( document ).ready(function(){
     <div class="prompt"></div>
 
 
-
-<div class="output_html rendered_html output_subarea ">
-<pre>==========================================================================================
-Layer (type:depth-idx)                   Output Shape              Param #                
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Reservoir generated. Number of units: 1000 Spectral Radius: 9.383778346648873
+Scaling reservoir matrix to have spectral radius 0.9...
+Done: 0.8999999999999861
+Reservoir generated. Number of units: 1000 Spectral Radius: 9.383778346648873
+Scaling reservoir matrix to have spectral radius 0.9...
+Done: 0.8999999999999861
 ==========================================================================================
-CustomActorCriticReservoirPolicy         --                        --                     
-├─FlattenExtractor: 1-1                  [1, 13]                   --                     
-│    └─Flatten: 2-1                      [1, 13]                   --                     
-├─CustomReservoirNetwork: 1-2            [1, 64]                   --                     
-│    └─Sequential: 2-2                   [1, 64]                   --                     
-│    └─BatchNorm1d: 2-3                  [1, 13]                   26                     
-│    └─Sequential: 2                     --                        --                     
-│    │    └─BatchNorm1d: 3-1             [1, 13]                   (recursive)            
-│    └─CustomESNN: 2                     --                        --                     
-│    │    └─Linear: 3-2                  [1, 64]                   64,896                 
-│    └─Sequential: 2                     --                        --                     
-│    │    └─Tanh: 3-3                    [1, 64]                   --                     
-│    └─Sequential: 2-4                   [1, 64]                   --                     
-│    └─BatchNorm1d: 2-5                  [1, 13]                   26                     
-│    └─Sequential: 2                     --                        --                     
-│    │    └─BatchNorm1d: 3-4             [1, 13]                   (recursive)            
-│    └─CustomESNN: 2                     --                        --                     
-│    │    └─Linear: 3-5                  [1, 64]                   64,896                 
-│    └─Sequential: 2                     --                        --                     
-│    │    └─Tanh: 3-6                    [1, 64]                   --                     
-├─Linear: 1-3                            [1, 1]                    65                     
-├─Linear: 1-4                            [1, 4]                    260                    
+Layer (type:depth-idx)                   Output Shape              Param #
 ==========================================================================================
-Total params: 130,169                                                                     
-Trainable params: 130,169                                                                 
-Non-trainable params: 0                                                                   
-Total mult-adds (M): 0.26                                                                 
+CustomActorCriticReservoirPolicy         --                        --
+├─FlattenExtractor: 1-1                  [4000, 13]                --
+│    └─Flatten: 2-1                      [4000, 13]                --
+├─CustomReservoirNetwork: 1-2            [4000, 64]                --
+│    └─Sequential: 2-2                   [4000, 64]                --
+│    └─BatchNorm1d: 2-3                  [4000, 13]                26
+│    └─Sequential: 2                     --                        --
+│    │    └─BatchNorm1d: 3-1             [4000, 13]                (recursive)
+│    └─CustomESNN: 2                     --                        --
+│    │    └─Linear: 3-2                  [4000, 64]                64,896
+│    └─Sequential: 2                     --                        --
+│    │    └─Tanh: 3-3                    [4000, 64]                --
+│    └─Sequential: 2-4                   [4000, 64]                --
+│    └─BatchNorm1d: 2-5                  [4000, 13]                26
+│    └─Sequential: 2                     --                        --
+│    │    └─BatchNorm1d: 3-4             [4000, 13]                (recursive)
+│    └─CustomESNN: 2                     --                        --
+│    │    └─Linear: 3-5                  [4000, 64]                64,896
+│    └─Sequential: 2                     --                        --
+│    │    └─Tanh: 3-6                    [4000, 64]                --
+├─Linear: 1-3                            [4000, 1]                 65
+├─Linear: 1-4                            [4000, 4]                 260
 ==========================================================================================
-Input size (MB): 0.00                                                                     
-Forward/backward pass size (MB): 0.00                                                     
-Params size (MB): 0.52                                                                    
-Estimated Total Size (MB): 0.52                                                           
+Total params: 130,169
+Trainable params: 130,169
+Non-trainable params: 0
+Total mult-adds (G): 1.04
+==========================================================================================
+Input size (MB): 0.21
+Forward/backward pass size (MB): 5.09
+Params size (MB): 0.52
+Estimated Total Size (MB): 5.82
 ==========================================================================================
 </pre>
 </div>
-
 </div>
 
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[6]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">model_dir</span><span class="o">+</span><span class="s2">&quot;validation_log_mid.pkl&quot;</span><span class="p">):</span>
+        <span class="n">actions</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">val_date</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">enumerate</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">validation_dates</span><span class="p">)),</span> <span class="n">total</span><span class="o">=</span><span class="n">validation_dates</span><span class="o">.</span><span class="n">size</span><span class="p">):</span>
+                <span class="n">env</span> <span class="o">=</span> <span class="n">LOBEnv_mid</span><span class="p">(</span><span class="n">LOB_on_certain_day</span><span class="p">(</span><span class="n">LOB</span><span class="p">,</span><span class="n">val_date</span><span class="p">),</span><span class="n">train_config</span><span class="p">[</span><span class="s1">&#39;SCENARIO&#39;</span><span class="p">]</span> \
+                        <span class="p">,</span><span class="n">prices_enabled</span><span class="o">=</span><span class="n">train_config</span><span class="p">[</span><span class="s1">&#39;PRICES_ENABLED&#39;</span><span class="p">],</span><span class="n">window_size</span><span class="o">=</span><span class="n">train_config</span><span class="p">[</span><span class="s1">&#39;WINDOW_SIZE&#39;</span><span class="p">])</span>
+                <span class="n">done</span><span class="o">=</span><span class="mi">0</span>
+                <span class="n">actions</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="p">[(</span><span class="kc">None</span><span class="p">,</span><span class="kc">None</span><span class="p">,</span><span class="mi">0</span><span class="p">)]</span>
+                <span class="n">obs</span><span class="o">=</span><span class="n">env</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">MODEL_TO_VALIDATE</span> <span class="o">==</span> <span class="s1">&#39;ESN&#39;</span><span class="p">:</span>
+                        <span class="n">model</span><span class="o">.</span><span class="n">policy</span><span class="o">.</span><span class="n">reset_reservoirs</span><span class="p">()</span>
+                <span class="k">while</span> <span class="ow">not</span> <span class="n">done</span><span class="p">:</span>
+                        <span class="n">action</span><span class="p">,</span><span class="n">_</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">obs</span><span class="p">)</span>
+                        <span class="n">obs</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">done</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
+                        <span class="n">position</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">position</span>
+                        <span class="n">actions</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">action</span><span class="p">,</span><span class="n">reward</span><span class="p">,</span><span class="n">position</span><span class="p">))</span>
+        
+        <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">act</span><span class="p">,</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;action&quot;</span><span class="p">,</span><span class="s2">&quot;reward&quot;</span><span class="p">,</span><span class="s2">&quot;position&quot;</span><span class="p">],</span> \
+                        <span class="n">index</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">MultiIndex</span><span class="o">.</span><span class="n">from_tuples</span><span class="p">((</span><span class="n">i</span><span class="p">,</span><span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">act</span><span class="p">))))</span> \
+                                   <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">act</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">actions</span><span class="o">.</span><span class="n">values</span><span class="p">())])</span><span class="o">.</span><span class="n">to_pickle</span><span class="p">(</span><span class="n">model_dir</span><span class="o">+</span><span class="s2">&quot;validation_log_mid.pkl&quot;</span><span class="p">)</span>
+</pre></div>
+
+    </div>
 </div>
 </div>
 
@@ -13281,22 +13390,39 @@ Estimated Total Size (MB): 0.52
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Rewards">Rewards<a class="anchor-link" href="#Rewards">&#182;</a></h2><p>We see that the ESN based model has better performance than random feedforward networks and the fully trained one.</p>
+<h2 id="Rewards">Rewards<a class="anchor-link" href="#Rewards">&#182;</a></h2><p>We see that the ESN based model has better performance than the fully trained one.</p>
 
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[4]:</div>
+<div class="prompt input_prompt">In&nbsp;[7]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">model_dir</span><span class="o">+</span><span class="s2">&quot;rewards_mid.pkl&quot;</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-    <span class="n">rewards_mid</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">log</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_pickle</span><span class="p">(</span><span class="n">model_dir</span><span class="o">+</span><span class="s2">&quot;validation_log_mid.pkl&quot;</span><span class="p">)</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">model_dir</span><span class="o">+</span><span class="s2">&quot;rewards_mid.pkl&quot;</span><span class="p">):</span>
+    <span class="n">rewards_mid</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">trange</span><span class="p">(</span><span class="n">log</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">temp</span><span class="o">=</span><span class="mi">0</span>
+        <span class="n">rewards_mid</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="p">[]</span>
+        <span class="k">for</span> <span class="n">rew</span><span class="p">,</span><span class="n">pos</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">log</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s2">&quot;reward&quot;</span><span class="p">],</span><span class="n">log</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s2">&quot;position&quot;</span><span class="p">]):</span>
+            <span class="k">if</span> <span class="n">temp</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">pos</span><span class="p">:</span>
+                <span class="n">rewards_mid</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rew</span><span class="p">)</span>
+                <span class="n">temp</span><span class="o">=</span><span class="mi">0</span>
+            <span class="k">elif</span> <span class="ow">not</span> <span class="n">temp</span> <span class="ow">and</span> <span class="n">pos</span><span class="p">:</span>
+                <span class="n">temp</span><span class="o">=</span><span class="mi">1</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">model_dir</span><span class="o">+</span><span class="s2">&quot;/rewards_mid.pkl&quot;</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">rewards_mid</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">model_dir</span><span class="o">+</span><span class="s2">&quot;rewards_mid.pkl&quot;</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">rewards_mid</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
 
 <span class="n">rewards_daily_mid</span> <span class="o">=</span> <span class="p">[</span><span class="o">*</span><span class="nb">map</span><span class="p">(</span><span class="nb">sum</span><span class="p">,</span><span class="n">rewards_mid</span><span class="o">.</span><span class="n">values</span><span class="p">())]</span>
 <span class="n">wallet</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">rewards_daily_mid</span><span class="p">)</span>
-<span class="n">total_reward_mid</span><span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">rewards_daily_mid</span><span class="p">)</span>
+<span class="n">total_reward_mid</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">rewards_daily_mid</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total Gains: </span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">total_reward_mid</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2"> TL in </span><span class="si">{</span><span class="n">validation_dates</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2"> days.&quot;</span><span class="p">)</span>
 
 <span class="n">mcpd</span> <span class="o">=</span> <span class="p">{</span><span class="mi">1</span><span class="p">:[</span><span class="s1">&#39;darkgoldenrod&#39;</span><span class="p">,</span><span class="s1">&#39;royalblue&#39;</span><span class="p">],</span><span class="mi">2</span><span class="p">:[</span><span class="s1">&#39;darkgreen&#39;</span><span class="p">,</span><span class="s1">&#39;darkblue&#39;</span><span class="p">]}</span> <span class="c1">#model_color_pair_dict</span>
@@ -13332,7 +13458,7 @@ Estimated Total Size (MB): 0.52
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>Total Gains: 190.07 TL in 103 days.
+<pre>Total Gains: 186.24 TL in 103 days.
 </pre>
 </div>
 </div>
@@ -13343,7 +13469,7 @@ Estimated Total Size (MB): 0.52
 
 
 <div class="output_subarea output_stream output_stderr output_text">
-<pre>100%|██████████| 1/1 [00:00&lt;00:00,  6.85it/s]
+<pre>100%|██████████| 1/1 [00:00&lt;00:00,  7.26it/s]
 </pre>
 </div>
 </div>
@@ -13356,7 +13482,7 @@ Estimated Total Size (MB): 0.52
 
 
 <div class="output_png output_subarea ">
-<img src="paper_reservoir_website_PPO_files/paper_reservoir_website_PPO_7_2.png"
+<img src="paper_reservoir_website_PPO_files/paper_reservoir_website_PPO_8_2.png"
 >
 </div>
 
@@ -13377,17 +13503,54 @@ Estimated Total Size (MB): 0.52
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[5]:</div>
+<div class="prompt input_prompt">In&nbsp;[10]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">rewards_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">model_dir</span><span class="o">+</span><span class="s1">&#39;rewards_df.csv&#39;</span><span class="p">,</span><span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">log</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">model_dir</span><span class="o">+</span><span class="s2">&quot;progress.csv&quot;</span><span class="p">)</span>
+
+<span class="n">col_</span> <span class="o">=</span> <span class="n">log</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="n">log</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;[&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="kc">False</span><span class="p">)]</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+
+<span class="n">log</span><span class="p">[</span><span class="n">col_</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">log</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="n">log</span><span class="o">.</span><span class="n">index</span><span class="o">%</span><span class="k">25</span>==0]]=log[&#39;rewards&#39;].loc[log.index[log.index%25==0]]
+
+<span class="k">def</span> <span class="nf">parser</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
+    <span class="n">temp</span><span class="o">=</span><span class="s1">&#39;&#39;</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">k</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">[</span><span class="s1">&#39;[&#39;</span><span class="p">,</span><span class="s1">&#39;]&#39;</span><span class="p">,</span><span class="s1">&#39; &#39;</span><span class="p">]</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">k</span><span class="p">):</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">temp</span><span class="o">+=</span><span class="n">string</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">temp</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">model_dir</span><span class="o">+</span><span class="s1">&#39;log.txt&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">lines</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+    <span class="n">early_stopped_at</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span><span class="p">)</span><span class="o">==</span><span class="s1">&#39;model_saved&#39;</span>
+    <span class="k">if</span> <span class="n">early_stopped_at</span><span class="o">.</span><span class="n">sum</span><span class="p">():</span>
+        <span class="n">early_stopped_at</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">lines</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">early_stopped_at</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">)[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+        <span class="c1"># print(f&#39;Model taken from iteration no. {early_stopped_at}.&#39;)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">early_stopped_at</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">lines_</span> <span class="o">=</span> <span class="n">lines</span><span class="p">[</span><span class="o">-</span><span class="mi">14</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">lines_</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;time_elapsed&#39;</span>
+    <span class="n">time_elapsed</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">lines_</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+    <span class="n">lines_</span> <span class="o">=</span> <span class="n">lines</span><span class="p">[</span><span class="o">-</span><span class="mi">15</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">lines_</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;iterations&#39;</span>
+    <span class="n">iterations</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">lines_</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+    <span class="c1"># print(f&#39;Total iterations: {iterations}.&#39;)</span>
+
+<span class="n">rewards_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">log</span><span class="p">[</span><span class="n">col_</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">25</span><span class="p">),</span><span class="n">columns</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">25</span><span class="p">),</span><span class="n">index</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="n">iterations</span><span class="p">))</span>
+<span class="k">if</span> <span class="n">early_stopped_at</span><span class="p">:</span>
+    <span class="n">rewards_df</span> <span class="o">=</span> <span class="n">rewards_df</span><span class="p">[:</span><span class="n">early_stopped_at</span><span class="p">]</span>
+
+<span class="n">rewards_df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">model_dir</span><span class="o">+</span><span class="s1">&#39;/rewards_df.csv&#39;</span><span class="p">)</span>
+
+<span class="n">rewards_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">model_dir</span><span class="o">+</span><span class="s1">&#39;rewards_df.csv&#39;</span><span class="p">,</span><span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
 <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">model_dir</span><span class="o">+</span><span class="s1">&#39;log.txt&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
     <span class="n">lines</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
     <span class="n">time_elapsed</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="o">*</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">)[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">if</span> <span class="s1">&#39;time_elapsed&#39;</span> <span class="ow">in</span> <span class="n">x</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span><span class="n">lines</span><span class="p">)])</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span><span class="mi">60</span><span class="p">)</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
     <span class="n">iterations</span> <span class="o">=</span> <span class="n">time_elapsed</span><span class="o">.</span><span class="n">size</span> <span class="p">;</span> <span class="n">time_elapsed</span><span class="o">.</span><span class="n">index</span> <span class="o">+=</span> <span class="mi">1</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Training duration: </span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">time_elapsed</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="mi">60</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2"> Hours, Model taken from iteration no. </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">rewards_df</span><span class="p">)</span><span class="si">}</span><span class="s2">, Total iterations: </span><span class="si">{</span><span class="n">iterations</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Training duration: </span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">time_elapsed</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="mi">60</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2"> Hours.</span><span class="se">\n</span><span class="s2">Model taken from iteration no. </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">rewards_df</span><span class="p">)</span><span class="si">}</span><span class="s2">.</span><span class="se">\n</span><span class="s2">Total iterations: </span><span class="si">{</span><span class="n">iterations</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
 
 <span class="n">means</span> <span class="o">=</span> <span class="n">rewards_df</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span><span class="n">force_zehnerpot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mf">0.01</span><span class="p">))</span>
 <span class="n">medians</span> <span class="o">=</span> <span class="n">rewards_df</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span><span class="n">force_zehnerpot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mf">0.01</span><span class="p">))</span>
@@ -13401,7 +13564,7 @@ Estimated Total Size (MB): 0.52
                     <span class="p">[</span><span class="n">rewards_df</span><span class="o">.</span><span class="n">index</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">rewards_df</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span><span class="nb">dict</span><span class="p">(</span><span class="n">linewidth</span><span class="o">=</span><span class="s1">&#39;10&#39;</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;Cumulative Rewards&#39;</span><span class="p">)]</span>
                     <span class="p">,[[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="n">rewards_df</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="mi">25</span><span class="p">::</span><span class="mi">25</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span><span class="o">+</span><span class="p">[</span><span class="n">rewards_df</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span><span class="n">time_elapsed</span><span class="o">.</span><span class="n">loc</span><span class="p">[[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="n">rewards_df</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="mi">25</span><span class="p">::</span><span class="mi">25</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span><span class="o">+</span><span class="p">[</span><span class="n">rewards_df</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">]]</span><span class="o">.</span><span class="n">values</span><span class="p">]</span>
                     <span class="p">,[</span><span class="s2">&quot;Cumulative Rewards&quot;</span><span class="p">,</span><span class="nb">dict</span><span class="p">(</span><span class="n">rotation</span><span class="o">=-</span><span class="mi">90</span><span class="p">,</span><span class="n">labelpad</span><span class="o">=</span><span class="mi">15</span><span class="p">)],[</span><span class="s1">&#39;Duration in Minutes&#39;</span><span class="p">,</span><span class="nb">dict</span><span class="p">(</span><span class="n">labelpad</span><span class="o">=</span><span class="mi">5</span><span class="p">)],[],</span>
-                             <span class="p">[</span><span class="s2">&quot;Sample Rewards&quot;</span><span class="p">,</span><span class="nb">dict</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span><span class="n">pad</span><span class="o">=</span><span class="mi">45</span><span class="p">)],[</span><span class="s2">&quot;#Episode&quot;</span><span class="p">],[</span><span class="s2">&quot;Individual Rewards&quot;</span><span class="p">],[[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="n">rewards_df</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="mi">25</span><span class="p">::</span><span class="mi">25</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span><span class="o">+</span><span class="p">[</span><span class="n">rewards_df</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">]],</span>
+                             <span class="p">[</span><span class="s2">&quot;Sample Rewards&quot;</span><span class="p">,</span><span class="nb">dict</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span><span class="n">pad</span><span class="o">=</span><span class="mi">45</span><span class="p">)],[</span><span class="s2">&quot;#Iteration&quot;</span><span class="p">],[</span><span class="s2">&quot;Individual Rewards&quot;</span><span class="p">],[[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="n">rewards_df</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="mi">25</span><span class="p">::</span><span class="mi">25</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span><span class="o">+</span><span class="p">[</span><span class="n">rewards_df</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">]],</span>
                                     <span class="p">[</span><span class="nb">dict</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;lower center&quot;</span><span class="p">,</span><span class="n">ncol</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span><span class="n">title</span><span class="o">=</span><span class="s1">&#39;Individual Rewards&#39;</span><span class="p">)],[</span><span class="nb">dict</span><span class="p">(</span><span class="n">b</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;both&#39;</span><span class="p">,</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.9</span><span class="p">)]]</span>
         <span class="p">]</span>
 
@@ -13412,13 +13575,13 @@ Estimated Total Size (MB): 0.52
         <span class="p">,</span><span class="s2">&quot;2nd_set_ylabel&quot;</span><span class="p">,</span><span class="s1">&#39;2nd_set_xlabel&#39;</span><span class="p">,</span><span class="s2">&quot;2nd_legend&quot;</span><span class="p">,</span>
         <span class="s2">&quot;set_title&quot;</span><span class="p">,</span><span class="s2">&quot;set_xlabel&quot;</span><span class="p">,</span><span class="s2">&quot;set_ylabel&quot;</span><span class="p">,</span><span class="s1">&#39;set_xticks&#39;</span>
         <span class="p">,</span><span class="s2">&quot;legend&quot;</span><span class="p">,</span><span class="s2">&quot;grid&quot;</span><span class="p">]</span> \
-        <span class="p">,</span><span class="n">ncols</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span><span class="n">show</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">fig_title</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;Echo State Network&#39;</span><span class="p">,</span><span class="n">suptitle_y</span><span class="o">=</span><span class="mf">1.1</span><span class="p">,</span><span class="n">suptitle_x</span><span class="o">=</span><span class="mf">0.51</span><span class="p">,</span><span class="n">second_plot</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="p">,</span><span class="n">ncols</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span><span class="n">show</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">fig_title</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">MODEL_TO_VALIDATE</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span><span class="n">suptitle_y</span><span class="o">=</span><span class="mf">1.1</span><span class="p">,</span><span class="n">suptitle_x</span><span class="o">=</span><span class="mf">0.51</span><span class="p">,</span><span class="n">second_plot</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
 <span class="n">args</span> <span class="o">=</span> <span class="p">[</span>
         <span class="p">[</span>
             <span class="p">[</span><span class="n">rewards_df</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)],</span><span class="s2">&quot;scott&quot;</span><span class="p">,{</span><span class="s2">&quot;zorder&quot;</span><span class="p">:</span><span class="mi">0</span><span class="p">,</span><span class="s2">&quot;color&quot;</span><span class="p">:</span><span class="s2">&quot;sienna&quot;</span><span class="p">}]</span>
         <span class="p">,[</span><span class="nb">dict</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s1">&#39;scientific&#39;</span><span class="p">,</span><span class="n">scilimits</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span><span class="o">-</span><span class="mi">5</span><span class="p">))],[</span><span class="sa">f</span><span class="s2">&quot;Environment </span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">],[</span><span class="s2">&quot;Rewards&quot;</span><span class="p">],[</span><span class="s2">&quot;Counts&quot;</span><span class="p">]</span>
-            <span class="p">,[</span><span class="nb">dict</span><span class="p">(</span><span class="n">cellText</span><span class="o">=</span><span class="p">[[</span><span class="n">stats</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">i</span><span class="p">]],[</span><span class="n">stats</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">i</span><span class="p">]],[</span><span class="n">stats</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="n">i</span><span class="p">]],[</span><span class="n">stats</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="n">i</span><span class="p">]]],</span> <span class="n">rowLabels</span><span class="o">=</span><span class="p">[</span><span class="sa">r</span><span class="s2">&quot;$\mu$&quot;</span><span class="p">,</span><span class="s2">&quot;median&quot;</span><span class="p">,</span><span class="sa">r</span><span class="s2">&quot;$\sigma$&quot;</span><span class="p">,</span><span class="s2">&quot;skewness&quot;</span><span class="p">],</span> <span class="n">bbox</span><span class="o">=</span><span class="p">(</span><span class="mf">0.25</span><span class="p">,</span><span class="mf">0.6</span><span class="p">,</span><span class="mf">0.18</span><span class="p">,</span><span class="mf">0.3</span><span class="p">)),</span> 
+            <span class="p">,[</span><span class="nb">dict</span><span class="p">(</span><span class="n">cellText</span><span class="o">=</span><span class="p">[[</span><span class="n">stats</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">i</span><span class="p">]],[</span><span class="n">stats</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">i</span><span class="p">]],[</span><span class="n">stats</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="n">i</span><span class="p">]],[</span><span class="n">stats</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="n">i</span><span class="p">]]],</span> <span class="n">rowLabels</span><span class="o">=</span><span class="p">[</span><span class="sa">r</span><span class="s2">&quot;$\mu$&quot;</span><span class="p">,</span><span class="s2">&quot;median&quot;</span><span class="p">,</span><span class="sa">r</span><span class="s2">&quot;$\sigma$&quot;</span><span class="p">,</span><span class="s2">&quot;skewness&quot;</span><span class="p">],</span> <span class="n">bbox</span><span class="o">=</span><span class="p">(</span><span class="mf">0.25</span><span class="p">,</span><span class="mf">0.6</span><span class="p">,</span><span class="mf">0.22</span><span class="p">,</span><span class="mf">0.3</span><span class="p">)),</span> 
               <span class="p">{</span><span class="s1">&#39;fontsize&#39;</span><span class="p">:</span><span class="mi">7</span><span class="p">,</span><span class="s2">&quot;zorder&quot;</span><span class="p">:</span><span class="mi">10</span><span class="p">,</span><span class="s2">&quot;alpha&quot;</span><span class="p">:</span><span class="mf">0.1</span><span class="p">}]</span>
         <span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">25</span><span class="p">)]</span>
 
@@ -13441,8 +13604,25 @@ Estimated Total Size (MB): 0.52
     <div class="prompt"></div>
 
 
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>/Users/egeyilmaz/opt/anaconda3/envs/MLinFin/lib/python3.9/site-packages/pandas/core/indexing.py:1732: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame
+
+See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  self._setitem_single_block(indexer, value, name)
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>Training duration: 1.89 Hours, Model taken from iteration no. 100, Total iterations: 100.
+<pre>Training duration: 3.12 Hours.
+Model taken from iteration no. 173.
+Total iterations: 200.
 </pre>
 </div>
 </div>
@@ -13453,7 +13633,7 @@ Estimated Total Size (MB): 0.52
 
 
 <div class="output_subarea output_stream output_stderr output_text">
-<pre>100%|██████████| 1/1 [00:00&lt;00:00, 16.69it/s]
+<pre>100%|██████████| 1/1 [00:00&lt;00:00,  5.28it/s]
 </pre>
 </div>
 </div>
@@ -13466,7 +13646,7 @@ Estimated Total Size (MB): 0.52
 
 
 <div class="output_png output_subarea ">
-<img src="paper_reservoir_website_PPO_files/paper_reservoir_website_PPO_9_2.png"
+<img src="paper_reservoir_website_PPO_files/paper_reservoir_website_PPO_10_3.png"
 >
 </div>
 
@@ -13478,7 +13658,7 @@ Estimated Total Size (MB): 0.52
 
 
 <div class="output_subarea output_stream output_stderr output_text">
-<pre>100%|██████████| 25/25 [00:00&lt;00:00, 66.59it/s]
+<pre>100%|██████████| 25/25 [00:00&lt;00:00, 95.15it/s]
 </pre>
 </div>
 </div>
@@ -13491,7 +13671,7 @@ Estimated Total Size (MB): 0.52
 
 
 <div class="output_png output_subarea ">
-<img src="paper_reservoir_website_PPO_files/paper_reservoir_website_PPO_9_4.png"
+<img src="paper_reservoir_website_PPO_files/paper_reservoir_website_PPO_10_5.png"
 >
 </div>
 
