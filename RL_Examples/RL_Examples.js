@@ -23,7 +23,8 @@ var links  =
 var cartpole_links  = 
 {
 "ESNRLS-Q": "./cartpole_ESNRLS-Q_website.html",
-"ESN-PPO": "./cartpole_ESN_PPO_website.html"};
+"ESN-PPO": "./cartpole_ESN_PPO_website.html",
+"ESN-PPO-POMDP": "./cartpole_POMDP_ESN_PPO_website.html"};
 
 
 
