@@ -13090,7 +13090,7 @@ div#notebook {
 <script>
 $( document ).ready(function(){
 
-            var cfg = {"base_numbering": 1, "nav_menu": {}, "number_sections": true, "sideBar": true, "skip_h1_title": false, "title_cell": "Table of Contents", "title_sidebar": "Contents", "toc_cell": false, "toc_position": {}, "toc_section_display": true, "toc_window_display": false};
+            var cfg = {};
 
             // fire the main function with these parameters
             require(['nbextensions/toc2/toc2'], function (toc2) {
@@ -13105,8 +13105,7 @@ $( document ).ready(function(){
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="Notebook-Overview">Notebook Overview<a class="anchor-link" href="#Notebook-Overview">&#182;</a></h1><p>We train an Echo State Network on the <a href="https://gym.openai.com/envs/CartPole-v0/">cartpole environment</a> by plugging it to <a href="https://stable-baselines3.readthedocs.io/en/master/modules/ppo.html">stable_baselines3's PPO implementation</a>.</p>
-<ul>
+<h1 id="Notebook-Overview">Notebook Overview<a class="anchor-link" href="#Notebook-Overview">&#182;</a></h1><p>We train an Echo State Network on the <a href="https://gym.openai.com/envs/CartPole-v0/">cartpole environment</a> by plugging it to <a href="https://stable-baselines3.readthedocs.io/en/master/modules/ppo.html">stable_baselines3's PPO implementation</a>. Then we compare its performance to a feedforward network with analogous architecture.</p>
 
 </div>
 </div>
@@ -13116,264 +13115,60 @@ $( document ).ready(function(){
 <div class="prompt input_prompt">In&nbsp;[1]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">HTML</span>
-<span class="k">def</span> <span class="nf">hide_code</span><span class="p">():</span> <span class="k">return</span> <span class="n">HTML</span><span class="p">(</span><span class="s1">&#39;&#39;&#39;&lt;script&gt;code_show=true; function code_toggle() {if (code_show){$(&#39;div.input&#39;).hide();} else {$(&#39;div.input&#39;).show();}code_show = !code_show} $( document ).ready(code_toggle);&lt;/script&gt;&lt;form action=&quot;javascript:code_toggle()&quot;&gt;&lt;input type=&quot;submit&quot; value=&quot;Click here to toggle on/off the raw code.&quot;&gt;&lt;/form&gt;&#39;&#39;&#39;</span><span class="p">)</span>
-<span class="n">hide_code</span><span class="p">()</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;./../&#39;</span><span class="p">)</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;./../../&#39;</span><span class="p">)</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;./../../../&#39;</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">torchinfo</span> <span class="kn">import</span> <span class="n">summary</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">gym</span>
+<span class="kn">from</span> <span class="nn">stable_baselines3.common.env_util</span> <span class="kn">import</span> <span class="n">make_vec_env</span>
+<span class="kn">from</span> <span class="nn">utils.timer</span> <span class="kn">import</span> <span class="n">timer</span>
+<span class="kn">from</span> <span class="nn">CustomReservoirNetwork_Policy</span> <span class="kn">import</span> <span class="n">CustomActorCriticReservoirPolicy</span>
+<span class="kn">from</span> <span class="nn">stable_baselines3</span> <span class="kn">import</span> <span class="n">PPO</span>
+<span class="kn">from</span> <span class="nn">RL_examples.CustomStableBaselines</span> <span class="kn">import</span> <span class="n">CustomPPO</span>
+<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">trange</span>
+<span class="kn">from</span> <span class="nn">stable_baselines3.common</span> <span class="kn">import</span> <span class="n">env_checker</span>
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+<span class="kn">from</span> <span class="nn">stable_baselines3.common.logger</span> <span class="kn">import</span> <span class="n">configure</span>
+
+<span class="n">torch</span><span class="o">.</span><span class="n">manual_seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+
+<span class="n">log_id</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2">_%m_%Y&quot;</span><span class="p">)</span>
 </pre></div>
 
     </div>
 </div>
 </div>
 
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt output_prompt">Out[1]:</div>
-
-
-
-<div class="output_html rendered_html output_subarea output_execute_result">
-<script>code_show=true; function code_toggle() {if (code_show){$('div.input').hide();} else {$('div.input').show();}code_show = !code_show} $( document ).ready(code_toggle);</script><form action="javascript:code_toggle()"><input type="submit" value="Click here to toggle on/off the raw code."></form>
 </div>
-
-</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Reservoir-Network">Reservoir Network<a class="anchor-link" href="#Reservoir-Network">&#182;</a></h1><p>We modified the PPO implementation of stable_baselines3 to allow training of reservoir computers and use <a href="https://github.com/Quantumyilmaz/EchoStateNetwork">our framework</a> to create an Echo State Network with the necessary features.</p>
 
 </div>
 </div>
-
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Hyperparameters">Hyperparameters<a class="anchor-link" href="#Hyperparameters">&#182;</a></h2>
+</div>
+</div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">In&nbsp;[2]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span><span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
-<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">trange</span>
-<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
-<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;./../../../&#39;</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">utils.EchoStateNetwork</span> <span class="kn">import</span> <span class="n">ESNN</span>
-<span class="kn">from</span> <span class="nn">torchinfo</span> <span class="kn">import</span> <span class="n">summary</span>
-<span class="kn">import</span> <span class="nn">torch</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">torchvision</span>
-<span class="kn">import</span> <span class="nn">gym</span>
-<span class="kn">from</span> <span class="nn">gym</span> <span class="kn">import</span> <span class="n">spaces</span>
-<span class="kn">from</span> <span class="nn">utils.timer</span> <span class="kn">import</span> <span class="n">timer</span>
-<span class="kn">from</span> <span class="nn">stable_baselines3.common.policies</span> <span class="kn">import</span> <span class="n">ActorCriticPolicy</span>
-<span class="kn">from</span> <span class="nn">stable_baselines3</span> <span class="kn">import</span> <span class="n">PPO</span>
-<span class="kn">from</span> <span class="nn">stable_baselines3.common.env_util</span> <span class="kn">import</span> <span class="n">make_vec_env</span>
-<span class="kn">from</span> <span class="nn">RL_examples.CustomStableBaselines</span> <span class="kn">import</span> <span class="n">CustomPPO</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">from</span> <span class="nn">stable_baselines3.common.logger</span> <span class="kn">import</span> <span class="n">configure</span>
-
-<span class="n">LOG_PATH</span> <span class="o">=</span> <span class="s2">&quot;./logs/reservoir_&quot;</span> <span class="o">+</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2">_%m_%Y&quot;</span><span class="p">)</span>
-<span class="n">logger</span> <span class="o">=</span> <span class="n">configure</span><span class="p">(</span><span class="n">LOG_PATH</span><span class="p">)</span>
-<span class="n">torch</span><span class="o">.</span><span class="n">manual_seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
-<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>Logging to ./logs/reservoir_10_12_2021
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="Hyperparameters">Hyperparameters<a class="anchor-link" href="#Hyperparameters">&#182;</a></h1>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[3]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">resSize</span><span class="o">=</span><span class="mi">280</span>
-<span class="n">leak_rate</span> <span class="o">=</span> <span class="mi">1</span>
-<span class="n">leak_version</span> <span class="o">=</span> <span class="mi">0</span>
-<span class="n">batch_size</span> <span class="o">=</span> <span class="mi">64</span>
-<span class="n">PPO_batch_size</span> <span class="o">=</span> <span class="n">batch_size</span>
-<span class="c1"># PPO_n_steps = PPO_batch_size</span>
-<span class="n">last_layer_dim_pi</span> <span class="o">=</span> <span class="mi">32</span>
-<span class="n">last_layer_dim_vf</span> <span class="o">=</span> <span class="mi">32</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="Reservoir-Network">Reservoir Network<a class="anchor-link" href="#Reservoir-Network">&#182;</a></h1><p>We customize the PPO implementation of stable_baselines to train our reservoir. We use <a href="https://github.com/Quantumyilmaz/EchoStateNetwork">our framework</a> to create an Echo State Network with the necessary features.</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[4]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">class</span> <span class="nc">CustomESNN</span><span class="p">(</span><span class="n">ESNN</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span><span class="n">in_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span><span class="n">out_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span><span class="n">bias</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span><span class="n">W</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">resSize</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">450</span><span class="p">,</span> <span class="n">xn</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="o">-</span><span class="mi">4</span><span class="p">],</span> <span class="n">pn</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.9875</span><span class="p">,</span> <span class="mf">0.00625</span><span class="p">,</span> <span class="mf">0.00625</span><span class="p">],</span> <span class="n">random_state</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">null_state_init</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span><span class="n">custom_initState</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">CustomESNN</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span><span class="n">in_size</span><span class="o">=</span><span class="n">in_size</span><span class="p">,</span><span class="n">out_size</span><span class="o">=</span><span class="n">out_size</span><span class="p">,</span><span class="n">bias</span><span class="o">=</span><span class="n">bias</span><span class="p">,</span><span class="n">W</span><span class="o">=</span><span class="n">W</span><span class="p">,</span><span class="n">resSize</span><span class="o">=</span><span class="n">resSize</span><span class="p">,</span><span class="n">xn</span><span class="o">=</span><span class="n">xn</span><span class="p">,</span><span class="n">pn</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span><span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span><span class="n">null_state_init</span><span class="o">=</span><span class="n">null_state_init</span><span class="p">,</span><span class="n">custom_initState</span><span class="o">=</span><span class="n">custom_initState</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        
-    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">x</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_layer_mode</span> <span class="o">==</span> <span class="s1">&#39;batch&#39;</span><span class="p">:</span>
-            <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">update_reservoir_layers_serially</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
-            <span class="n">x</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__call__</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">x</span>
-    
-    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">x</span><span class="p">):</span>
-        <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">update_reservoir_layer</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
-        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__call__</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
-
-<span class="k">class</span> <span class="nc">CustomReservoirNetwork</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
-
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">feature_dim</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-        <span class="n">resSize</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-        <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-        <span class="n">last_layer_dim_pi</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">last_layer_dim_pi</span><span class="p">,</span>
-        <span class="n">last_layer_dim_vf</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">last_layer_dim_vf</span>
-        
-    <span class="p">):</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">CustomReservoirNetwork</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-        
-        <span class="bp">self</span><span class="o">.</span><span class="n">feature_dim</span> <span class="o">=</span> <span class="n">feature_dim</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">latent_dim_pi</span> <span class="o">=</span> <span class="n">last_layer_dim_pi</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">latent_dim_vf</span> <span class="o">=</span> <span class="n">last_layer_dim_vf</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">resSize</span> <span class="o">=</span> <span class="n">resSize</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">=</span> <span class="n">batch_size</span>
-        
-        <span class="bp">self</span><span class="o">.</span><span class="n">bn1</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm1d</span><span class="p">(</span><span class="n">feature_dim</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">res1</span> <span class="o">=</span> <span class="n">CustomESNN</span><span class="p">(</span><span class="n">bias</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span>
-                        <span class="n">in_size</span><span class="o">=</span><span class="n">feature_dim</span><span class="p">,</span><span class="n">out_size</span><span class="o">=</span><span class="n">last_layer_dim_pi</span><span class="p">,</span><span class="n">resSize</span><span class="o">=</span><span class="n">resSize</span><span class="p">,</span>
-                                    <span class="n">f</span><span class="o">=</span><span class="s1">&#39;tanh&#39;</span><span class="p">,</span><span class="n">leak_rate</span><span class="o">=</span><span class="n">leak_rate</span><span class="p">,</span><span class="n">leak_version</span><span class="o">=</span><span class="n">leak_version</span>
-<span class="c1">#                                            ,custom_initState=np.random.rand(resSize,1)-0.5</span>
-                                               <span class="p">,</span><span class="n">W</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">resSize</span><span class="p">,</span><span class="n">resSize</span><span class="p">)</span><span class="o">-</span><span class="mf">0.5</span>
-                                                <span class="p">,</span><span class="n">random_state</span><span class="o">=</span><span class="mi">42</span>
-                              <span class="p">)</span>
-        
-        <span class="bp">self</span><span class="o">.</span><span class="n">res1</span><span class="o">.</span><span class="n">scale_reservoir_weights</span><span class="p">(</span><span class="mf">0.9</span><span class="p">)</span>
-            
-        <span class="bp">self</span><span class="o">.</span><span class="n">ln1</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">last_layer_dim_pi</span><span class="p">,</span><span class="n">last_layer_dim_pi</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
-        
-        
-        <span class="bp">self</span><span class="o">.</span><span class="n">bn2</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm1d</span><span class="p">(</span><span class="n">feature_dim</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">res2</span> <span class="o">=</span> <span class="n">CustomESNN</span><span class="p">(</span><span class="n">bias</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span>
-                        <span class="n">in_size</span><span class="o">=</span><span class="n">feature_dim</span><span class="p">,</span><span class="n">out_size</span><span class="o">=</span><span class="n">last_layer_dim_pi</span><span class="p">,</span><span class="n">resSize</span><span class="o">=</span><span class="n">resSize</span><span class="p">,</span>
-                                    <span class="n">f</span><span class="o">=</span><span class="s1">&#39;tanh&#39;</span><span class="p">,</span><span class="n">leak_rate</span><span class="o">=</span><span class="n">leak_rate</span><span class="p">,</span><span class="n">leak_version</span><span class="o">=</span><span class="n">leak_version</span>
-<span class="c1">#                                            ,custom_initState=np.random.rand(resSize,1)-0.5</span>
-                                               <span class="p">,</span><span class="n">W</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">resSize</span><span class="p">,</span><span class="n">resSize</span><span class="p">)</span><span class="o">-</span><span class="mf">0.5</span>
-                                                <span class="p">,</span><span class="n">random_state</span><span class="o">=</span><span class="mi">42</span>
-                              <span class="p">)</span>
-        
-        <span class="bp">self</span><span class="o">.</span><span class="n">res2</span><span class="o">.</span><span class="n">scale_reservoir_weights</span><span class="p">(</span><span class="mf">0.9</span><span class="p">)</span>
-        
-        <span class="bp">self</span><span class="o">.</span><span class="n">ln2</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">last_layer_dim_pi</span><span class="p">,</span><span class="n">last_layer_dim_pi</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
-        
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">reservoirs</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">res1</span>
-                           <span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">res2</span>
-                          <span class="p">]</span>
-
-<span class="c1">#         # Policy network</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">policy_net</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">bn1</span><span class="p">,</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">res1</span><span class="p">,</span>
-                    <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Tanh</span><span class="p">(),</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">ln1</span><span class="p">,</span>
-                    <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Tanh</span><span class="p">()</span>
-        <span class="p">)</span>
-<span class="c1">#         # Value network</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">value_net</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">bn2</span><span class="p">,</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">res2</span><span class="p">,</span>
-                    <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Tanh</span><span class="p">(),</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">ln2</span><span class="p">,</span>
-                    <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Tanh</span><span class="p">()</span>  
-        <span class="p">)</span>
-        
-        <span class="bp">self</span><span class="o">.</span><span class="n">shared_net</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
-        <span class="p">)</span>
-        
-    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">policy_net</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">double</span><span class="p">())</span><span class="o">.</span><span class="n">float</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">value_net</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">double</span><span class="p">())</span><span class="o">.</span><span class="n">float</span><span class="p">()</span>
-
-<span class="k">class</span> <span class="nc">CustomActorCriticReservoirPolicy</span><span class="p">(</span><span class="n">ActorCriticPolicy</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">observation_space</span><span class="p">:</span> <span class="n">gym</span><span class="o">.</span><span class="n">spaces</span><span class="o">.</span><span class="n">Space</span><span class="p">,</span>
-        <span class="n">action_space</span><span class="p">:</span> <span class="n">gym</span><span class="o">.</span><span class="n">spaces</span><span class="o">.</span><span class="n">Space</span><span class="p">,</span>
-        <span class="n">lr_schedule</span><span class="p">,</span>
-        <span class="n">net_arch</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">activation_fn</span><span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="o">*</span><span class="n">args</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-    <span class="p">):</span>
-
-        <span class="nb">super</span><span class="p">(</span><span class="n">CustomActorCriticReservoirPolicy</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
-            <span class="n">observation_space</span><span class="p">,</span>
-            <span class="n">action_space</span><span class="p">,</span>
-            <span class="n">lr_schedule</span><span class="p">,</span>
-            <span class="n">net_arch</span><span class="p">,</span>
-            <span class="n">activation_fn</span><span class="p">,</span>
-            <span class="c1"># Pass remaining arguments to base class</span>
-            <span class="o">*</span><span class="n">args</span><span class="p">,</span>
-            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="c1"># Disable orthogonal initialization</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ortho_init</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="c1">#         self.has_reservoirs = True</span>
-
-    <span class="k">def</span> <span class="nf">_build_mlp_extractor</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">mlp_extractor</span> <span class="o">=</span> <span class="n">CustomReservoirNetwork</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">features_dim</span><span class="p">,</span><span class="n">resSize</span><span class="p">,</span><span class="n">batch_size</span><span class="p">)</span>
-    
-    <span class="k">def</span> <span class="nf">reset_reservoirs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">dones</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
-            <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mlp_extractor</span><span class="o">.</span><span class="n">reservoirs</span><span class="p">:</span>
-                <span class="n">res</span><span class="o">.</span><span class="n">reset_reservoir_layer</span><span class="p">()</span>
-    
-    <span class="k">def</span> <span class="nf">collapse_reservoirs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
-            <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mlp_extractor</span><span class="o">.</span><span class="n">reservoirs</span><span class="p">:</span>
-                <span class="n">res</span><span class="o">.</span><span class="n">_collapse_reservoir_layers</span><span class="p">()</span>
-    
-    <span class="k">def</span> <span class="nf">expand_reservoirs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
-            <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mlp_extractor</span><span class="o">.</span><span class="n">reservoirs</span><span class="p">:</span>
-                <span class="n">res</span><span class="o">.</span><span class="n">_expand_reservoir_layer</span><span class="p">()</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">PPO_batch_size</span> <span class="o">=</span> <span class="mi">64</span>
+<span class="n">N_EPOCHS</span><span class="o">=</span><span class="mi">10</span>
+<span class="n">n_envs</span> <span class="o">=</span> <span class="mi">1</span>
 </pre></div>
 
     </div>
@@ -13391,16 +13186,14 @@ $( document ).ready(function(){
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[5]:</div>
+<div class="prompt input_prompt">In&nbsp;[3]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Parallel environments</span>
-<span class="c1"># env = make_vec_env(&quot;CartPole-v0&quot;, n_envs=1)</span>
-<span class="n">env</span> <span class="o">=</span> <span class="n">gym</span><span class="o">.</span><span class="n">make</span><span class="p">(</span><span class="s2">&quot;CartPole-v0&quot;</span><span class="p">)</span>
+<span class="n">env</span> <span class="o">=</span> <span class="n">make_vec_env</span><span class="p">(</span><span class="s2">&quot;CartPole-v0&quot;</span><span class="p">,</span> <span class="n">n_envs</span><span class="o">=</span><span class="n">n_envs</span><span class="p">)</span>
 <span class="n">env</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">CustomPPO</span><span class="p">(</span><span class="n">CustomActorCriticReservoirPolicy</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">policy_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;n_envs&#39;</span><span class="p">:</span><span class="n">n_envs</span><span class="p">,</span><span class="s1">&#39;batch_size&#39;</span><span class="p">:</span><span class="n">PPO_batch_size</span><span class="p">},</span><span class="n">batch_size</span><span class="o">=</span><span class="n">PPO_batch_size</span><span class="p">,</span><span class="n">n_steps</span><span class="o">=</span><span class="mi">2048</span><span class="p">,</span><span class="n">n_epochs</span><span class="o">=</span><span class="n">N_EPOCHS</span><span class="p">)</span>
 
-<span class="n">model</span> <span class="o">=</span> <span class="n">CustomPPO</span><span class="p">(</span><span class="n">CustomActorCriticReservoirPolicy</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">PPO_batch_size</span><span class="p">)</span>
-<span class="n">model</span><span class="o">.</span><span class="n">set_logger</span><span class="p">(</span><span class="n">logger</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">summary</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">policy</span><span class="p">,</span><span class="n">input_data</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">PPO_batch_size</span><span class="p">,</span><span class="n">env</span><span class="o">.</span><span class="n">observation_space</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])))</span>
 </pre></div>
 
@@ -13419,14 +13212,12 @@ $( document ).ready(function(){
 
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>Using cpu device
-Wrapping the env with a `Monitor` wrapper
-Wrapping the env in a DummyVecEnv.
-Reservoir generated. Spectral Radius: 5.070153616107132
-Scaling matrix to have spectral radius 0.9...
-Done: 0.9000000000000004
-Reservoir generated. Spectral Radius: 5.070153616107132
-Scaling matrix to have spectral radius 0.9...
-Done: 0.9000000000000004
+Reservoir generated. Number of units: 128 Spectral Radius: 3.4215481281280518
+Scaling reservoir matrix to have spectral norm 0.99...
+Done: 0.9900000095367432
+Reservoir generated. Number of units: 128 Spectral Radius: 3.3037431240081787
+Scaling reservoir matrix to have spectral norm 0.99...
+Done: 0.9899999499320984
 Win (input weights) generated.
 Win (input weights) generated.
 ==========================================================================================
@@ -13435,43 +13226,35 @@ Layer (type:depth-idx)                   Output Shape              Param #
 CustomActorCriticReservoirPolicy         --                        --
 ├─FlattenExtractor: 1-1                  [64, 4]                   --
 │    └─Flatten: 2-1                      [64, 4]                   --
-├─CustomReservoirNetwork: 1-2            [64, 32]                  --
-│    └─Sequential: 2-2                   [64, 32]                  --
+├─CustomReservoirNetwork: 1-2            [64, 64]                  --
+│    └─Sequential: 2-2                   [64, 64]                  --
 │    └─BatchNorm1d: 2-3                  [64, 4]                   8
 │    └─Sequential: 2                     --                        --
 │    │    └─BatchNorm1d: 3-1             [64, 4]                   (recursive)
 │    └─CustomESNN: 2                     --                        --
-│    │    └─Linear: 3-2                  [64, 32]                  9,120
+│    │    └─Linear: 3-2                  [64, 64]                  8,512
 │    └─Sequential: 2                     --                        --
-│    │    └─Tanh: 3-3                    [64, 32]                  --
-│    └─Linear: 2-4                       [64, 32]                  1,056
+│    │    └─Tanh: 3-3                    [64, 64]                  --
+│    └─Sequential: 2-4                   [64, 64]                  --
+│    └─BatchNorm1d: 2-5                  [64, 4]                   8
 │    └─Sequential: 2                     --                        --
-│    │    └─Linear: 3-4                  [64, 32]                  (recursive)
-│    │    └─Tanh: 3-5                    [64, 32]                  --
-│    └─Sequential: 2-5                   [64, 32]                  --
-│    └─BatchNorm1d: 2-6                  [64, 4]                   8
-│    └─Sequential: 2                     --                        --
-│    │    └─BatchNorm1d: 3-6             [64, 4]                   (recursive)
+│    │    └─BatchNorm1d: 3-4             [64, 4]                   (recursive)
 │    └─CustomESNN: 2                     --                        --
-│    │    └─Linear: 3-7                  [64, 32]                  9,120
+│    │    └─Linear: 3-5                  [64, 64]                  8,512
 │    └─Sequential: 2                     --                        --
-│    │    └─Tanh: 3-8                    [64, 32]                  --
-│    └─Linear: 2-7                       [64, 32]                  1,056
-│    └─Sequential: 2                     --                        --
-│    │    └─Linear: 3-9                  [64, 32]                  (recursive)
-│    │    └─Tanh: 3-10                   [64, 32]                  --
-├─Linear: 1-3                            [64, 1]                   33
-├─Linear: 1-4                            [64, 2]                   66
+│    │    └─Tanh: 3-6                    [64, 64]                  --
+├─Linear: 1-3                            [64, 1]                   65
+├─Linear: 1-4                            [64, 2]                   130
 ==========================================================================================
-Total params: 20,467
-Trainable params: 20,467
+Total params: 17,235
+Trainable params: 17,235
 Non-trainable params: 0
-Total mult-adds (M): 2.61
+Total mult-adds (M): 2.19
 ==========================================================================================
 Input size (MB): 0.00
 Forward/backward pass size (MB): 0.07
-Params size (MB): 0.08
-Estimated Total Size (MB): 0.15
+Params size (MB): 0.07
+Estimated Total Size (MB): 0.14
 ==========================================================================================
 </pre>
 </div>
@@ -13483,24 +13266,554 @@ Estimated Total Size (MB): 0.15
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[4]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">with</span> <span class="n">timer</span><span class="p">(</span><span class="s1">&#39;Traning duration:&#39;</span><span class="p">):</span>
-    <span class="n">model</span><span class="o">.</span><span class="n">learn</span><span class="p">(</span><span class="n">total_timesteps</span><span class="o">=</span><span class="mi">40000</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">logger</span> <span class="o">=</span> <span class="n">configure</span><span class="p">(</span><span class="s2">&quot;./logs/reservoir_&quot;</span> <span class="o">+</span> <span class="n">log_id</span><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">set_logger</span><span class="p">(</span><span class="n">logger</span><span class="p">)</span>
+<span class="k">with</span> <span class="n">timer</span><span class="p">(</span><span class="s1">&#39;Traning duration:&#39;</span><span class="p">):</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">learn</span><span class="p">(</span><span class="n">total_timesteps</span><span class="o">=</span><span class="mi">40000</span><span class="o">*</span><span class="n">n_envs</span><span class="p">)</span>
 </pre></div>
 
     </div>
 </div>
 </div>
 
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Logging to ./logs/reservoir_14_01_2022
+---------------------------------
+| rollout/           |          |
+|    ep_len_mean     | 21.9     |
+|    ep_rew_mean     | 21.9     |
+| time/              |          |
+|    fps             | 1851     |
+|    iterations      | 1        |
+|    time_elapsed    | 1        |
+|    total_timesteps | 2048     |
+---------------------------------
+-----------------------------------------
+| rollout/                |             |
+|    ep_len_mean          | 28.9        |
+|    ep_rew_mean          | 28.9        |
+| time/                   |             |
+|    fps                  | 1357        |
+|    iterations           | 2           |
+|    time_elapsed         | 3           |
+|    total_timesteps      | 4096        |
+| train/                  |             |
+|    approx_kl            | 0.014277613 |
+|    clip_fraction        | 0.197       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -0.682      |
+|    explained_variance   | -0.0129     |
+|    learning_rate        | 0.0003      |
+|    loss                 | 4.24        |
+|    n_updates            | 10          |
+|    policy_gradient_loss | -0.0244     |
+|    value_loss           | 28          |
+-----------------------------------------
+---------------------------------------
+| rollout/                |           |
+|    ep_len_mean          | 43.9      |
+|    ep_rew_mean          | 43.9      |
+| time/                   |           |
+|    fps                  | 1255      |
+|    iterations           | 3         |
+|    time_elapsed         | 4         |
+|    total_timesteps      | 6144      |
+| train/                  |           |
+|    approx_kl            | 0.0164369 |
+|    clip_fraction        | 0.182     |
+|    clip_range           | 0.2       |
+|    entropy_loss         | -0.647    |
+|    explained_variance   | 0.351     |
+|    learning_rate        | 0.0003    |
+|    loss                 | 11.5      |
+|    n_updates            | 20        |
+|    policy_gradient_loss | -0.0307   |
+|    value_loss           | 36.3      |
+---------------------------------------
+-----------------------------------------
+| rollout/                |             |
+|    ep_len_mean          | 60.5        |
+|    ep_rew_mean          | 60.5        |
+| time/                   |             |
+|    fps                  | 1197        |
+|    iterations           | 4           |
+|    time_elapsed         | 6           |
+|    total_timesteps      | 8192        |
+| train/                  |             |
+|    approx_kl            | 0.015066053 |
+|    clip_fraction        | 0.186       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -0.613      |
+|    explained_variance   | 0.505       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 16.9        |
+|    n_updates            | 30          |
+|    policy_gradient_loss | -0.0213     |
+|    value_loss           | 58.5        |
+-----------------------------------------
+-----------------------------------------
+| rollout/                |             |
+|    ep_len_mean          | 77          |
+|    ep_rew_mean          | 77          |
+| time/                   |             |
+|    fps                  | 1174        |
+|    iterations           | 5           |
+|    time_elapsed         | 8           |
+|    total_timesteps      | 10240       |
+| train/                  |             |
+|    approx_kl            | 0.014416136 |
+|    clip_fraction        | 0.214       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -0.574      |
+|    explained_variance   | 0.493       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 21.2        |
+|    n_updates            | 40          |
+|    policy_gradient_loss | -0.0107     |
+|    value_loss           | 66          |
+-----------------------------------------
+-----------------------------------------
+| rollout/                |             |
+|    ep_len_mean          | 92.2        |
+|    ep_rew_mean          | 92.2        |
+| time/                   |             |
+|    fps                  | 1153        |
+|    iterations           | 6           |
+|    time_elapsed         | 10          |
+|    total_timesteps      | 12288       |
+| train/                  |             |
+|    approx_kl            | 0.009828973 |
+|    clip_fraction        | 0.161       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -0.562      |
+|    explained_variance   | 0.368       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 27.2        |
+|    n_updates            | 50          |
+|    policy_gradient_loss | -0.00153    |
+|    value_loss           | 78          |
+-----------------------------------------
+-----------------------------------------
+| rollout/                |             |
+|    ep_len_mean          | 111         |
+|    ep_rew_mean          | 111         |
+| time/                   |             |
+|    fps                  | 1084        |
+|    iterations           | 7           |
+|    time_elapsed         | 13          |
+|    total_timesteps      | 14336       |
+| train/                  |             |
+|    approx_kl            | 0.010467056 |
+|    clip_fraction        | 0.122       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -0.538      |
+|    explained_variance   | 0.238       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 20.6        |
+|    n_updates            | 60          |
+|    policy_gradient_loss | -0.000298   |
+|    value_loss           | 77.3        |
+-----------------------------------------
+-----------------------------------------
+| rollout/                |             |
+|    ep_len_mean          | 126         |
+|    ep_rew_mean          | 126         |
+| time/                   |             |
+|    fps                  | 1070        |
+|    iterations           | 8           |
+|    time_elapsed         | 15          |
+|    total_timesteps      | 16384       |
+| train/                  |             |
+|    approx_kl            | 0.010857141 |
+|    clip_fraction        | 0.128       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -0.528      |
+|    explained_variance   | 0.314       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 52.7        |
+|    n_updates            | 70          |
+|    policy_gradient_loss | 0.00252     |
+|    value_loss           | 83.6        |
+-----------------------------------------
+-----------------------------------------
+| rollout/                |             |
+|    ep_len_mean          | 143         |
+|    ep_rew_mean          | 143         |
+| time/                   |             |
+|    fps                  | 1070        |
+|    iterations           | 9           |
+|    time_elapsed         | 17          |
+|    total_timesteps      | 18432       |
+| train/                  |             |
+|    approx_kl            | 0.007366232 |
+|    clip_fraction        | 0.132       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -0.517      |
+|    explained_variance   | 0.431       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 36.4        |
+|    n_updates            | 80          |
+|    policy_gradient_loss | 0.002       |
+|    value_loss           | 87.9        |
+-----------------------------------------
+-----------------------------------------
+| rollout/                |             |
+|    ep_len_mean          | 155         |
+|    ep_rew_mean          | 155         |
+| time/                   |             |
+|    fps                  | 1066        |
+|    iterations           | 10          |
+|    time_elapsed         | 19          |
+|    total_timesteps      | 20480       |
+| train/                  |             |
+|    approx_kl            | 0.011241484 |
+|    clip_fraction        | 0.129       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -0.511      |
+|    explained_variance   | 0.675       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 48          |
+|    n_updates            | 90          |
+|    policy_gradient_loss | 0.0026      |
+|    value_loss           | 69.3        |
+-----------------------------------------
+----------------------------------------
+| rollout/                |            |
+|    ep_len_mean          | 169        |
+|    ep_rew_mean          | 169        |
+| time/                   |            |
+|    fps                  | 1063       |
+|    iterations           | 11         |
+|    time_elapsed         | 21         |
+|    total_timesteps      | 22528      |
+| train/                  |            |
+|    approx_kl            | 0.00864646 |
+|    clip_fraction        | 0.111      |
+|    clip_range           | 0.2        |
+|    entropy_loss         | -0.504     |
+|    explained_variance   | 0.759      |
+|    learning_rate        | 0.0003     |
+|    loss                 | 27.5       |
+|    n_updates            | 100        |
+|    policy_gradient_loss | 0.00223    |
+|    value_loss           | 58.4       |
+----------------------------------------
+-----------------------------------------
+| rollout/                |             |
+|    ep_len_mean          | 182         |
+|    ep_rew_mean          | 182         |
+| time/                   |             |
+|    fps                  | 1056        |
+|    iterations           | 12          |
+|    time_elapsed         | 23          |
+|    total_timesteps      | 24576       |
+| train/                  |             |
+|    approx_kl            | 0.008343596 |
+|    clip_fraction        | 0.131       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -0.483      |
+|    explained_variance   | 0.55        |
+|    learning_rate        | 0.0003      |
+|    loss                 | 25.1        |
+|    n_updates            | 110         |
+|    policy_gradient_loss | 0.00481     |
+|    value_loss           | 97.4        |
+-----------------------------------------
+-----------------------------------------
+| rollout/                |             |
+|    ep_len_mean          | 190         |
+|    ep_rew_mean          | 190         |
+| time/                   |             |
+|    fps                  | 1050        |
+|    iterations           | 13          |
+|    time_elapsed         | 25          |
+|    total_timesteps      | 26624       |
+| train/                  |             |
+|    approx_kl            | 0.012934265 |
+|    clip_fraction        | 0.126       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -0.479      |
+|    explained_variance   | 0.836       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 39.6        |
+|    n_updates            | 120         |
+|    policy_gradient_loss | 0.00198     |
+|    value_loss           | 55.5        |
+-----------------------------------------
+-----------------------------------------
+| rollout/                |             |
+|    ep_len_mean          | 197         |
+|    ep_rew_mean          | 197         |
+| time/                   |             |
+|    fps                  | 1050        |
+|    iterations           | 14          |
+|    time_elapsed         | 27          |
+|    total_timesteps      | 28672       |
+| train/                  |             |
+|    approx_kl            | 0.008489787 |
+|    clip_fraction        | 0.114       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -0.463      |
+|    explained_variance   | 0.854       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 25.4        |
+|    n_updates            | 130         |
+|    policy_gradient_loss | 0.00221     |
+|    value_loss           | 49.9        |
+-----------------------------------------
+-----------------------------------------
+| rollout/                |             |
+|    ep_len_mean          | 200         |
+|    ep_rew_mean          | 200         |
+| time/                   |             |
+|    fps                  | 1050        |
+|    iterations           | 15          |
+|    time_elapsed         | 29          |
+|    total_timesteps      | 30720       |
+| train/                  |             |
+|    approx_kl            | 0.010563629 |
+|    clip_fraction        | 0.127       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -0.466      |
+|    explained_variance   | 0.894       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 34.5        |
+|    n_updates            | 140         |
+|    policy_gradient_loss | 0.00254     |
+|    value_loss           | 46.6        |
+-----------------------------------------
+-----------------------------------------
+| rollout/                |             |
+|    ep_len_mean          | 200         |
+|    ep_rew_mean          | 200         |
+| time/                   |             |
+|    fps                  | 1051        |
+|    iterations           | 16          |
+|    time_elapsed         | 31          |
+|    total_timesteps      | 32768       |
+| train/                  |             |
+|    approx_kl            | 0.009930966 |
+|    clip_fraction        | 0.124       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -0.477      |
+|    explained_variance   | 0.904       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 17.5        |
+|    n_updates            | 150         |
+|    policy_gradient_loss | 0.00262     |
+|    value_loss           | 35.1        |
+-----------------------------------------
+----------------------------------------
+| rollout/                |            |
+|    ep_len_mean          | 200        |
+|    ep_rew_mean          | 200        |
+| time/                   |            |
+|    fps                  | 1046       |
+|    iterations           | 17         |
+|    time_elapsed         | 33         |
+|    total_timesteps      | 34816      |
+| train/                  |            |
+|    approx_kl            | 0.01665298 |
+|    clip_fraction        | 0.16       |
+|    clip_range           | 0.2        |
+|    entropy_loss         | -0.486     |
+|    explained_variance   | 0.971      |
+|    learning_rate        | 0.0003     |
+|    loss                 | 10.8       |
+|    n_updates            | 160        |
+|    policy_gradient_loss | 0.00249    |
+|    value_loss           | 21.6       |
+----------------------------------------
+-----------------------------------------
+| rollout/                |             |
+|    ep_len_mean          | 200         |
+|    ep_rew_mean          | 200         |
+| time/                   |             |
+|    fps                  | 1048        |
+|    iterations           | 18          |
+|    time_elapsed         | 35          |
+|    total_timesteps      | 36864       |
+| train/                  |             |
+|    approx_kl            | 0.012553493 |
+|    clip_fraction        | 0.152       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -0.481      |
+|    explained_variance   | 0.829       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 33          |
+|    n_updates            | 170         |
+|    policy_gradient_loss | 0.00319     |
+|    value_loss           | 73.7        |
+-----------------------------------------
+----------------------------------------
+| rollout/                |            |
+|    ep_len_mean          | 200        |
+|    ep_rew_mean          | 200        |
+| time/                   |            |
+|    fps                  | 1049       |
+|    iterations           | 19         |
+|    time_elapsed         | 37         |
+|    total_timesteps      | 38912      |
+| train/                  |            |
+|    approx_kl            | 0.01881332 |
+|    clip_fraction        | 0.156      |
+|    clip_range           | 0.2        |
+|    entropy_loss         | -0.495     |
+|    explained_variance   | 0.838      |
+|    learning_rate        | 0.0003     |
+|    loss                 | 25.6       |
+|    n_updates            | 180        |
+|    policy_gradient_loss | 0.00499    |
+|    value_loss           | 80.5       |
+----------------------------------------
+-----------------------------------------
+| rollout/                |             |
+|    ep_len_mean          | 200         |
+|    ep_rew_mean          | 200         |
+| time/                   |             |
+|    fps                  | 1046        |
+|    iterations           | 20          |
+|    time_elapsed         | 39          |
+|    total_timesteps      | 40960       |
+| train/                  |             |
+|    approx_kl            | 0.011363821 |
+|    clip_fraction        | 0.171       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -0.479      |
+|    explained_variance   | 0.402       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 60.6        |
+|    n_updates            | 190         |
+|    policy_gradient_loss | 0.00601     |
+|    value_loss           | 248         |
+-----------------------------------------
+Traning duration:: 40.01372003555298 seconds
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Validation">Validation<a class="anchor-link" href="#Validation">&#182;</a></h2>
+</div>
+</div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[7]:</div>
+<div class="prompt input_prompt">In&nbsp;[5]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">log_res</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;./logs/reservoir_10_12_2021/progress.csv&#39;</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">env</span> <span class="o">=</span> <span class="n">make_vec_env</span><span class="p">(</span><span class="s2">&quot;CartPole-v0&quot;</span><span class="p">,</span> <span class="n">n_envs</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">ep_lengths</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">model</span><span class="o">.</span><span class="n">policy</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">policy</span><span class="o">.</span><span class="n">mlp_extractor</span><span class="o">.</span><span class="n">reservoirs</span><span class="p">:</span>
+    <span class="n">res</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+<span class="n">model</span><span class="o">.</span><span class="n">policy</span><span class="o">.</span><span class="n">collapse_reservoirs</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">trange</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
+    <span class="n">state</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+    <span class="n">done</span><span class="o">=</span><span class="mi">0</span>
+    <span class="n">rewards</span><span class="o">=</span><span class="p">[]</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">policy</span><span class="o">.</span><span class="n">reset_reservoirs</span><span class="p">()</span>
+    <span class="k">while</span> <span class="ow">not</span> <span class="n">done</span><span class="p">:</span>
+        <span class="n">action</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">log_prob</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">policy</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">state</span><span class="p">[</span><span class="kc">None</span><span class="p">,:]))</span>
+        <span class="n">next_state</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">done</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">action</span><span class="o">.</span><span class="n">numpy</span><span class="p">())</span>
+        <span class="n">state</span> <span class="o">=</span> <span class="n">next_state</span>
+        <span class="n">rewards</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">reward</span><span class="p">)</span>
+    <span class="n">ep_lengths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">rewards</span><span class="p">))</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">ep_lengths</span><span class="p">))</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">ep_lengths</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>100%|██████████| 100/100 [00:10&lt;00:00,  9.09it/s]
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>200.0
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+
+<div class="output_png output_subarea ">
+<img src="cartpole_ESN_PPO_website_files/cartpole_ESN_PPO_website_9_2.png"
+>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The average episode length is 200/200. 100% of the time, the agent is able to complete the game succesfully.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Now we look at the convergence graph of the reservoir training</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[6]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">log_res</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;./logs/reservoir_</span><span class="si">{</span><span class="n">log_id</span><span class="si">}</span><span class="s1">/progress.csv&#39;</span><span class="p">)</span>
 <span class="n">log_res</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;train/n_updates&#39;</span><span class="p">)[</span><span class="s1">&#39;rollout/ep_rew_mean&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Convergence Graph&#39;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
@@ -13522,10 +13835,510 @@ Estimated Total Size (MB): 0.15
 
 
 <div class="output_png output_subarea ">
-<img src="cartpole_ESN_PPO_website_files/cartpole_ESN_PPO_website_10_0.png"
+<img src="cartpole_ESN_PPO_website_files/cartpole_ESN_PPO_website_12_0.png"
 >
 </div>
 
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Feedforward-Network">Feedforward Network<a class="anchor-link" href="#Feedforward-Network">&#182;</a></h1><p>We also compare our results with the feedforward case.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Train">Train<a class="anchor-link" href="#Train">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[7]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">stable_baselines3.common.env_util</span> <span class="kn">import</span> <span class="n">make_vec_env</span>
+
+<span class="c1"># Parallel environments</span>
+<span class="n">env</span> <span class="o">=</span> <span class="n">make_vec_env</span><span class="p">(</span><span class="s2">&quot;CartPole-v0&quot;</span><span class="p">,</span> <span class="n">n_envs</span><span class="o">=</span><span class="n">n_envs</span><span class="p">)</span>
+<span class="n">env</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">PPO</span><span class="p">(</span><span class="s2">&quot;MlpPolicy&quot;</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">policy_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;net_arch&#39;</span><span class="p">:[</span><span class="nb">dict</span><span class="p">(</span><span class="n">vf</span><span class="o">=</span><span class="p">[</span><span class="mi">128</span><span class="p">,</span><span class="mi">64</span><span class="p">],</span> <span class="n">pi</span><span class="o">=</span><span class="p">[</span><span class="mi">128</span><span class="p">,</span><span class="mi">64</span><span class="p">])]},</span><span class="n">batch_size</span><span class="o">=</span><span class="n">PPO_batch_size</span><span class="p">,</span><span class="n">n_epochs</span><span class="o">=</span><span class="n">N_EPOCHS</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">summary</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">policy</span><span class="p">,</span><span class="n">input_data</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">PPO_batch_size</span><span class="p">,</span><span class="n">env</span><span class="o">.</span><span class="n">observation_space</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])))</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">configure</span><span class="p">(</span><span class="s2">&quot;./logs/feedforward_&quot;</span> <span class="o">+</span> <span class="n">log_id</span><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">set_logger</span><span class="p">(</span><span class="n">logger</span><span class="p">)</span>
+<span class="k">with</span> <span class="n">timer</span><span class="p">(</span><span class="s1">&#39;Traning duration:&#39;</span><span class="p">):</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">learn</span><span class="p">(</span><span class="n">total_timesteps</span><span class="o">=</span><span class="mi">40000</span><span class="o">*</span><span class="n">n_envs</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Using cpu device
+==========================================================================================
+Layer (type:depth-idx)                   Output Shape              Param #
+==========================================================================================
+ActorCriticPolicy                        --                        --
+├─FlattenExtractor: 1-1                  [64, 4]                   --
+│    └─Flatten: 2-1                      [64, 4]                   --
+├─MlpExtractor: 1-2                      [64, 64]                  --
+│    └─Sequential: 2-2                   [64, 4]                   --
+│    └─Sequential: 2-3                   [64, 64]                  --
+│    │    └─Linear: 3-1                  [64, 128]                 640
+│    │    └─Tanh: 3-2                    [64, 128]                 --
+│    │    └─Linear: 3-3                  [64, 64]                  8,256
+│    │    └─Tanh: 3-4                    [64, 64]                  --
+│    └─Sequential: 2-4                   [64, 64]                  --
+│    │    └─Linear: 3-5                  [64, 128]                 640
+│    │    └─Tanh: 3-6                    [64, 128]                 --
+│    │    └─Linear: 3-7                  [64, 64]                  8,256
+│    │    └─Tanh: 3-8                    [64, 64]                  --
+├─Linear: 1-3                            [64, 1]                   65
+├─Linear: 1-4                            [64, 2]                   130
+==========================================================================================
+Total params: 17,987
+Trainable params: 17,987
+Non-trainable params: 0
+Total mult-adds (M): 1.15
+==========================================================================================
+Input size (MB): 0.00
+Forward/backward pass size (MB): 0.20
+Params size (MB): 0.07
+Estimated Total Size (MB): 0.27
+==========================================================================================
+Logging to ./logs/feedforward_14_01_2022
+---------------------------------
+| rollout/           |          |
+|    ep_len_mean     | 25.6     |
+|    ep_rew_mean     | 25.6     |
+| time/              |          |
+|    fps             | 2125     |
+|    iterations      | 1        |
+|    time_elapsed    | 0        |
+|    total_timesteps | 2048     |
+---------------------------------
+------------------------------------------
+| rollout/                |              |
+|    ep_len_mean          | 26.5         |
+|    ep_rew_mean          | 26.5         |
+| time/                   |              |
+|    fps                  | 1113         |
+|    iterations           | 2            |
+|    time_elapsed         | 3            |
+|    total_timesteps      | 4096         |
+| train/                  |              |
+|    approx_kl            | 0.0075579747 |
+|    clip_fraction        | 0.0762       |
+|    clip_range           | 0.2          |
+|    entropy_loss         | -0.687       |
+|    explained_variance   | -0.00116     |
+|    learning_rate        | 0.0003       |
+|    loss                 | 8.73         |
+|    n_updates            | 10           |
+|    policy_gradient_loss | -0.0114      |
+|    value_loss           | 55.2         |
+------------------------------------------
+-----------------------------------------
+| rollout/                |             |
+|    ep_len_mean          | 35.8        |
+|    ep_rew_mean          | 35.8        |
+| time/                   |             |
+|    fps                  | 1028        |
+|    iterations           | 3           |
+|    time_elapsed         | 5           |
+|    total_timesteps      | 6144        |
+| train/                  |             |
+|    approx_kl            | 0.012684651 |
+|    clip_fraction        | 0.0934      |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -0.663      |
+|    explained_variance   | 0.154       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 16.2        |
+|    n_updates            | 20          |
+|    policy_gradient_loss | -0.0202     |
+|    value_loss           | 39.1        |
+-----------------------------------------
+-----------------------------------------
+| rollout/                |             |
+|    ep_len_mean          | 47.1        |
+|    ep_rew_mean          | 47.1        |
+| time/                   |             |
+|    fps                  | 1003        |
+|    iterations           | 4           |
+|    time_elapsed         | 8           |
+|    total_timesteps      | 8192        |
+| train/                  |             |
+|    approx_kl            | 0.010092517 |
+|    clip_fraction        | 0.075       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -0.635      |
+|    explained_variance   | 0.141       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 18.9        |
+|    n_updates            | 30          |
+|    policy_gradient_loss | -0.0196     |
+|    value_loss           | 57.4        |
+-----------------------------------------
+-----------------------------------------
+| rollout/                |             |
+|    ep_len_mean          | 62.5        |
+|    ep_rew_mean          | 62.5        |
+| time/                   |             |
+|    fps                  | 1001        |
+|    iterations           | 5           |
+|    time_elapsed         | 10          |
+|    total_timesteps      | 10240       |
+| train/                  |             |
+|    approx_kl            | 0.007218941 |
+|    clip_fraction        | 0.0731      |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -0.609      |
+|    explained_variance   | 0.317       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 18.2        |
+|    n_updates            | 40          |
+|    policy_gradient_loss | -0.019      |
+|    value_loss           | 64.9        |
+-----------------------------------------
+-----------------------------------------
+| rollout/                |             |
+|    ep_len_mean          | 76.7        |
+|    ep_rew_mean          | 76.7        |
+| time/                   |             |
+|    fps                  | 1020        |
+|    iterations           | 6           |
+|    time_elapsed         | 12          |
+|    total_timesteps      | 12288       |
+| train/                  |             |
+|    approx_kl            | 0.010087628 |
+|    clip_fraction        | 0.0856      |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -0.588      |
+|    explained_variance   | 0.458       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 17.6        |
+|    n_updates            | 50          |
+|    policy_gradient_loss | -0.0158     |
+|    value_loss           | 60          |
+-----------------------------------------
+-----------------------------------------
+| rollout/                |             |
+|    ep_len_mean          | 91.8        |
+|    ep_rew_mean          | 91.8        |
+| time/                   |             |
+|    fps                  | 1010        |
+|    iterations           | 7           |
+|    time_elapsed         | 14          |
+|    total_timesteps      | 14336       |
+| train/                  |             |
+|    approx_kl            | 0.008731555 |
+|    clip_fraction        | 0.0724      |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -0.581      |
+|    explained_variance   | 0.562       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 21.3        |
+|    n_updates            | 60          |
+|    policy_gradient_loss | -0.0108     |
+|    value_loss           | 57.6        |
+-----------------------------------------
+-----------------------------------------
+| rollout/                |             |
+|    ep_len_mean          | 108         |
+|    ep_rew_mean          | 108         |
+| time/                   |             |
+|    fps                  | 1009        |
+|    iterations           | 8           |
+|    time_elapsed         | 16          |
+|    total_timesteps      | 16384       |
+| train/                  |             |
+|    approx_kl            | 0.007271885 |
+|    clip_fraction        | 0.036       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -0.57       |
+|    explained_variance   | 0.424       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 31.8        |
+|    n_updates            | 70          |
+|    policy_gradient_loss | -0.005      |
+|    value_loss           | 76.7        |
+-----------------------------------------
+------------------------------------------
+| rollout/                |              |
+|    ep_len_mean          | 123          |
+|    ep_rew_mean          | 123          |
+| time/                   |              |
+|    fps                  | 1031         |
+|    iterations           | 9            |
+|    time_elapsed         | 17           |
+|    total_timesteps      | 18432        |
+| train/                  |              |
+|    approx_kl            | 0.0048419307 |
+|    clip_fraction        | 0.0286       |
+|    clip_range           | 0.2          |
+|    entropy_loss         | -0.565       |
+|    explained_variance   | 0.534        |
+|    learning_rate        | 0.0003       |
+|    loss                 | 40.3         |
+|    n_updates            | 80           |
+|    policy_gradient_loss | -0.00183     |
+|    value_loss           | 66.3         |
+------------------------------------------
+-----------------------------------------
+| rollout/                |             |
+|    ep_len_mean          | 138         |
+|    ep_rew_mean          | 138         |
+| time/                   |             |
+|    fps                  | 1059        |
+|    iterations           | 10          |
+|    time_elapsed         | 19          |
+|    total_timesteps      | 20480       |
+| train/                  |             |
+|    approx_kl            | 0.008168362 |
+|    clip_fraction        | 0.0703      |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -0.563      |
+|    explained_variance   | 0.843       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 8.73        |
+|    n_updates            | 90          |
+|    policy_gradient_loss | -0.0049     |
+|    value_loss           | 34.1        |
+-----------------------------------------
+------------------------------------------
+| rollout/                |              |
+|    ep_len_mean          | 151          |
+|    ep_rew_mean          | 151          |
+| time/                   |              |
+|    fps                  | 1090         |
+|    iterations           | 11           |
+|    time_elapsed         | 20           |
+|    total_timesteps      | 22528        |
+| train/                  |              |
+|    approx_kl            | 0.0028254774 |
+|    clip_fraction        | 0.0262       |
+|    clip_range           | 0.2          |
+|    entropy_loss         | -0.568       |
+|    explained_variance   | 0.61         |
+|    learning_rate        | 0.0003       |
+|    loss                 | 9.2          |
+|    n_updates            | 100          |
+|    policy_gradient_loss | -0.00119     |
+|    value_loss           | 90.7         |
+------------------------------------------
+------------------------------------------
+| rollout/                |              |
+|    ep_len_mean          | 164          |
+|    ep_rew_mean          | 164          |
+| time/                   |              |
+|    fps                  | 1118         |
+|    iterations           | 12           |
+|    time_elapsed         | 21           |
+|    total_timesteps      | 24576        |
+| train/                  |              |
+|    approx_kl            | 0.0030597989 |
+|    clip_fraction        | 0.0119       |
+|    clip_range           | 0.2          |
+|    entropy_loss         | -0.556       |
+|    explained_variance   | 0.55         |
+|    learning_rate        | 0.0003       |
+|    loss                 | 10.2         |
+|    n_updates            | 110          |
+|    policy_gradient_loss | -0.00187     |
+|    value_loss           | 80.9         |
+------------------------------------------
+------------------------------------------
+| rollout/                |              |
+|    ep_len_mean          | 175          |
+|    ep_rew_mean          | 175          |
+| time/                   |              |
+|    fps                  | 1133         |
+|    iterations           | 13           |
+|    time_elapsed         | 23           |
+|    total_timesteps      | 26624        |
+| train/                  |              |
+|    approx_kl            | 0.0023050865 |
+|    clip_fraction        | 0.00278      |
+|    clip_range           | 0.2          |
+|    entropy_loss         | -0.553       |
+|    explained_variance   | 0.222        |
+|    learning_rate        | 0.0003       |
+|    loss                 | 41.6         |
+|    n_updates            | 120          |
+|    policy_gradient_loss | -0.000585    |
+|    value_loss           | 135          |
+------------------------------------------
+------------------------------------------
+| rollout/                |              |
+|    ep_len_mean          | 185          |
+|    ep_rew_mean          | 185          |
+| time/                   |              |
+|    fps                  | 1132         |
+|    iterations           | 14           |
+|    time_elapsed         | 25           |
+|    total_timesteps      | 28672        |
+| train/                  |              |
+|    approx_kl            | 0.0060982956 |
+|    clip_fraction        | 0.0597       |
+|    clip_range           | 0.2          |
+|    entropy_loss         | -0.559       |
+|    explained_variance   | 0.836        |
+|    learning_rate        | 0.0003       |
+|    loss                 | 23           |
+|    n_updates            | 130          |
+|    policy_gradient_loss | -0.00476     |
+|    value_loss           | 50.2         |
+------------------------------------------
+-----------------------------------------
+| rollout/                |             |
+|    ep_len_mean          | 191         |
+|    ep_rew_mean          | 191         |
+| time/                   |             |
+|    fps                  | 1141        |
+|    iterations           | 15          |
+|    time_elapsed         | 26          |
+|    total_timesteps      | 30720       |
+| train/                  |             |
+|    approx_kl            | 0.004326394 |
+|    clip_fraction        | 0.0264      |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -0.541      |
+|    explained_variance   | 0.592       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 37.5        |
+|    n_updates            | 140         |
+|    policy_gradient_loss | -0.00293    |
+|    value_loss           | 127         |
+-----------------------------------------
+-----------------------------------------
+| rollout/                |             |
+|    ep_len_mean          | 195         |
+|    ep_rew_mean          | 195         |
+| time/                   |             |
+|    fps                  | 1138        |
+|    iterations           | 16          |
+|    time_elapsed         | 28          |
+|    total_timesteps      | 32768       |
+| train/                  |             |
+|    approx_kl            | 0.003927394 |
+|    clip_fraction        | 0.0302      |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -0.542      |
+|    explained_variance   | 0.727       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 30.8        |
+|    n_updates            | 150         |
+|    policy_gradient_loss | -0.00507    |
+|    value_loss           | 87.7        |
+-----------------------------------------
+-----------------------------------------
+| rollout/                |             |
+|    ep_len_mean          | 197         |
+|    ep_rew_mean          | 197         |
+| time/                   |             |
+|    fps                  | 1127        |
+|    iterations           | 17          |
+|    time_elapsed         | 30          |
+|    total_timesteps      | 34816       |
+| train/                  |             |
+|    approx_kl            | 0.004014457 |
+|    clip_fraction        | 0.0225      |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -0.527      |
+|    explained_variance   | 0.612       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 76.6        |
+|    n_updates            | 160         |
+|    policy_gradient_loss | -0.0043     |
+|    value_loss           | 109         |
+-----------------------------------------
+------------------------------------------
+| rollout/                |              |
+|    ep_len_mean          | 198          |
+|    ep_rew_mean          | 198          |
+| time/                   |              |
+|    fps                  | 1115         |
+|    iterations           | 18           |
+|    time_elapsed         | 33           |
+|    total_timesteps      | 36864        |
+| train/                  |              |
+|    approx_kl            | 0.0054183146 |
+|    clip_fraction        | 0.0513       |
+|    clip_range           | 0.2          |
+|    entropy_loss         | -0.522       |
+|    explained_variance   | 0.123        |
+|    learning_rate        | 0.0003       |
+|    loss                 | 77.8         |
+|    n_updates            | 170          |
+|    policy_gradient_loss | -0.0052      |
+|    value_loss           | 179          |
+------------------------------------------
+------------------------------------------
+| rollout/                |              |
+|    ep_len_mean          | 199          |
+|    ep_rew_mean          | 199          |
+| time/                   |              |
+|    fps                  | 1121         |
+|    iterations           | 19           |
+|    time_elapsed         | 34           |
+|    total_timesteps      | 38912        |
+| train/                  |              |
+|    approx_kl            | 0.0024167993 |
+|    clip_fraction        | 0.0268       |
+|    clip_range           | 0.2          |
+|    entropy_loss         | -0.52        |
+|    explained_variance   | 0.376        |
+|    learning_rate        | 0.0003       |
+|    loss                 | 24.5         |
+|    n_updates            | 180          |
+|    policy_gradient_loss | -0.00188     |
+|    value_loss           | 152          |
+------------------------------------------
+-----------------------------------------
+| rollout/                |             |
+|    ep_len_mean          | 200         |
+|    ep_rew_mean          | 200         |
+| time/                   |             |
+|    fps                  | 1117        |
+|    iterations           | 20          |
+|    time_elapsed         | 36          |
+|    total_timesteps      | 40960       |
+| train/                  |             |
+|    approx_kl            | 0.004537179 |
+|    clip_fraction        | 0.0225      |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -0.526      |
+|    explained_variance   | 0.299       |
+|    learning_rate        | 0.0003      |
+|    loss                 | 65.7        |
+|    n_updates            | 190         |
+|    policy_gradient_loss | -0.00229    |
+|    value_loss           | 141         |
+-----------------------------------------
+Traning duration:: 37.423856258392334 seconds
+</pre>
+</div>
 </div>
 
 </div>
@@ -13544,73 +14357,23 @@ Estimated Total Size (MB): 0.15
 <div class="prompt input_prompt">In&nbsp;[8]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">ep_lengths</span> <span class="o">=</span> <span class="p">[]</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">env</span> <span class="o">=</span> <span class="n">make_vec_env</span><span class="p">(</span><span class="s2">&quot;CartPole-v0&quot;</span><span class="p">,</span> <span class="n">n_envs</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">ep_lengths</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="n">model</span><span class="o">.</span><span class="n">policy</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
-<span class="n">model</span><span class="o">.</span><span class="n">policy</span><span class="o">.</span><span class="n">collapse_reservoirs</span><span class="p">()</span>
 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">trange</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
     <span class="n">state</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
     <span class="n">done</span><span class="o">=</span><span class="mi">0</span>
     <span class="n">rewards</span><span class="o">=</span><span class="p">[]</span>
-    <span class="n">model</span><span class="o">.</span><span class="n">policy</span><span class="o">.</span><span class="n">reset_reservoirs</span><span class="p">()</span>
     <span class="k">while</span> <span class="ow">not</span> <span class="n">done</span><span class="p">:</span>
         <span class="n">action</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">log_prob</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">policy</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">state</span><span class="p">[</span><span class="kc">None</span><span class="p">,:]))</span>
-        <span class="n">next_state</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">done</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">action</span><span class="o">.</span><span class="n">numpy</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">next_state</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">done</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">action</span><span class="o">.</span><span class="n">numpy</span><span class="p">())</span>
         <span class="n">state</span> <span class="o">=</span> <span class="n">next_state</span>
         <span class="n">rewards</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">reward</span><span class="p">)</span>
-    <span class="n">ep_lengths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">rewards</span><span class="p">))</span>
-<span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">ep_lengths</span><span class="p">)</span>
-</pre></div>
+    <span class="n">ep_lengths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">rewards</span><span class="p">))</span>
 
-    </div>
-</div>
-</div>
+<span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">ep_lengths</span><span class="p">))</span>
 
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stderr output_text">
-<pre>100%|██████████| 100/100 [00:12&lt;00:00,  7.74it/s]
-</pre>
-</div>
-</div>
-
-<div class="output_area">
-
-    <div class="prompt output_prompt">Out[8]:</div>
-
-
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>200.0</pre>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>The average episode length is 200. 100% of the time, the agent is able to complete the game succesfully.</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[9]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">ep_lengths</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">ep_lengths</span><span class="p">))</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 
@@ -13627,10 +14390,42 @@ Estimated Total Size (MB): 0.15
     <div class="prompt"></div>
 
 
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>100%|██████████| 100/100 [00:08&lt;00:00, 11.35it/s]</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>198.17
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
 
 
 <div class="output_png output_subarea ">
-<img src="cartpole_ESN_PPO_website_files/cartpole_ESN_PPO_website_14_0.png"
+<img src="cartpole_ESN_PPO_website_files/cartpole_ESN_PPO_website_17_3.png"
 >
 </div>
 
@@ -13643,138 +14438,17 @@ Estimated Total Size (MB): 0.15
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="Feedforward-Network">Feedforward Network<a class="anchor-link" href="#Feedforward-Network">&#182;</a></h1><p>We also compare our results with the feedforward case, where we give the network almost double the amount of parameters than the reservoir case.</p>
-
+<h1 id="Comparison-of-Convergences">Comparison of Convergences<a class="anchor-link" href="#Comparison-of-Convergences">&#182;</a></h1>
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[10]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">LOG_PATH</span> <span class="o">=</span> <span class="s2">&quot;./logs/feedforward_&quot;</span> <span class="o">+</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2">_%m_%Y&quot;</span><span class="p">)</span>
-<span class="n">logger</span> <span class="o">=</span> <span class="n">configure</span><span class="p">(</span><span class="n">LOG_PATH</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>Logging to ./logs/feedforward_10_12_2021
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Training">Training<a class="anchor-link" href="#Training">&#182;</a></h2>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[11]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Parallel environments</span>
-<span class="c1"># env = make_vec_env(&quot;CartPole-v0&quot;, n_envs=1)</span>
-<span class="n">env</span> <span class="o">=</span> <span class="n">gym</span><span class="o">.</span><span class="n">make</span><span class="p">(</span><span class="s2">&quot;CartPole-v0&quot;</span><span class="p">)</span>
-
-<span class="n">model</span> <span class="o">=</span> <span class="n">PPO</span><span class="p">(</span><span class="s2">&quot;MlpPolicy&quot;</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">policy_kwargs</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">net_arch</span><span class="o">=</span><span class="p">[</span><span class="nb">dict</span><span class="p">(</span><span class="n">vf</span><span class="o">=</span><span class="p">[</span><span class="mi">128</span><span class="p">,</span><span class="mi">128</span><span class="p">],</span><span class="n">pi</span><span class="o">=</span><span class="p">[</span><span class="mi">128</span><span class="p">,</span><span class="mi">128</span><span class="p">])],</span><span class="n">optimizer_class</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">))</span>
-<span class="n">model</span><span class="o">.</span><span class="n">set_logger</span><span class="p">(</span><span class="n">logger</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">summary</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">policy</span><span class="p">,</span><span class="n">input_data</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">batch_size</span><span class="p">,</span><span class="n">env</span><span class="o">.</span><span class="n">observation_space</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])))</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>==========================================================================================
-Layer (type:depth-idx)                   Output Shape              Param #
-==========================================================================================
-ActorCriticPolicy                        --                        --
-├─FlattenExtractor: 1-1                  [64, 4]                   --
-│    └─Flatten: 2-1                      [64, 4]                   --
-├─MlpExtractor: 1-2                      [64, 128]                 --
-│    └─Sequential: 2-2                   [64, 4]                   --
-│    └─Sequential: 2-3                   [64, 128]                 --
-│    │    └─Linear: 3-1                  [64, 128]                 640
-│    │    └─Tanh: 3-2                    [64, 128]                 --
-│    │    └─Linear: 3-3                  [64, 128]                 16,512
-│    │    └─Tanh: 3-4                    [64, 128]                 --
-│    └─Sequential: 2-4                   [64, 128]                 --
-│    │    └─Linear: 3-5                  [64, 128]                 640
-│    │    └─Tanh: 3-6                    [64, 128]                 --
-│    │    └─Linear: 3-7                  [64, 128]                 16,512
-│    │    └─Tanh: 3-8                    [64, 128]                 --
-├─Linear: 1-3                            [64, 1]                   129
-├─Linear: 1-4                            [64, 2]                   258
-==========================================================================================
-Total params: 34,691
-Trainable params: 34,691
-Non-trainable params: 0
-Total mult-adds (M): 2.22
-==========================================================================================
-Input size (MB): 0.00
-Forward/backward pass size (MB): 0.26
-Params size (MB): 0.14
-Estimated Total Size (MB): 0.40
-==========================================================================================
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">with</span> <span class="n">timer</span><span class="p">(</span><span class="s1">&#39;Traning duration:&#39;</span><span class="p">):</span>
-    <span class="n">model</span><span class="o">.</span><span class="n">learn</span><span class="p">(</span><span class="n">total_timesteps</span><span class="o">=</span><span class="mi">40000</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[13]:</div>
+<div class="prompt input_prompt">In&nbsp;[9]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">log_res</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;train/n_updates&#39;</span><span class="p">)[</span><span class="s1">&#39;rollout/ep_rew_mean&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;reservoir&#39;</span><span class="p">)</span>
-<span class="n">log_ff</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;./logs/feedforward_10_12_2021/progress.csv&#39;</span><span class="p">)</span>
+<span class="n">log_ff</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;./logs/feedforward_</span><span class="si">{</span><span class="n">log_id</span><span class="si">}</span><span class="s1">/progress.csv&#39;</span><span class="p">)</span>
 <span class="n">log_ff</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;train/n_updates&#39;</span><span class="p">)[</span><span class="s1">&#39;rollout/ep_rew_mean&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;feedforward&#39;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Convergence Graph&#39;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
@@ -13797,105 +14471,7 @@ Estimated Total Size (MB): 0.40
 
 
 <div class="output_png output_subarea ">
-<img src="cartpole_ESN_PPO_website_files/cartpole_ESN_PPO_website_20_0.png"
->
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Validation">Validation<a class="anchor-link" href="#Validation">&#182;</a></h2>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[14]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">ep_lengths</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="n">model</span><span class="o">.</span><span class="n">policy</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
-<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">trange</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
-    <span class="n">state</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
-    <span class="n">done</span><span class="o">=</span><span class="mi">0</span>
-    <span class="n">rewards</span><span class="o">=</span><span class="p">[]</span>
-    <span class="k">while</span> <span class="ow">not</span> <span class="n">done</span><span class="p">:</span>
-        <span class="n">action</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">log_prob</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">policy</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">state</span><span class="p">[</span><span class="kc">None</span><span class="p">,:]))</span>
-        <span class="n">next_state</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">done</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">action</span><span class="o">.</span><span class="n">numpy</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span>
-        <span class="n">state</span> <span class="o">=</span> <span class="n">next_state</span>
-        <span class="n">rewards</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">reward</span><span class="p">)</span>
-    <span class="n">ep_lengths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">rewards</span><span class="p">))</span>
-<span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">ep_lengths</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stderr output_text">
-<pre>100%|██████████| 100/100 [00:07&lt;00:00, 13.98it/s]
-</pre>
-</div>
-</div>
-
-<div class="output_area">
-
-    <div class="prompt output_prompt">Out[14]:</div>
-
-
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>200.0</pre>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[15]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">ep_lengths</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-
-
-<div class="output_png output_subarea ">
-<img src="cartpole_ESN_PPO_website_files/cartpole_ESN_PPO_website_23_0.png"
+<img src="cartpole_ESN_PPO_website_files/cartpole_ESN_PPO_website_19_0.png"
 >
 </div>
 
