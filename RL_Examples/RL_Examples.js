@@ -114,22 +114,22 @@ document.write(`
 </div>
 
 <div class="mysidenav" id= "mysidenav">
-  <a class = "home" href="https://quantumyilmaz.github.io/MTFS21/">Home</a>
-  <a href="https://quantumyilmaz.github.io/MTFS21/#LiteratureSummary" id ="LiteratureSummary">Literature Summary (WIP)</a>
+  <a class = "home" href="https://quantumyilmaz.github.io/MTHS21/">Home</a>
+  <a href="https://quantumyilmaz.github.io/MTHS21/#LiteratureSummary" id ="LiteratureSummary">Literature Summary (WIP)</a>
   <button class="mydropdown-btn">Reservoir Computing Examples<i class="fa fa-caret-down"></i></button>
     <div class="mydropdown-container">
-      <a href="https://quantumyilmaz.github.io/MTFS21/Examples/SinusESN/SinusESN.html">Sinusodial</a>
-      <a href="https://quantumyilmaz.github.io/MTFS21/Examples/HouseESN/HouseESN.html">House of the Rising Sun</a>
-      <a href="https://quantumyilmaz.github.io/MTFS21/Examples/SimpleESN/large/SimpleESN_large.html">Mackey-Glass Equations</a>
-      <a href="https://quantumyilmaz.github.io/MTFS21/Examples/RC_SP/LOB/RC_SP_LOB.html">Mid-price Forecasting</a>
+      <a href="https://quantumyilmaz.github.io/MTHS21/Examples/SinusESN/SinusESN.html">Sinusodial</a>
+      <a href="https://quantumyilmaz.github.io/MTHS21/Examples/HouseESN/HouseESN.html">House of the Rising Sun</a>
+      <a href="https://quantumyilmaz.github.io/MTHS21/Examples/SimpleESN/large/SimpleESN_large.html">Mackey-Glass Equations</a>
+      <a href="https://quantumyilmaz.github.io/MTHS21/Examples/RC_SP/LOB/RC_SP_LOB.html">Mid-price Forecasting</a>
     </div>
   <button class="mydropdown-btn">Reinforcement Learning Examples<i class="fa fa-caret-down"></i></button>
     <div class="mydropdown-container">
-      <a href="https://quantumyilmaz.github.io/MTFS21/RL_Examples/cartpole/cartpole_ESNRLS-Q_website.html">Cartpole(ESN)</a>
-      <a href="https://quantumyilmaz.github.io/MTFS21/RL_Examples/RL_paper/FullyTrained/paper_website.html">Mid-price Trading</a>
+      <a href="https://quantumyilmaz.github.io/MTHS21/RL_Examples/cartpole/cartpole_ESNRLS-Q_website.html">Cartpole(ESN)</a>
+      <a href="https://quantumyilmaz.github.io/MTHS21/RL_Examples/RL_paper/FullyTrained/paper_website.html">Mid-price Trading</a>
     </div>
-  <a href="https://quantumyilmaz.github.io/MTFS21/#Links" id ="Links">Links</a>
-  <a href="https://quantumyilmaz.github.io/MTFS21/#Log" id ="Log">Log</a>
+  <a href="https://quantumyilmaz.github.io/MTHS21/#Links" id ="Links">Links</a>
+  <a href="https://quantumyilmaz.github.io/MTHS21/#Log" id ="Log">Log</a>
 </div>
 
 `);
