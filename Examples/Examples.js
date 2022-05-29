@@ -65,7 +65,7 @@ document.write(`
 
 <div class="mysidenav" id= "mysidenav">
   <a class = "home" href="https://quantumyilmaz.github.io/MTHS21/">Home</a>
-  <a href="https://quantumyilmaz.github.io/MTHS21/#LiteratureSummary" id ="LiteratureSummary">Literature Summary (WIP)</a>
+  <a href="https://quantumyilmaz.github.io/MTHS21/#LiteratureSummary" id ="LiteratureSummary">Thesis</a>
   <button class="mydropdown-btn">Reservoir Computing Examples<i class="fa fa-caret-down"></i></button>
     <div class="mydropdown-container">
       <a href="https://quantumyilmaz.github.io/MTHS21/Examples/SinusESN/SinusESN.html">Sinusodial</a>
