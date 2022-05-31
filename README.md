@@ -1,3 +1,3 @@
 # MTFS21 
 
-Webpage stuff
+Web page resources.
